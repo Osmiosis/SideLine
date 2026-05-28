@@ -52,6 +52,24 @@ def find_split(root: Path, split="test"):
             return img, lbl
     raise FileNotFoundError(f"no {split} split under {root}")
 
+def load_gt_remap(root: Path):
+    """If root/data.yaml exists, return {raw_gt_idx -> eval_idx or None} mapping
+    derived from dataset class NAMES (matches the by-name convention used on the
+    prediction side). Falls back to identity if no yaml is present."""
+    yml = root / "data.yaml"
+    if not yml.exists():
+        return None
+    try:
+        import yaml as _yaml
+        d = _yaml.safe_load(yml.read_text())
+        names = d.get("names", [])
+        if isinstance(names, dict):
+            names = [names[i] for i in sorted(names)]
+        return {i: map_class_name_to_eval(str(n)) for i, n in enumerate(names)}
+    except Exception as e:
+        print(f"  WARN: could not parse {yml}: {e}")
+        return None
+
 def parse_label(path: Path):
     if not path.exists(): return []
     out = []
@@ -134,13 +152,20 @@ def evaluate(model_path, root, n, seed, imgsz, conf_thresh, iou_thresh, gt_as_pr
     sample = random.sample(all_imgs, min(n, len(all_imgs)))
     print(f"sample: {len(sample)} / {len(all_imgs)} images  (seed {seed})")
 
-    # Auto-detect which eval classes have any GT in this sample.
+    # GT remap from data.yaml NAMES (by-name, matches prediction side).
+    gt_remap = load_gt_remap(root)
+    if gt_remap is not None:
+        print(f"GT remap (raw_idx -> eval): {gt_remap}")
+
+    # Auto-detect which eval classes have any GT in this sample (post-remap).
     # On a ball-only dataset, person predictions would otherwise count as FPs forever.
     gt_classes_present = set()
     for p in sample:
         for c, *_ in parse_label(lbl_dir / (p.stem + ".txt")):
-            gt_classes_present.add(c)
-    print(f"GT classes present in sample: {sorted(gt_classes_present)} ({[CLASS_NAMES[c] for c in sorted(gt_classes_present) if c in CLASS_NAMES]})")
+            mapped = gt_remap.get(c) if gt_remap is not None else c
+            if mapped is not None:
+                gt_classes_present.add(mapped)
+    print(f"GT classes present in sample (eval space): {sorted(gt_classes_present)} ({[CLASS_NAMES[c] for c in sorted(gt_classes_present) if c in CLASS_NAMES]})")
 
     model = None
     remap = None
@@ -168,6 +193,10 @@ def evaluate(model_path, root, n, seed, imgsz, conf_thresh, iou_thresh, gt_as_pr
             print(f"  skip unreadable {img_path.name}"); continue
         H, W = img_for_size.shape[:2]
 
+        # Apply GT remap by name; drop classes whose name doesn't map to {ball, person}
+        if gt_remap is not None:
+            gt = [(gt_remap[c], cx, cy, w, h) for c, cx, cy, w, h in gt
+                  if gt_remap.get(c) is not None]
         gt_classes = np.array([c for c, *_ in gt], dtype=np.int64)
         gt_boxes   = yolo_to_xyxy([(cx, cy, w, h) for _, cx, cy, w, h in gt], W, H)
         for c in (0, 1):

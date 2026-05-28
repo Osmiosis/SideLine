@@ -192,3 +192,80 @@ Not possible on YOLOBball (no occlusion attribute). PRD's UniqueData plan A woul
 - For tracking, use `yolov8m.pt` for basketball ball detection (NOT boris-gans). Update `models/basketball.pt` accordingly? Deferred — not part of Day 4 scope, but recommended.
 - DeepSportradar fine-tuning is the right next move when ready.
 - Roboflow/Kaggle credentials stored OUTSIDE the repo at `~/.roboflow/key` and `~/.kaggle/access_token`. Not committed.
+
+---
+
+## Day 5 — 2026-05-28 — Basketball ball detector fine-tuning
+
+### Setup
+- Base weights: `yolov8m.pt` (COCO). Train data: YOLOBball (`basketball-keumj/yolobball` v6) train split: 11,310 imgs, 1 class (ball-only).
+- Config: imgsz=1280, epochs=30 (cap), patience=10, batch=4 (explicit — autobatch OOM'd on the 4060), workers=2 (Windows DataLoader fragility), amp=True (mixed precision for VRAM headroom), cache=False, seed=42. Optimizer: AdamW auto-picked, lr=0.002.
+- **Stopped manually after epoch 15** because val mAP slope was clearly flattening (Δ shrank from +0.068 at ep1→2 to +0.002 at ep13→14, +0.006 at ep14→15). Patience clock had not yet started (every epoch was a new fitness best), but plateau was visible.
+- VRAM at training: 6.1 GB / 8.0 GB stable. GPU 80–100% util, 80–84°C. ~21 min/epoch at 2.5 it/s. Total training wall: ~5h15m for 15 epochs.
+
+### OOD test set (the headline)
+- `computer-vision-d5fjh/basketball-detection-dn6fg` v4 (Roboflow, CC BY 4.0), 488 test imgs, classes ball/basket/person.
+- Different workspace, different annotation pipeline, different source video material from YOLOBball. Valid out-of-distribution: the fine-tuned model never saw these images during training.
+- Why not UniqueData (Kaggle)? Attempted first — its CVAT XML annotations were in 1280x720 source-video coords but the `images/N/M.png` files on disk were portrait-oriented and differently sized; `boxes/frame_*.PNG` had bounding boxes already drawn ON the pixels (cyan rectangles), so they couldn't be used as clean training/eval data either. Structurally broken — abandoned.
+
+### Per-epoch val curve (YOLOBball val, 1,077 imgs, 2,325 instances)
+| Epoch | P | R | mAP@0.5 | mAP@0.5:0.95 |
+|------:|------:|------:|--------:|-------------:|
+| 1  | 0.819 | 0.686 | 0.787 | 0.541 |
+| 2  | 0.894 | 0.767 | 0.855 | 0.617 |
+| 3  | 0.915 | 0.788 | 0.871 | 0.638 |
+| 4  | 0.917 | 0.825 | 0.898 | 0.670 |
+| 5  | 0.913 | 0.860 | 0.910 | 0.688 |
+| 6  | 0.934 | 0.850 | 0.918 | 0.707 |
+| 7  | 0.933 | 0.858 | 0.923 | 0.711 |
+| 8  | 0.935 | 0.867 | 0.922 | 0.716 |
+| 9  | 0.931 | 0.895 | 0.937 | 0.728 |
+| 10 | 0.933 | 0.898 | 0.942 | 0.742 |
+| 11 | 0.937 | 0.915 | 0.953 | 0.749 |
+| 12 | 0.936 | 0.906 | 0.946 | 0.752 |
+| 13 | 0.941 | 0.914 | 0.954 | 0.761 |
+| 14 | 0.944 | 0.922 | 0.956 | 0.766 |
+| 15 | 0.943 | 0.933 | **0.960** | **0.775** |
+
+### Baselines (COCO yolov8m @1280, before fine-tuning)
+- YOLOBball-test (ID) ball AP: 0.285 (reproduces Day 4)
+- OOD ball AP: 0.274 (almost identical to ID, confirming the basketball ball-detection difficulty is comparable across both sources for COCO)
+
+### Fine-tuned headline (N=500 per set, seed=42, imgsz=1280, IoU=0.5)
+| Model            | ID ball AP | OOD ball AP | OOD ball R@0.25 |
+|------------------|-----------:|------------:|----------------:|
+| COCO yolov8m     | 0.285      | 0.274       | 0.074           |
+| **Fine-tuned (ep 15)** | **0.893** | **0.618** | **0.534**     |
+| Lift vs COCO     | +0.608 (3.1x) | +0.344 (2.3x) | 7.2x |
+
+- ID-vs-OOD gap: 0.893 → 0.618 = **0.275 absolute drop, ~31% relative.** Real overfitting signal — the model learned YOLOBball harder than it learned "basketball ball in general." Not catastrophic; worth budgeting for in deployment.
+
+### VERDICT
+- **Did fine-tuning beat COCO OOD?** Yes — by a wide margin. 0.618 vs 0.274 ball AP (2.3x), 0.534 vs 0.074 recall (7.2x). Honest improvement, not an in-distribution artifact.
+- **Parity vs football soccana (OOD ball AP 0.474):** basketball is now **AHEAD by +0.144**. Day 4's "basketball is materially behind football" is fully reversed by one round of fine-tuning. The previous gap was a model-availability gap, not a sport-difficulty gap.
+- **Plateau read:** mAP@0.5 climbed +0.173 in epochs 1-15 but the last 5 epochs only added +0.018. Marginal returns clearly diminishing. More epochs likely buy <+0.01. If pushing further, the lever is data variety (more sources → smaller ID-vs-OOD gap), not more epochs on the same data.
+
+### Considered alternatives (architectures NOT chosen this session, and why)
+
+**Perspective A: Pixel-Level Segmentation (BallSeg).** State-of-the-art basketball ball models formulate detection as semantic segmentation — predict a probability mask over the image so partial/occluded ball pixels (e.g., 80% blocked by hands) still register. This effectively eliminates the occlusion density problem that causes standard bbox detectors to drop frames. **Rejected for now:** needs pixel-mask labels; YOLOBball has only bounding boxes. Strong future direction once we have mask-labeled data (DeepSportradar with segmentation export is a candidate).
+
+**Perspective B: Part-Intensity-Field (PIFBall).** Treats the ball as a keypoint and predicts its exact center, drawing on human-pose-estimation techniques. Highly effective for severe motion blur — the network learns aerodynamic / directional blur patterns rather than relying on clear spherical boundaries. **Rejected for now:** needs keypoint labels + reframes the whole box-based pipeline and eval harness (precision/recall against keypoints, not IoU). Future work if motion blur becomes the dominant failure mode in DPS MIS footage.
+
+**Perspective C: Temporal Sequential Tracking (Bidirectional LSTMs).** Pairs a Faster R-CNN or RetinaNet single-frame detector with a bidirectional LSTM that, if the ball is hidden in frame t, mathematically infers its position from velocity / trajectory / physics across frames t-1 and t+1. **Rejected as a separate model:** the tractable equivalent — a Kalman filter on ball trajectory — is already planned for the tracking phase and covers most of the gap-filling benefit at a fraction of the engineering cost. Will revisit LSTM only if Kalman proves insufficient.
+
+**Chosen approach:** fine-tuned single-frame YOLO detector (this session) + (later) Kalman temporal smoothing at tracking time. Covers most of the occlusion / blur robustness the exotic methods promise, buildable in the timeline, with a working harness already in place.
+
+### Next steps
+- `models/basketball.pt` should be updated to point at the fine-tuned weights (currently still points at boris-gans from Day 4). Recommend `cp models/basketball_ft.pt models/basketball.pt` for downstream tracking.
+- Reduce the ID-vs-OOD gap: source 1–2 additional basketball training sets distinct from YOLOBball; retrain on the union. This is the highest-leverage next move.
+- DeepSportradar still parked as the gold-standard fine-tuning target when the project is ready for it.
+- Players: dedicated player detector (COCO yolov8m on persons is already strong — OOD person AP 0.837 measured today) combined with this ball detector at tracking integration time.
+
+### Errors hit (informative)
+1. **Autobatch OOM at imgsz=1280** on 4060 8GB — autobatch fell back to batch=16, which OOM'd. In-process retry poisoned the CUDA context and crashed empty_cache(). Fix: explicit batch=4 + fresh process.
+2. **Windows multiprocessing `RuntimeError`** ("not using fork to start child processes"). The training script was missing `if __name__ == "__main__":`. Standard Windows + multiprocessing pitfall. Fixed with main-guard.
+3. **DataLoader worker died unexpectedly** at epoch 1 batch 156. Default 8 workers was too aggressive under memory pressure. Fix: workers=2 + amp=True + cache=False.
+4. **Ultralytics path quirk:** `project="runs/train"` saves under `runs/detect/runs/train/bball_ft/` (project type prepended). Harmless; weights still findable.
+
+### Time
+- Wall: ~7h end-to-end (most of it training). Hands-on: ~45min (Part A dataset wrangling + Part B baselines + script iteration + Part D evals + Part E notes).
