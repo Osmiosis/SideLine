@@ -269,3 +269,63 @@ Not possible on YOLOBball (no occlusion attribute). PRD's UniqueData plan A woul
 
 ### Time
 - Wall: ~7h end-to-end (most of it training). Hands-on: ~45min (Part A dataset wrangling + Part B baselines + script iteration + Part D evals + Part E notes).
+
+---
+
+## Day 6 — 2026-05-28 — Basketball player tracking: measurement harness + baseline (SportsMOT)
+
+### Pivot context
+- Original Day 6 was football tracking (SoccerNet-Tracking). SoccerNet is NDA-gated; the agreement/password flow is pending, so pivoted to basketball today via SportsMOT (open access, no NDA).
+- The harness built today is sport-agnostic — drops in MOTChallenge-format sequences from any source. Football harness re-use will be near-zero new code once SoccerNet (or SportsMOT football seqs) is available.
+
+### Setup
+- Eval: SportsMOT basketball, 5 sequences from the val split (chosen alphabetically for reproducibility): `v_00HRwkvvjtQ_c001`, `_c003`, `_c005`, `_c007`, `_c008`. 1280x720 @ 25fps, total ~4,600 frames, 50 GT player IDs, 43,897 GT detections.
+- Tools: `sn-trackeval` 0.4.0 (imports as `trackeval`) for HOTA/MOTA/IDF1/IDsw via MotChallenge2DBox dataset, `DO_PREPROC=False` (SportsMOT has no distractor preproc).
+- Tracker: Ultralytics' `BYTETracker` with shipped `bytetrack.yaml` defaults. No tuning.
+- Detector for Baseline #2: `yolov8m.pt` (COCO) at imgsz=1280, keep `person` class.
+- Data source: HuggingFace `MCG-NJU/SportsMOT` (CC BY-NC 4.0). Pulled val.tar (6.3 GB), extracted only 5 chosen basketball seqs to `datasets/sportsmot_basketball/` (1.5 GB on disk).
+
+### Sanity checks
+- GT tracklets visualized in `outputs/gt_samples/bball_track_gt_{c001,c003,c005}.mp4` (max 100 frames each, IDs drawn).
+- **TrackEval GT-as-output: HOTA=1.000, IDF1=1.000, MOTA=1.000, IDsw=0** across all 5 seqs (43,897 detections, 50 IDs, all matched). PASS.
+- **TrackEval empty output: HOTA=0.000, IDF1=0.000, MOTA=0.000**, no crash. PASS.
+
+### Baselines (player class only)
+| Setup                              | HOTA   | MOTA    | IDF1   | IDsw | DetA  | AssA  | unique-ID proxy |
+|------------------------------------|--------|---------|--------|------|-------|-------|-----------------|
+| **GT detections + ByteTrack** (ceiling) | **74.05** | 98.95 | **84.56** | 53 | 83.88 | 65.39 | 83 |
+| **yolov8m person + ByteTrack** (real)   | **26.62** | -113.03 | **22.23** | 365 | 25.32 | 28.00 | **2,435** |
+
+Notes on the real baseline:
+- MOTA is NEGATIVE because false positives (90,032) far exceed true positives (40,782). When `FP > TP + FN`, MOTA goes negative — a clear failure signal.
+- Det recall = 78.57% (yolov8m finds 4 of 5 actual players) but Det precision = 26.37% (most "person" boxes are NOT GT players — they're refs, coaches, audience, sideline).
+- 130,814 detections vs 43,897 GT = **~3x over-detection**.
+
+### Interpretation
+
+**Where the gap lives.** Ceiling HOTA 74.05 vs real 26.62 = a gap of **47.4 points**, and DetA collapses from 83.88 to 25.32 (-58.6) while AssA only drops from 65.39 to 28.00 (-37.4). **The dominant problem is detection, not tracking.** Specifically, it's a class-semantics problem: yolov8m's COCO `person` class includes ANY person in frame (refs, coaches, audience, ball boys, sideline staff), while SportsMOT GT only labels the 10 players on court. The tracker is doing its job — it's correctly persisting the IDs of all the people the detector hands it, including the wrong ones.
+
+**Unique-ID proxy vs IDF1 — exactly how misleading.** Day 2's "basketball had 268-325 unique IDs" sounded bad. Today's real run produced **2,435** unique IDs (with a stronger detector). But the actual identity metric (IDF1) is 22.2 — the unique-ID count tells us almost nothing about whether the SAME id stays on the SAME player. Day 2's proxy understated the chaos by an order of magnitude AND can't distinguish between "tracker reassigns IDs every frame" (real story) vs "detector saw few people once each" (fake story).
+
+**vs SportsMOT published numbers.** The SportsMOT paper reports best-method basketball HOTA ~60.8, SOTA refinement methods ~81 overall. Our **ceiling** (perfect detections + vanilla ByteTrack) sits at 74.05 — comfortably in the middle of that range, confirming the published "basketball is the hardest sport to track" finding mostly comes from detection, not association. Our **real** at 26.62 is well below the paper's worst published method — because they used proper person-vs-player classification or court-bounds filtering, both of which we have not yet.
+
+### Where next effort belongs
+
+**Detector, by a mile.** The ceiling experiment proves vanilla ByteTrack handles basketball association at IDF1 84.56 when given clean inputs. Tracker tuning will help, but the leverage is 10x bigger on detection. Three concrete fixes ranked by effort:
+
+1. **Court-bounds filter** (lowest effort): mask off-court detections via a homography or a simple rectangular court polygon. Single-image preprocessing. Likely gets MOTA back into positive territory immediately.
+2. **Person-class filter** (medium effort): use jersey color / size / on-court heuristic to drop refs and bench staff. Bridges player vs person.
+3. **Player-trained detector** (highest leverage, highest effort): fine-tune on SportsMOT-train or similar to learn "basketball player on court" rather than "any person." Mirrors the Day 5 ball detector win pattern.
+
+### Next sessions (NOT today)
+- Tune ByteTrack thresholds (`track_high_thresh`, `match_thresh`, `new_track_thresh`, `track_buffer`/`max_age`) for fast-motion sports; try BoT-SORT (appearance features) vs ByteTrack; re-measure vs this baseline.
+- Football tracking: reuse this exact harness on SportsMOT football seqs (already have train/val splits) or SoccerNet-Tracking when NDA lands.
+- Ball tracking: separate session, Kalman + the fine-tuned basketball detector from Day 5.
+- Try a court-bounds filter as the fastest detector-side win before training anything new.
+
+### Errors hit (informative)
+- `BYTETracker.__init__()` no longer accepts `frame_rate=` kwarg in Ultralytics current; reads it from args namespace instead. One-line fix.
+- `BYTETracker.update()` expects an indexable `Boxes` object, not a SimpleNamespace; reconstructed predictions as `ultralytics.engine.results.Boxes(tensor, orig_shape)` and it worked.
+
+### Time
+Wall: ~25min hands-on after the val.tar download (~3 min). Total session about 50 min including reorg + memory work earlier.
