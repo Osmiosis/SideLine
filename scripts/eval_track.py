@@ -20,11 +20,11 @@ import sys
 import trackeval
 
 BENCHMARK = "SportsMOT"
-SPLIT = "basketball-val"
+SPLIT = "basketball-val"  # default; override via --split
 
-def stage_gt(source: Path, staging: Path, seqs: list):
+def stage_gt(source: Path, staging: Path, seqs: list, split: str):
     """Copy/relink GT + seqinfo into TrackEval's expected tree."""
-    gt_base = staging / "gt" / "mot_challenge" / f"{BENCHMARK}-{SPLIT}"
+    gt_base = staging / "gt" / "mot_challenge" / f"{BENCHMARK}-{split}"
     seqmaps = staging / "gt" / "mot_challenge" / "seqmaps"
     gt_base.mkdir(parents=True, exist_ok=True)
     seqmaps.mkdir(parents=True, exist_ok=True)
@@ -38,14 +38,14 @@ def stage_gt(source: Path, staging: Path, seqs: list):
         shutil.copy2(seq_src / "seqinfo.ini", seq_dst / "seqinfo.ini")
 
     # seqmap file: one column "name", header + seq names
-    sm_path = seqmaps / f"{BENCHMARK}-{SPLIT}.txt"
+    sm_path = seqmaps / f"{BENCHMARK}-{split}.txt"
     sm_path.write_text("name\n" + "\n".join(seqs) + "\n")
     print(f"staged {len(seqs)} GT seqs at {gt_base}")
     return gt_base.parent.parent  # staging/gt
 
-def stage_tracker(tracker_dir: Path, staging: Path, tracker_name: str, seqs: list):
+def stage_tracker(tracker_dir: Path, staging: Path, tracker_name: str, seqs: list, split: str):
     """Copy tracker outputs into TrackEval tree."""
-    out_base = staging / "trackers" / "mot_challenge" / f"{BENCHMARK}-{SPLIT}" / tracker_name / "data"
+    out_base = staging / "trackers" / "mot_challenge" / f"{BENCHMARK}-{split}" / tracker_name / "data"
     out_base.mkdir(parents=True, exist_ok=True)
     n = 0
     for seq in seqs:
@@ -63,6 +63,7 @@ def main():
     ap.add_argument("--tracker-name", required=True, help="Used as a label in TrackEval reports")
     ap.add_argument("--source", default="datasets/sportsmot_basketball", help="SportsMOT extracted dir")
     ap.add_argument("--staging", default="outputs/track_eval_staging", help="Temp TrackEval layout root")
+    ap.add_argument("--split", default=SPLIT, help="TrackEval split label, e.g. basketball-val, football-val")
     ap.add_argument("--reset-staging", action="store_true", help="Wipe staging first")
     args = ap.parse_args()
 
@@ -75,8 +76,8 @@ def main():
     seqs = sorted(d.name for d in source.iterdir() if d.is_dir() and (d / "seqinfo.ini").exists())
     print(f"sequences: {seqs}")
 
-    stage_gt(source, staging, seqs)
-    stage_tracker(Path(args.tracker_dir), staging, args.tracker_name, seqs)
+    stage_gt(source, staging, seqs, args.split)
+    stage_tracker(Path(args.tracker_dir), staging, args.tracker_name, seqs, args.split)
 
     # Configure TrackEval
     eval_cfg = trackeval.Evaluator.get_default_eval_config()
@@ -90,7 +91,7 @@ def main():
     ds_cfg["GT_FOLDER"] = str(staging / "gt" / "mot_challenge")
     ds_cfg["TRACKERS_FOLDER"] = str(staging / "trackers" / "mot_challenge")
     ds_cfg["BENCHMARK"] = BENCHMARK
-    ds_cfg["SPLIT_TO_EVAL"] = SPLIT
+    ds_cfg["SPLIT_TO_EVAL"] = args.split
     ds_cfg["TRACKERS_TO_EVAL"] = [args.tracker_name]
     ds_cfg["CLASSES_TO_EVAL"] = ["pedestrian"]
     ds_cfg["DO_PREPROC"] = False  # SportsMOT has no distractor preproc
@@ -110,10 +111,13 @@ def main():
     print("\n=== HEADLINE METRICS ===")
     res = output_res["MotChallenge2DBox"][args.tracker_name]["COMBINED_SEQ"]["pedestrian"]
     hota = res["HOTA"]["HOTA"].mean()
+    deta = res["HOTA"]["DetA"].mean()
+    assa = res["HOTA"]["AssA"].mean()
     mota = res["CLEAR"]["MOTA"]
     idf1 = res["Identity"]["IDF1"]
     idsw = int(res["CLEAR"]["IDSW"])
-    print(f"  HOTA: {hota:.3f}    MOTA: {mota:.3f}    IDF1: {idf1:.3f}    IDsw: {idsw}")
+    print(f"  HOTA: {hota:.3f}    DetA: {deta:.3f}    AssA: {assa:.3f}")
+    print(f"  MOTA: {mota:.3f}    IDF1: {idf1:.3f}    IDsw: {idsw}")
 
 if __name__ == "__main__":
     main()
