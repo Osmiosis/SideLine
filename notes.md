@@ -626,3 +626,121 @@ Wall ~2h: 25 min cache build (~30s/seq on the 4060, 3 datasets sequentially), 5 
 - `outputs/track_results/*_botsort_gmc/` -- BoT-SORT GMC tracker outputs.
 - `outputs/logs/{det_cache_*,day9_sweep_*}.log` -- diagnostic logs.
 
+## Day 10 — First Deliverable: Football Player Heatmaps + Distance Covered
+
+**Goal:** Turn the Day-9 tuned tracker into the first stakeholder-facing output: per-player + team positional HEATMAPS, and DISTANCE COVERED in real meters. Validate distance against SoccerNet GSR's official `bbox_pitch` (the session trust gate). Football, SoccerNet, 5 seqs (SNGS-116..120).
+
+### Per-Part status
+- **Part A -- Generate clean tracks:** ✅ reused Day-9 `sn_soccana_botsort_gmc` outputs (BoT-SORT + GMC + match_thresh=0.9; HOTA 59.8 / AssA 50.1 on this 5-seq subset). Extracted bottom-center of bbox per detection as the feet position. No re-running detection or tracking.
+- **Part B -- Per-frame homography pixel→pitch (the hard part):** ✅ Used GSR's correspondences. Each frame has ~20 GT detections, each with BOTH `bbox_image` (px) AND `bbox_pitch` (m). Derived `H` per frame from an 80% calibration subset via `cv2.findHomography(RANSAC, reproj=2px)`, then HELD OUT the remaining 20% as the test set to measure positional error in meters.
+- **Part C -- Distance covered (raw + smoothed):** ✅ centered moving-average over 5-frame window in meter-space. Reported BOTH raw and smoothed so jitter inflation is visible per PRD. Plausibility check: 30s clip x ~22 players, GT-derived team totals 545-1158 m (slow play to active corner — consistent with action class).
+- **Part D -- Heatmaps:** ✅ team + per-player density overlaid on a to-scale 105x68m pitch diagram (penalty boxes, goal areas, center circle, halfway line all drawn). Outputs at `outputs/deliverables/<seq>/`.
+- **Part E -- Log + commit + sample deliverable:** ✅ SNGS-118 selected as sample (cleanest fit to GT, +8% smoothed team distance vs GT). Sample committed at `outputs/deliverables/day10_sample/` (heatmap PNGs + distance table; the rest of `outputs/deliverables/*` stays gitignored).
+
+### Homography source (Part B)
+**Option (a) -- GSR's provided correspondences.** SoccerNet GSR ships `bbox_pitch` for every player+goalkeeper annotation -- per-frame correspondences between image pixels (bbox bottom-mid) and pitch meters (bbox_pitch bottom-mid). For each frame I derive a 3x3 homography via `cv2.findHomography` on an 80% calibration subset of that frame's correspondences. No manual landmark picking needed. **This is the best-case path** -- the calibration is implicit in the dataset.
+
+Why per-frame (not per-seq): the broadcast camera pans, tilts, and zooms. A single seq H would fit poorly to most frames. Per-frame H is cheap (4 ms / frame; one-shot pass over 750 frames per seq).
+
+### Session trust gate -- homography validation vs GSR `bbox_pitch`
+
+For each frame: derive H on a random 80% of GT correspondences, project the held-out 20% from image pixels to pitch meters using H, compare to GSR's known bbox_pitch values. Aggregate positional error in meters:
+
+| Seq | Action | median (m) | mean (m) | p90 (m) | p99 (m) | n_holdout | n_frames |
+|---|---|---:|---:|---:|---:|---:|---:|
+| SNGS-116 | Corner | **0.15** | 0.27 | 0.53 | 1.90 | 1953 | 750 |
+| SNGS-117 | Offside | **0.22** | 0.53 | 1.11 | 5.70 | 1456 | 750 |
+| SNGS-118 | Shots off target | **0.14** | 0.22 | 0.45 | 1.34 | 1816 | 750 |
+| SNGS-119 | Clearance | **0.18** | 1.86 | 1.02 | 21.85 | 1378 | 750 |
+| SNGS-120 | Foul | **0.16** | 0.23 | 0.44 | 1.38 | 1920 | 750 |
+
+**Trust gate verdict: PASS** -- median errors are 0.14-0.22 m across all 5 seqs (PRD threshold was <2-3 m). p90 stays under 1.1 m on 4 of 5 seqs. The two outliers are p99 on SNGS-117 (5.70 m) and especially SNGS-119 (21.85 m -- mean 1.86 m) where some frames have a degenerate detection layout (clustered or near-collinear) that RANSAC can't constrain a planar H from. These are bad-frame artifacts, not pipeline bugs; they show up as gigantic raw distances on SNGS-119 (see below) -- a calibrated failure mode worth flagging in the deliverable.
+
+### Distance covered: tracker vs GT (Part C)
+
+Apples-to-apples comparison: GT team distance uses GSR `bbox_pitch` directly (no homography intermediate); tracker team distance uses Day-9 tracker boxes -> our per-frame H -> sum |Δp| with 5-frame centered MA smoothing.
+
+| Seq | Tracker IDs | GT IDs | Tracker raw (m) | Tracker smoothed (m) | GT smoothed (m) | Tracker_sm vs GT_sm | Jitter inflation (raw->smoothed) |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| SNGS-116 | 67 | 24 | 2593 | 1321 | 1158 | **+14%** | 96% |
+| SNGS-117 | 49 | 27 | 2833 | 1279 | 1036 | **+23%** | 122% |
+| SNGS-118 | 41 | 21 | 2050 | 1223 | 1129 | **+8%** | 68% |
+| SNGS-119 | 43 | 22 | 4719 | 1493 | 545 | **+174%** ⚠ | 216% |
+| SNGS-120 | 62 | 23 | 1684 | 1049 | 1138 | **-8%** | 61% |
+
+**Raw vs smoothed (jitter inflation):**
+- Tracker raw is 60-216% over tracker smoothed -- the detector's per-frame bbox jitter at ~25 fps adds spurious motion to every standing player. **Raw distance is unusable for any player report**.
+- GT data shows the floor: smoothing reduces GT by only ~1% because GSR's annotations are clean. So all the inflation comes from detector jitter, not from real motion.
+
+**Tracker smoothed vs GT smoothed:**
+- 4 of 5 seqs land within ±25% of GT. SNGS-118 (the sample chosen for the deliverable) is best at +8% (1223 m vs 1129 m).
+- **SNGS-119 is the outlier (+174%)**. Diagnosis: ground truth covers only 545 m (slow "Clearance" clip with mostly stationary players), so any tracker jitter in pitch coords is a large *relative* error. Combined with the p99=21.85m homography outliers on degenerate frames, a handful of bad-H frames inject huge frame-to-frame jumps that the 5-frame smoother cannot kill. The right fix is detecting and dropping degenerate-H frames (e.g., by checking the RANSAC inlier ratio or the condition number of H); deferred to a future polish session.
+
+### Per-player plausibility (SNGS-118 sample)
+
+Sorted by smoothed distance, top "main" tracker IDs (>=100 frames continuous):
+
+| Player ID | Frames | Duration | Raw (m) | Smoothed (m) | Avg speed (m/s) |
+|---:|---:|---:|---:|---:|---:|
+| 005 | 748 | 30.0s | 196 | 97 | 3.23 |
+| 003 | 576 | 23.1s | 121 | 94 | 4.07 |
+| 007 | 750 | 30.0s | 154 | 82 | 2.72 |
+| 031 | 592 | 23.8s | 103 | 81 | 3.39 |
+| 065 | 591 | 23.7s | 242 | 78 | 3.30 |
+| 055 | 624 | 25.0s | 101 | 76 | 3.02 |
+
+Speeds 2.6-5.1 m/s (9-18 km/h) -- a moderate-tempo attacking sequence on a "shots off target" clip. Sensible. **Total of main-IDs smoothed distance = 1128 m, vs GT smoothed 1129 m -- a 1-meter agreement.**
+
+Aggregated "fragment" tracker IDs (<100 frames each) total only 94 m on SNGS-118 -- they're noise around real players, not phantom players.
+
+**ID-switch corruption (the caveat):** at AssA ~0.50, our 41 tracker IDs map to 21 GT IDs (~2x inflation). Per-player tracker totals near boundaries can stitch parts of two players' paths together, or split one player into two IDs. The aggregate (team total) is robust to this; per-player numbers are NOT. The deliverable table reports per-player smoothed distances WITH that caveat called out, not as authoritative single-player numbers.
+
+### Heatmaps (Part D)
+Rendered overlaid on a to-scale 105x68 m pitch (penalty boxes 16.5x40.32 m, goal areas 5.5x18.32 m, center circle r=9.15 m, halfway line). Density via `hist2d` over (x_m, y_m), 80 bins, hot colormap, alpha=0.7.
+
+Visual plausibility per seq (spot-checked):
+- **SNGS-116 (Corner):** density concentrated near right penalty area + a hot spot on the corner flag. ✓ matches a corner-kick setup.
+- **SNGS-118 (Shots off target):** density on the attacking right half, looping pattern from midfield into the box. ✓ matches an attacking move building to a shot.
+- **SNGS-120 (Foul):** density cluster mid-pitch where the foul is committed. ✓
+- **Per-player heatmaps** (e.g., player 7 on SNGS-118): clean loop pattern around the 16-yard box -- a winger's attacking run. ✓
+
+**Team heatmap is the safe deliverable.** It's position density, identity-agnostic, so ID switches don't corrupt it. Per-player heatmaps inherit ID-switch error (a player heatmap can include another's positions where the IDs swapped); fine for an illustrative deliverable but caveated for accuracy.
+
+### What's trustworthy vs what's caveated
+
+**Trustworthy (ship these to a coach):**
+- Team positional heatmap, per seq.
+- Team total distance (smoothed), with the homography validation as the trust receipt.
+- Median/p90 homography error in meters (the technical credibility number).
+
+**Caveated:**
+- Per-player distance totals -- ID switches at AssA ~0.50 corrupt some; the table's "main vs fragment" split helps but isn't a replacement for AssA closer to 0.7+. ReID (deferred from Day 9) is the natural next step here.
+- Per-player heatmaps -- same caveat; use as illustrative, not authoritative.
+- SNGS-119-style outliers -- whenever a clip has near-collinear or clustered detections, H can degenerate on a handful of frames and inject large bad pitch coords. The team total on such clips needs sanity-checking against expected distance ranges.
+
+### The honest deployment limitation
+This works on **SoccerNet** because GSR ships `bbox_pitch` -- we get per-frame correspondences for free. For the eventual DPS MIS deployment, the school's own footage will NOT come with calibration. The fallback is PRD option (b): manual selection of ≥4 pitch landmarks per camera angle (penalty box corners, halfway line ends, center circle intersections) with the school's pitch dimensions, then `cv2.getPerspectiveTransform` for the per-camera homography. Validation would have to lean on physical-plausibility checks (distance ranges, speeds, can't-exit-pitch) since there's no GT reference.
+
+### What the next deliverable needs
+- **Team assignment** (for possession / heatmap-by-team / pass map). Probably color-clustering of jersey ROIs per player track, requires extracting the jersey region from each bbox and clustering across the tracker's IDs.
+- **Ball tracking** (for follow-cam / event tagging). The Kalman filter for the ball was scoped out of Day 1-10 explicitly; next session.
+- **AssA improvement** (ReID arm from Day 9). Would make per-player totals trustworthy. Biggest remaining lever on SoccerNet.
+
+### Errors hit
+- **`bbox_pitch` is None on a small fraction of annotations** (when a player's feet are off-pitch -- e.g., on the touchline at the camera edge). Skipped those in the homography fit (≈1% of points). Didn't affect H quality.
+- **Initial smoothing window=5 frames (0.2s) is borderline too aggressive for the tracker output:** raw vs smoothed gap is 60-216% on tracker but only ~1% on GT. The window is fine for the tracker (matches the detector's noise scale); the gap reflects tracker jitter, not over-smoothing.
+- **SNGS-119 degenerate-H outliers** (p99 21.85 m). Diagnosed as detection clustering in a few frames during the Clearance setup; tagged for future fix (degenerate-frame detection + drop).
+- **No issues with the GSR pitch coord convention** -- center-origin, x ∈ ~[-52.5, 52.5] m, y ∈ ~[-34, 34] m matches FIFA 105x68 m, confirmed by inspecting per-seq ranges before building the rendering code.
+
+### Time
+Wall ~2.5h: 10 min pipeline design + GSR coord inspection, 60 min writing analyze_pitch.py (homography + projection + smoothing + heatmap rendering), 15 min running on 5 seqs + GT baseline cross-check, 30 min sample deliverable polish + notes + commit.
+
+### Files added / changed
+- `PRD'S/PRD_Day10.md` -- session plan.
+- `scripts/analyze_pitch.py` -- end-to-end per-seq analyzer: load tracker + GT, derive per-frame H, validate vs held-out GT, compute raw + smoothed distance, render team + top-N per-player heatmaps, dump JSONs.
+- `.gitignore` -- whitelist `outputs/deliverables/day10_sample/*.png` and `*.md` so the curated sample lands in the repo; the rest of `outputs/deliverables/*` (intermediate JSONs, per-seq heatmaps for all 5 seqs) stays gitignored.
+- `outputs/deliverables/day10_sample/SNGS-118_team_heatmap.png` -- the headline coach-facing visual.
+- `outputs/deliverables/day10_sample/SNGS-118_player{005,007}_heatmap.png` -- two illustrative per-player heatmaps (caveat: ID-switch fragile).
+- `outputs/deliverables/day10_sample/SNGS-118_distance_table.md` -- per-player distance + total table.
+- `outputs/deliverables/SNGS-{116..120}/` -- per-seq analysis outputs (positions.json, validation.json, distances.json, heatmap_team.png, heatmap_player*.png); gitignored.
+

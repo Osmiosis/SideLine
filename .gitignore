@@ -33,6 +33,14 @@ runs/*
 !outputs/.gitkeep
 !runs/.gitkeep
 
+# Sample deliverables (derived visuals + tables; no raw NDA frames). Commit per-day curated samples.
+!outputs/deliverables/
+outputs/deliverables/*
+!outputs/deliverables/day10_sample/
+outputs/deliverables/day10_sample/*
+!outputs/deliverables/day10_sample/*.png
+!outputs/deliverables/day10_sample/*.md
+
 # IDE
 .vscode/
 .idea/
