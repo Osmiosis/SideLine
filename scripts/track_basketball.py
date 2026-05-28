@@ -1,11 +1,12 @@
 from ultralytics import YOLO
-import cv2, time
+import cv2, time, sys
 from pathlib import Path
 
 MODEL = "models/basketball.pt"
-INPUT = "clips/basketball.mp4"
-OUTPUT = "outputs/basketball_tracked.mp4"
+INPUT = sys.argv[1] if len(sys.argv) > 1 else "clips/basketball.mp4"
+OUTPUT = f"outputs/{Path(INPUT).stem}_tracked.mp4"
 Path("outputs").mkdir(exist_ok=True)
+print(f"INPUT={INPUT}  OUTPUT={OUTPUT}")
 
 model = YOLO(MODEL)
 print("classes:", model.names)

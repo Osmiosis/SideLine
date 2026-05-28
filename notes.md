@@ -38,32 +38,48 @@ Date: 2026-05-28
 ## Day 2 — 2026-05-28
 
 ### Football model bake-off (imgsz=1280)
-| Model      | Ball % | Players/frame | Ball conf | FPS |
-|------------|--------|---------------|-----------|-----|
-| soccana    | 12.4   | 24.1          | 0.40      | 17.9 |
-| uisikdag   | 68.3   | 25.5          | 0.38      | 18.6 |
-| coco_hires | 16.7   | 22.6          | 0.51      | 17.5 |
+| Model      | Ball % (recall proxy) | Players/frame | Ball conf | FPS | Visual FP rate |
+|------------|-----------------------|---------------|-----------|-----|----------------|
+| soccana    | 12.4                  | 24.1          | 0.40      | 17.9 | near-zero — fires only on actual ball when close |
+| uisikdag   | 68.3                  | 25.5          | 0.38      | 18.6 | HIGH — white field-line markings tagged as balls |
+| coco_hires | 16.7                  | 22.6          | 0.51      | 17.5 | low |
 
-**WINNER: uisikdag** (`uisikdag/yolo-v8-football-players-detection`, classes: ball/goalkeeper/player/referee).
-Reason: 68.3% ball detection — 5x the next best, with the best player count and FPS. Day 1 baseline 0/540 (0%) -> Day 2 winner 68.3%. Resolution alone (coco_hires) only nudged ball from 0% to 16.7%, so the win is the sports-trained model, not just imgsz.
-Copied to `models/football.pt` for downstream scripts.
+**WINNER (revised after visual inspection): soccana** (`Adit-jain/soccana`, classes: Player/Ball/Referee).
+- Initial automatic pick was uisikdag based on 68.3% ball-detection — but visual review showed those detections are mostly **false positives on white pitch markings** (penalty area, center circle), not the actual ball.
+- soccana has lower recall (~12%, misses the far/small ball) but **near-zero false positives** — it only fires when the actual ball is reasonably close and clear.
+- **For tracking and downstream possession logic, high precision beats high recall:** a stream of FP "balls" on field paint poisons the tracker (gives the ball-track persistent IDs on stationary line markings) and breaks any "who has the ball" heuristic.
 
-### Football tracking (uisikdag + ByteTrack, imgsz=1280)
-- Frames: 540, avg FPS: 15.9
-- **Unique IDs: 371** (expected 25-45; >100 = heavy churn per PRD)
-- ID stability read: severe churn. Likely drivers: ball gets re-IDed every flicker, crowded occlusions in wide tactical angle, default `bytetrack.yaml` not tuned for sports. Detection is solid; tracking continuity needs work.
-- Output: `outputs/football_tracked.mp4`, midframe `outputs/football_tracked_midframe.png`
+**Methodology fix — ball % alone is misleading.** The bake-off script counted any box labeled "ball" as a detection; it had no way to distinguish a real-ball detection from a false-positive on field markings. Until we add an FP audit (visual or labeled-frame eval), treat "ball %" as a *recall proxy with no precision floor*. Future bake-offs should sample N frames and hand-label TP/FP, or evaluate against a ground-truth labeled subset.
+
+`models/football.pt` re-pointed to soccana (5.6MB, SHA256 `dd5f0bec…`).
+Day 1 baseline ball: 0/540 (0%) → Day 2 winner (soccana): ~12% **precise** ball detections, vs uisikdag's 68% mostly-spurious detections.
+
+### Football tracking (ByteTrack, imgsz=1280)
+- Run made with the original (uisikdag) winner BEFORE the precision revision.
+- Frames: 540, avg FPS: 15.9, **unique IDs: 371** (severe churn — expected 25-45).
+- Likely drivers: ball gets re-IDed every flicker, crowded occlusions in wide tactical angle, default `bytetrack.yaml` not tuned for sports.
+- Output `outputs/football_tracked.mp4` reflects the uisikdag run (including its field-line "ball" FPs). **TODO: rerun with `models/football.pt` now pointing to soccana** to get a tracking baseline on the precision winner.
 
 ### Basketball
-- Clip: `clips/basketball.mp4`, 640x360 @ 30fps, 762 frames (25.4s) — user-supplied
-- Model: `boris-gans/basketball-yolo11s-detect` (12 classes: ball variants, player + actions, referee, rim)
+- Model: `boris-gans/basketball-yolo11s-detect` (12 classes: ball variants, player + actions, referee, rim).
   - Rejected `446f6e6e79/YOLO-basketball-fineTuned` after inspecting classes — overfit to specific Red_X / White_X jersey numbers.
-- Ball %: **3.1**   Players/frame: 7.7   Unique IDs: 268   FPS: 30.8
-- Honest assessment: 360p clip is the dominant blocker — ball is a few pixels wide at this resolution, no model can recover that. Player count ~7.7 (expected ~10) is reasonable for partial view. ID churn mirrors football — default ByteTrack is too generic.
-- Output: `outputs/basketball_tracked.mp4`, midframe `outputs/basketball_tracked_midframe.png`
+- `track_basketball.py` now takes the input clip as a CLI arg; output filename derives from input stem.
+
+| Clip            | Resolution | Frames | Ball % | Players/f | Unique IDs | FPS  |
+|-----------------|------------|--------|--------|-----------|------------|------|
+| basketball.mp4  | 640x360    | 762    | 3.1    | 7.7       | 268        | 30.8 |
+| Basketball1.mp4 | 3840x2160  | 579    | 22.3   | 7.1       | 325        | 7.8  |
+
+- Resolution effect on ball: **3.1% -> 22.3% (~7x lift)** going from 360p to 4K, as predicted. Confirms the 360p clip was the dominant blocker.
+- Same precision caveat as football: 22.3% is a recall proxy; need a visual FP audit (especially around rim / scoreboard) before declaring victory.
+- 4K throughput drops to 7.8 FPS — letterbox to imgsz=1280 still has to decode 4K frames. Acceptable for offline analysis; would need downsample-first or imgsz tuning for real-time.
+- ID churn (325 / 268) mirrors football — default ByteTrack untuned for sports.
+- Outputs: `outputs/basketball_tracked.mp4` + `outputs/Basketball1_tracked.mp4`, midframes `outputs/basketball_tracked_midframe.png` + `outputs/Basketball1_tracked_midframe.png`
 
 ### Observations / next steps
-- **Football detection is "solved" for the baseline clip** at 68% ball, 25 players/frame.
-- **Tracking is the next bottleneck** — tune ByteTrack thresholds (track_high_thresh, track_low_thresh, match_thresh, new_track_thresh, max_age) for sports; consider running tracking only on `player` class and treating ball separately.
-- **Basketball needs a higher-res clip** before any real assessment is possible.
-- **Models folder** now holds: soccana.pt, uisikdag.pt, football.pt (=uisikdag), basketball_borisgans.pt, basketball.pt (=boris-gans). All gitignored.
+- **Precision audit is the missing piece across the board.** Every "ball %" number in this doc is recall-only. Add a TP/FP labelling step (even N=50 hand-labelled frames) before picking ball models on future clips.
+- **Football detection (soccana) is solid for the baseline clip** on precision: 12% recall but the boxes are real. Tracking on top of soccana not yet measured — rerun pending.
+- **Tracking is the next bottleneck** — tune ByteTrack thresholds (track_high_thresh, track_low_thresh, match_thresh, new_track_thresh, max_age) for sports; consider running tracking only on `player` class and treating ball as a separate single-instance tracker.
+- **Basketball benefited from the 4K clip (22.3% ball recall vs 3.1% at 360p);** still needs the same FP audit before any verdict.
+- **4K throughput is 7.8 FPS** — fine for batch, will need downsample/imgsz tuning for live.
+- **Models folder** now holds: soccana.pt, uisikdag.pt, football.pt (=soccana, 5.6MB, SHA256 dd5f0b…), basketball_borisgans.pt, basketball.pt (=boris-gans). All gitignored.
