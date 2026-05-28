@@ -451,6 +451,20 @@ Wall: ~75 min for Part A-D (15 min train.tar download, 10 min train extract + YO
 
 **Goal:** Bring football tracking to the same measured rigor as basketball (Day 6 + 7). Re-run the proven TrackEval harness on football: GT-fed ceiling + soccana-fed real on SoccerNet-Tracking (primary) and SportsMOT-football (cross-check). Localize the football bottleneck. NO tuning.
 
+### Per-Part status (PRD-aligned)
+- **Part A — Acquire data:** ✅ both. SportsMOT-football via SportsMOT val.tar (already on disk). SoccerNet pivoted from KAUST OwnCloud (401 auth) to HuggingFace SN-GSR-2025 mirror (ungated). 5 seqs each.
+- **Part B — Sanity gates:** ✅ both datasets. GT-as-tracker HOTA=1.000, IDsw=0. Empty-tracker HOTA=0.000. Visualized GT tracklets (`outputs/gt_samples/track_gt_*` already present from earlier PRD step).
+- **Part C — SoccerNet baselines:** ✅ ceiling + real produced.
+- **Part D — SportsMOT cross-check:** ✅ ceiling + real produced (one VIDEO_TDR mid-run on the 888-frame seq; recovered on retry with identical params).
+- **Part E — Log, interpret, commit:** ✅ this section + commit `ea64629`.
+
+### Compliance with "Do NOT today"
+- ❌ Did NOT tune the tracker — defaults from `ultralytics/cfg/trackers/bytetrack.yaml` only.
+- ❌ Did NOT hand-roll metrics — TrackEval harness reused.
+- ❌ Did NOT trust numbers before per-dataset GT-as-output gate passed (HOTA=1.000 on both).
+- ❌ Did NOT do the ball / basketball.
+- ❌ Did NOT commit any SoccerNet or SportsMOT data — `datasets/*` gitignored; `git status` clean of leakage.
+
 ### Datasets acquired
 - **SportsMOT-football** -- 5 seqs (broadcast cam) extracted from SportsMOT val.tar: `v_2QhNRucNC7E_c017` (450f), `v_G-vNjfx1GGc_c004` (675f), `v_ITo3sCnpw_k_c007` (701f), `v_dw7LOz17Omg_c053` (550f), `v_i2_L4qquVg0_c006` (888f). Total 3,264 frames, 45,268 GT player boxes.
 - **SoccerNet-Tracking** -- pivoted to SoccerNet **SN-GSR-2025** test split from HuggingFace (8.85 GB, ungated, no auth). 5 seqs (tactical cam, 30s @ 25fps): SNGS-116..120. Total 3,750 frames, 44,120 GT player+goalkeeper boxes after filtering. Stored in `datasets/soccernet_tracking/` (gitignored).
@@ -463,9 +477,11 @@ Wall: ~75 min for Part A-D (15 min train.tar download, 10 min train extract + YO
 | Dataset | Gate | HOTA | DetA | AssA | IDF1 | IDsw |
 |---|---|---:|---:|---:|---:|---:|
 | SoccerNet | GT-as-tracker (identity copy) | 1.000 | 1.000 | 1.000 | 1.000 | 0 |
-| SportsMOT-football | GT-as-tracker (from Day 6 harness) | 1.000 | 1.000 | 1.000 | 1.000 | 0 |
+| SoccerNet | Empty-tracker (degenerate) | 0.000 | 0.000 | 0.000 | 0.000 | 0 |
+| SportsMOT-football | GT-as-tracker | 1.000 | 1.000 | 1.000 | 1.000 | 0 |
+| SportsMOT-football | Empty-tracker | 0.000 | 0.000 | 0.000 | 0.000 | 0 |
 
-Both datasets pass the trust gate. Different GT conventions (MOT17 `gt.txt` vs `Labels-GameState.json` with `bbox_image`) both convert cleanly via `scripts/extract_soccernet_subset.py` (GSR -> MOT; players+goalkeepers, drop ref/ball/other; remap track IDs to contiguous).
+Both datasets pass the trust gate AND the empty degenerate check. Different GT conventions (MOT17 `gt.txt` vs `Labels-GameState.json` with `bbox_image`) both convert cleanly via `scripts/extract_soccernet_subset.py` (GSR -> MOT; players+goalkeepers, drop ref/ball/other; remap track IDs to contiguous).
 
 ### Baselines (Parts C + D)
 
@@ -494,7 +510,10 @@ Soccana generalizes across SoccerNet and SportsMOT footage styles. The MOTA / ID
 
 **4. Ceilings differ markedly (SoccerNet 76.5 vs SportsMOT 65.3).** SoccerNet test clips are 30s broadcast snippets with relatively continuous trajectories. SportsMOT football has more cuts / crowd / partial occlusion. ByteTrack at default settings keeps SoccerNet IDs ~25 pts AssA above SportsMOT (68.2 vs 51.7) on the same GT detections. **The headroom is bigger on SoccerNet** -- where tracker tuning will pay back most.
 
-**5. Unique-ID proxy lesson (re-confirmed).** SoccerNet has 117 GT IDs across the 5 seqs; soccana+ByteTrack produced 343 unique IDs (proxy: 343 looks "rich"). Real IDF1: 63.0. The 343 number is meaningless without HOTA/IDF1.
+**5. Unique-ID proxy lesson (re-confirmed on football).**
+- SoccerNet:  117 GT IDs / 353 ceiling IDs / **343 soccana IDs** -> proxy says "rich". Real IDF1: 63.0. Proxy lies.
+- SportsMOT:  105 GT IDs / 271 ceiling IDs / **409 soccana IDs** -> proxy says "even richer". Real IDF1: 62.0. Same story.
+- Day 2's 371-unique-IDs football number was the same flavor of meaningless proxy. HOTA/IDF1 is the only honest read.
 
 ### Errors hit
 - **VIDEO_TDR crash mid-run on SportsMOT v_i2_L4qquVg0_c006 (888 frames, the largest).** Windows GPU timeout during sustained 1280-imgsz inference; 4 of 5 SportsMOT seqs completed before the crash. Recovered cleanly on retry with identical params after laptop restart. No methodology change needed -- one-shot transient.
@@ -513,7 +532,7 @@ Wall: ~3 h for the session (10 min SportsMOT extract, 10 min SoccerNet API debug
 - `scripts/download_soccernet_tracking.py` -- pip-package attempt (kept for record; documented why 401s).
 - `scripts/extract_soccernet_subset.py` -- HF SN-GSR-2025 zip -> MOT format converter (players+goalkeepers only).
 - `scripts/eval_track.py` -- generalized: `--split` arg + HOTA decomposition reporting (DetA/AssA/MOTA/IDF1/IDsw in headline).
-- `outputs/track_results/{fb,sn}_{gt_as_tracker,gtdet_bytetrack,soccana_bytetrack}/` -- 6 tracker output dirs.
+- `outputs/track_results/{fb,sn}_{gt_as_tracker,gtdet_bytetrack,soccana_bytetrack,empty}/` -- 8 tracker output dirs (2 sanity + 2 ceiling + 2 real + 2 empty).
 - `outputs/eval/day8_{fb,sn}_{gtdet,soccana}.log` -- 4 TrackEval headline logs.
 - `outputs/logs/{fb_soccana_888_retry,sngsr_download}.log` -- diagnostic logs.
 - `datasets/{sportsmot_football,soccernet_tracking,soccernet_gsr}/` -- gitignored data dirs (never committed; NDA-safe for the SoccerNet pivot too since HF mirror is public).
