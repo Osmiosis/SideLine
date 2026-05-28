@@ -23,11 +23,15 @@ env/
 *.mkv
 *.webm
 
-# Data folders
-clips/
-datasets/
-outputs/
-runs/
+# Data folders (track only .gitkeep markers)
+clips/*
+datasets/*
+outputs/*
+runs/*
+!clips/.gitkeep
+!datasets/.gitkeep
+!outputs/.gitkeep
+!runs/.gitkeep
 
 # IDE
 .vscode/
