@@ -83,3 +83,58 @@ Day 1 baseline ball: 0/540 (0%) → Day 2 winner (soccana): ~12% **precise** bal
 - **Basketball benefited from the 4K clip (22.3% ball recall vs 3.1% at 360p);** still needs the same FP audit before any verdict.
 - **4K throughput is 7.8 FPS** — fine for batch, will need downsample/imgsz tuning for live.
 - **Models folder** now holds: soccana.pt, uisikdag.pt, football.pt (=soccana, 5.6MB, SHA256 dd5f0b…), basketball_borisgans.pt, basketball.pt (=boris-gans). All gitignored.
+
+---
+
+## Day 3 — 2026-05-28 — Football detection eval (SoccerNet_v3_H250 test split)
+
+Eval set: SoccerNet_v3_H250 test, N=500 images sampled (seed 42), IoU=0.5, imgsz=1280, prod-conf=0.25.
+- Source: Zenodo 7808511 (MD5 verified `cdc2401a…`). Test split = 2,692 images (used random 500 for runtime).
+- Class instances in full test: 2,108 ball, 38,004 person.
+- Class mapping (by name via `model.names`): model 'ball'/'Ball' -> ball; player/goalkeeper/referee/Player/Referee -> person; everything else dropped.
+
+### Harness sanity checks (all PASS)
+1. GT-as-pred -> ball P/R/AP = 1.0, person P/R/AP = 1.0, FP = 0 across 500 images. Matching logic correct.
+2. Empty preds -> R = 0, P = 0, AP = 0, FN = n_gt for both classes. No divide-by-zero.
+3. Spot-check on one image (soccana): ball TP=1 FP=0 FN=0, person TP=20 FP=4 FN=1 — plausible (the 4 person FPs are likely sideline/coach detections not in GT). Canvas at `outputs/spot_check.png`.
+
+### Results — ball class (the headline)
+| Model      | P@0.25 | R@0.25 | AP    | FP@0.25 | FP@allconf | n_gt |
+|------------|--------|--------|-------|---------|------------|------|
+| soccana    | 0.647  | 0.491  | 0.474 | 102     | 5,425      | 381  |
+| uisikdag   | 0.129  | 0.034  | 0.108 | 88      | 1,970      | 381  |
+| yolov8m    | 0.258  | 0.373  | 0.286 | 409     | 14,988     | 381  |
+
+### Results — person class
+| Model      | P@0.25 | R@0.25 | AP    |
+|------------|--------|--------|-------|
+| soccana    | 0.928  | 0.923  | 0.903 |
+| uisikdag   | 0.610  | 0.610  | 0.621 |
+| yolov8m    | 0.833  | 0.888  | 0.880 |
+
+### mAP@0.5
+- **soccana: 0.689** (winner)
+- uisikdag: 0.364
+- yolov8m:  0.583
+
+### VERDICT
+**soccana wins on every metric.** The Day 2 eyeball call (soccana > uisikdag on precision) is **strongly confirmed and quantified**:
+- Ball precision: soccana 0.647 vs uisikdag 0.129 -> ~5x more precise.
+- Ball recall: soccana 0.491 vs uisikdag 0.034 (at conf=0.25) -> ~14x more recall at the production threshold.
+- Ball AP: soccana 0.474 vs uisikdag 0.108 -> ~4.4x better ranking quality.
+- uisikdag's Day 2 "68.3% ball" was almost entirely **low-confidence trash** — at conf=0.25 it only catches 13 of 381 balls, while filing 88 FPs.
+
+### Surprises
+1. **soccana's real ball recall is 49%, not the ~12% Day 2 eyeball suggested.** The video-mode test was punishing it more than the still-image eval does. Day 2's hand-estimate undersold soccana's recall by ~4x.
+2. **uisikdag is worse than the COCO baseline on ball** (AP 0.108 vs 0.286). Day 2 picked uisikdag as winner on (mostly-FP) ball recall — turns out it's the worst of the three on every dimension. Lesson: never rank on recall without a precision floor.
+3. **COCO yolov8m is a non-trivial baseline** at 1280px (mAP 0.583, ball AP 0.286). Generic pretraining + high res closes a lot of the gap to soccer-specific models.
+4. coco has the **highest FP@allconf for both classes** (14,988 ball, 78,520 person) — its low-confidence noise floor is huge because it has 80 classes and fires loosely. At conf=0.25 it tames down to reasonable numbers.
+
+### Methodology notes for next time
+- "Ball %" alone is meaningless without a precision floor — Day 2 lesson re-confirmed in hard numbers.
+- AP is the right ranking metric (full PR curve, threshold-independent). P/R at conf=0.25 is the right operating-point report. Reporting both kept the assessment honest.
+- The 3 sanity checks (gt-as-pred, empty, spot) caught nothing this time but are cheap insurance — keep them in any future eval harness.
+
+### Models confirmed
+- `models/football.pt` = soccana (re-pointed on Day 2; confirmed correct choice today).
+- uisikdag retained on disk but should not be used for ball detection without retraining/recalibration.
