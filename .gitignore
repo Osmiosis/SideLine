@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Model weights (large binary files)
+*.pt
+*.pth
+*.onnx
+*.engine
+
+# Video files (too large for git)
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+
+# Data folders
+clips/
+datasets/
+outputs/
+runs/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Notes (uncomment if you want notes private)
+# notes.md
