@@ -4,9 +4,9 @@ import time
 from pathlib import Path
 
 INPUT = "clips/day1_test.mp4"
-OUTPUT = "outputs/day1_video_annotated.mp4"
+OUTPUT = "outputs/annotated_videos/day1_video_annotated.mp4"
 
-Path("outputs").mkdir(exist_ok=True)
+Path("outputs/annotated_videos").mkdir(parents=True, exist_ok=True)
 model = YOLO("yolov8m.pt")
 
 cap = cv2.VideoCapture(INPUT)

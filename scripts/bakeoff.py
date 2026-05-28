@@ -3,7 +3,7 @@ import cv2, time
 from pathlib import Path
 
 INPUT = "clips/football.mp4"
-Path("outputs").mkdir(exist_ok=True)
+Path("outputs/annotated_videos").mkdir(parents=True, exist_ok=True)
 IMGSZ = 1280
 
 candidates = {
@@ -29,7 +29,7 @@ for tag, path in candidates.items():
     fps_in = cap.get(cv2.CAP_PROP_FPS)
     w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    writer = cv2.VideoWriter(f"outputs/bakeoff_{tag}.mp4", cv2.VideoWriter_fourcc(*"mp4v"), fps_in, (w, h))
+    writer = cv2.VideoWriter(f"outputs/annotated_videos/bakeoff_{tag}.mp4", cv2.VideoWriter_fourcc(*"mp4v"), fps_in, (w, h))
     frames = frames_with_ball = ball_dets = player_sum = 0
     ball_conf_sum = 0.0
     t0 = time.time()

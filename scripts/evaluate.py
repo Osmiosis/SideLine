@@ -330,8 +330,8 @@ def main():
 
     if args.out is None:
         tag = "gt_as_pred" if args.gt_as_pred else ("empty_preds" if args.empty_preds else Path(args.model).stem)
-        args.out = f"outputs/eval_{tag}.json"
-    Path("outputs").mkdir(exist_ok=True)
+        args.out = f"outputs/eval/eval_{tag}.json"
+    Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     with open(args.out, "w") as f:
         json.dump({"metrics": metrics, "per_image": per_image}, f, indent=2)
     print(f"\nwrote {args.out}")

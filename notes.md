@@ -23,7 +23,7 @@ Date: 2026-05-28
 - **26.8 FPS avg** on RTX 4060 (20.2s wall-clock)
 - 9265 total person detections -> 17.2 players/frame avg (22 on pitch + ref + sideline)
 - 0 ball detections (expected per PRD; YOLOv8 weak on small fast objects)
-- Outputs: `outputs/football_annotated.mp4`, `outputs/football_midframe.png`
+- Outputs: `outputs/annotated_videos/football_annotated.mp4`, `outputs/frames/football_midframe.png`
 
 ## Known issues / notes
 - Initial push to GitHub deferred (per user choice); remote `origin` set to
@@ -58,7 +58,7 @@ Day 1 baseline ball: 0/540 (0%) → Day 2 winner (soccana): ~12% **precise** bal
 - Run made with the original (uisikdag) winner BEFORE the precision revision.
 - Frames: 540, avg FPS: 15.9, **unique IDs: 371** (severe churn — expected 25-45).
 - Likely drivers: ball gets re-IDed every flicker, crowded occlusions in wide tactical angle, default `bytetrack.yaml` not tuned for sports.
-- Output `outputs/football_tracked.mp4` reflects the uisikdag run (including its field-line "ball" FPs). **TODO: rerun with `models/football.pt` now pointing to soccana** to get a tracking baseline on the precision winner.
+- Output `outputs/annotated_videos/football_tracked.mp4` reflects the uisikdag run (including its field-line "ball" FPs). **TODO: rerun with `models/football.pt` now pointing to soccana** to get a tracking baseline on the precision winner.
 
 ### Basketball
 - Model: `boris-gans/basketball-yolo11s-detect` (12 classes: ball variants, player + actions, referee, rim).
@@ -74,7 +74,7 @@ Day 1 baseline ball: 0/540 (0%) → Day 2 winner (soccana): ~12% **precise** bal
 - Same precision caveat as football: 22.3% is a recall proxy; need a visual FP audit (especially around rim / scoreboard) before declaring victory.
 - 4K throughput drops to 7.8 FPS — letterbox to imgsz=1280 still has to decode 4K frames. Acceptable for offline analysis; would need downsample-first or imgsz tuning for real-time.
 - ID churn (325 / 268) mirrors football — default ByteTrack untuned for sports.
-- Outputs: `outputs/basketball_tracked.mp4` + `outputs/Basketball1_tracked.mp4`, midframes `outputs/basketball_tracked_midframe.png` + `outputs/Basketball1_tracked_midframe.png`
+- Outputs: `outputs/annotated_videos/basketball_tracked.mp4` + `outputs/annotated_videos/Basketball1_tracked.mp4`, midframes `outputs/frames/basketball_tracked_midframe.png` + `outputs/frames/Basketball1_tracked_midframe.png`
 
 ### Observations / next steps
 - **Precision audit is the missing piece across the board.** Every "ball %" number in this doc is recall-only. Add a TP/FP labelling step (even N=50 hand-labelled frames) before picking ball models on future clips.
@@ -96,7 +96,7 @@ Eval set: SoccerNet_v3_H250 test, N=500 images sampled (seed 42), IoU=0.5, imgsz
 ### Harness sanity checks (all PASS)
 1. GT-as-pred -> ball P/R/AP = 1.0, person P/R/AP = 1.0, FP = 0 across 500 images. Matching logic correct.
 2. Empty preds -> R = 0, P = 0, AP = 0, FN = n_gt for both classes. No divide-by-zero.
-3. Spot-check on one image (soccana): ball TP=1 FP=0 FN=0, person TP=20 FP=4 FN=1 — plausible (the 4 person FPs are likely sideline/coach detections not in GT). Canvas at `outputs/spot_check.png`.
+3. Spot-check on one image (soccana): ball TP=1 FP=0 FN=0, person TP=20 FP=4 FN=1 — plausible (the 4 person FPs are likely sideline/coach detections not in GT). Canvas at `outputs/frames/spot_check.png`.
 
 ### Results — ball class (the headline)
 | Model      | P@0.25 | R@0.25 | AP    | FP@0.25 | FP@allconf | n_gt |

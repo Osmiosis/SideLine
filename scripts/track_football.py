@@ -4,8 +4,8 @@ from pathlib import Path
 
 MODEL = "models/football.pt"
 INPUT = "clips/football.mp4"
-OUTPUT = "outputs/football_tracked.mp4"
-Path("outputs").mkdir(exist_ok=True)
+OUTPUT = "outputs/annotated_videos/football_tracked.mp4"
+Path("outputs/annotated_videos").mkdir(parents=True, exist_ok=True)
 
 model = YOLO(MODEL)
 print("classes:", model.names)

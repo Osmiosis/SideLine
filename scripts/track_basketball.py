@@ -4,8 +4,8 @@ from pathlib import Path
 
 MODEL = "models/basketball.pt"
 INPUT = sys.argv[1] if len(sys.argv) > 1 else "clips/basketball.mp4"
-OUTPUT = f"outputs/{Path(INPUT).stem}_tracked.mp4"
-Path("outputs").mkdir(exist_ok=True)
+OUTPUT = f"outputs/annotated_videos/{Path(INPUT).stem}_tracked.mp4"
+Path("outputs/annotated_videos").mkdir(parents=True, exist_ok=True)
 print(f"INPUT={INPUT}  OUTPUT={OUTPUT}")
 
 model = YOLO(MODEL)

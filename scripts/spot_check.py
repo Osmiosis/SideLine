@@ -36,7 +36,7 @@ def main():
     ap.add_argument("--conf", type=float, default=0.25)
     ap.add_argument("--iou", type=float, default=0.5)
     ap.add_argument("--root", default="datasets/soccernet_h250")
-    ap.add_argument("--out", default="outputs/spot_check.png")
+    ap.add_argument("--out", default="outputs/frames/spot_check.png")
     args = ap.parse_args()
 
     img_path = Path(args.image)

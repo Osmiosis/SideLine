@@ -90,11 +90,11 @@ def main():
     sample = random.sample(pool, NUM_GT_SAMPLES)
     print(f"\nRendering {NUM_GT_SAMPLES} GT samples (from {'ball-containing' if pool is with_ball else 'all'} pool):")
     for i, p in enumerate(sample):
-        out = Path("outputs") / f"gt_sample_{i+1}.png"
+        out = Path("outputs/gt_samples") / f"gt_sample_{i+1}.png"
         draw_gt(p, lbl_dir / (p.stem + ".txt"), out)
         print(f"  {p.name} -> {out}")
 
-    print("\nDeveloper: open outputs/gt_sample_*.png and verify boxes sit on real ball/players.")
+    print("\nDeveloper: open outputs/gt_samples/gt_sample_*.png and verify boxes sit on real ball/players.")
 
 if __name__ == "__main__":
     main()
