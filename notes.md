@@ -18,6 +18,13 @@ Date: 2026-05-28
 - Annotated output: `outputs/day1_video_annotated.mp4` (gitignored)
 - First frame snapshot: `outputs/day1_first_frame.png`
 
+## Bonus run: user-supplied football.mp4
+- Input: `football.mp4` (project root, gitignored), 1280x720 @ 30fps, 540 frames (18s)
+- **26.8 FPS avg** on RTX 4060 (20.2s wall-clock)
+- 9265 total person detections -> 17.2 players/frame avg (22 on pitch + ref + sideline)
+- 0 ball detections (expected per PRD; YOLOv8 weak on small fast objects)
+- Outputs: `outputs/football_annotated.mp4`, `outputs/football_midframe.png`
+
 ## Known issues / notes
 - Initial push to GitHub deferred (per user choice); remote `origin` set to
   `https://github.com/Osmiosis/sports-ai-capstone.git`. Run `git push -u origin main`
