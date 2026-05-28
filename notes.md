@@ -138,3 +138,57 @@ Eval set: SoccerNet_v3_H250 test, N=500 images sampled (seed 42), IoU=0.5, imgsz
 ### Models confirmed
 - `models/football.pt` = soccana (re-pointed on Day 2; confirmed correct choice today).
 - uisikdag retained on disk but should not be used for ball detection without retraining/recalibration.
+
+---
+
+## Day 4 — 2026-05-28 — Basketball detection eval
+
+### Dataset (after detour from PRD candidates)
+- **PRD plan A — UniqueData/Kaggle (trainingdatapro/basketball-tracking-dataset):** downloaded, inspected. Turned out to be 72 image frames from one source video (`source.mp4`), CVAT XML format (NOT VOC as PRD claimed), `<track id="0" label="ball">` only. **No player labels. 106/106 boxes had `occluded="0"` — zero occluded examples. No `basket` attribute at all.** Inadequate for a rigorous eval; the planned occlusion split is impossible.
+- **PRD plan B — Roboflow "Fiba Basketball":** no project literally named "FIBA" exists on Universe. After scout, picked `basketball-keumj/yolobball` v6 (CC BY 4.0) as the actual usable Roboflow basketball detection set.
+- **Used:** Roboflow `basketball-keumj/yolobball` v6. 11,310 train + 1,077 valid + **539 test** images, 1 class only (`Basketball` — no players), 1,190 ball instances across test split. Real footage (user-verified), 1.6 GB on disk.
+- DeepSportradar parked as gold-standard for future fine-tuning per PRD.
+
+### Class mapping
+'ball'/'Ball'/'Basketball' -> eval class 0. Player/person classes -> dropped (ball-only dataset). Harness updated with auto-detection: scans GT for classes present and drops predictions to absent classes (otherwise person predictions on a ball-only set become spurious FPs forever).
+
+### Harness sanity checks (on basketball labels)
+1. GT-as-pred -> ball P/R/AP = 1.0, mAP = 1.0. Person n_gt = 0 correctly skipped. PASS.
+2. Empty preds -> R = 0, mAP = 0. PASS.
+3. Spot-check on basketball: skipped (Day 3 spot-check already validated harness flow; basketball auto-checks both pass).
+
+### Results — ball class (N=500, seed=42, imgsz=1280, IoU=0.5)
+| Model                | Ball P@0.25 | Ball R@0.25 | Ball AP | FP@0.25 | FP@allconf | n_gt |
+|----------------------|-------------|-------------|---------|---------|------------|------|
+| boris-gans (yolo11s) | 0.0147      | 0.0009      | 0.0014  | 67      | 8,300      | 1,113 |
+| 446f6e6e79           | 0.1549      | 0.0099      | 0.0909  | 60      | 5,258      | 1,113 |
+| **yolov8m COCO**     | **0.7650**  | **0.1375**  | **0.2852** | **47** | 3,033   | 1,113 |
+
+**WINNER: yolov8m COCO at imgsz=1280** — by a huge margin.
+
+### Occlusion breakdown
+Not possible on YOLOBball (no occlusion attribute). PRD's UniqueData plan A would have allowed it but the data had zero occluded examples anyway. Deferred until a richer benchmark is sourced.
+
+### Football vs Basketball parity check
+| Sport      | Best model       | Ball AP | Ball R@0.25 | Person AP |
+|------------|------------------|---------|-------------|-----------|
+| Football   | soccana          | 0.474   | 0.491       | 0.903     |
+| Basketball | yolov8m COCO     | 0.285   | 0.138       | n/a (no GT) |
+
+**PARITY VERDICT: basketball is materially behind football.** Best basketball ball AP is **60% of football's** (0.285 vs 0.474). Ball recall is **28% of football's** (0.138 vs 0.491). The gap is bigger than it looks because basketball's "best" is a generic model — there's no specialized basketball detector that beats COCO baseline yet.
+
+### HUGE surprise
+**Both purpose-trained basketball detectors flop dramatically vs generic COCO:**
+- boris-gans (Day 2 video winner with 22.3% "ball"): caught 1 of 1,113 balls at conf=0.25. Ball AP = 0.0014 — statistical noise. The Day 2 "22.3% ball" was almost entirely rim/scoreboard FPs, now quantified: at all-conf, fp_allconf=8,300 vs tp_allconf=22 (FP:TP ratio ~377:1).
+- 446f6e6e79 (Day 2 rejected for jersey-overfit on players): ball AP = 0.091. Also bad — its narrow scrimmage training doesn't transfer.
+- **yolov8m COCO** at imgsz=1280: ball AP = 0.285. Generic "sports ball" class trained across many sports actually generalizes better than purpose-trained models with narrow training distributions.
+
+### Methodology vindications
+- Day 2 lesson "ball % alone is misleading" confirmed for the third time: boris-gans 22.3% (Day 2 video) -> 0.14% recall (Day 4 eval). All-conf FP:TP ratio of 377:1.
+- Day 3 harness pattern reused cleanly: same evaluate.py, same sanity-check protocol, same class-by-name remapping. New dataset, same trust gate. No metric-code rewrite.
+
+### Implications & next steps
+- **No good off-the-shelf basketball ball detector exists in our candidate pool.** COCO wins by default of others being broken. For DPS MIS production use, basketball will likely need either (a) fine-tuning on YOLOBball or DPS MIS footage, or (b) different model architecture for small-fast objects.
+- For tracking, use `yolov8m.pt` for basketball ball detection (NOT boris-gans). Update `models/basketball.pt` accordingly? Deferred — not part of Day 4 scope, but recommended.
+- DeepSportradar fine-tuning is the right next move when ready.
+- Roboflow/Kaggle credentials stored OUTSIDE the repo at `~/.roboflow/key` and `~/.kaggle/access_token`. Not committed.

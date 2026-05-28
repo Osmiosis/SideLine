@@ -134,13 +134,24 @@ def evaluate(model_path, root, n, seed, imgsz, conf_thresh, iou_thresh, gt_as_pr
     sample = random.sample(all_imgs, min(n, len(all_imgs)))
     print(f"sample: {len(sample)} / {len(all_imgs)} images  (seed {seed})")
 
+    # Auto-detect which eval classes have any GT in this sample.
+    # On a ball-only dataset, person predictions would otherwise count as FPs forever.
+    gt_classes_present = set()
+    for p in sample:
+        for c, *_ in parse_label(lbl_dir / (p.stem + ".txt")):
+            gt_classes_present.add(c)
+    print(f"GT classes present in sample: {sorted(gt_classes_present)} ({[CLASS_NAMES[c] for c in sorted(gt_classes_present) if c in CLASS_NAMES]})")
+
     model = None
     remap = None
     if not gt_as_pred and not empty_preds:
         model = load_model(model_path)
         print(f"model classes: {model.names}")
-        remap = build_remap(model.names)
-        print(f"remap (model_idx -> eval): {remap}")
+        remap_raw = build_remap(model.names)
+        # Restrict remap to only classes with GT present — predictions to other
+        # eval classes get dropped (not counted as FPs against absent GT).
+        remap = {k: (v if v in gt_classes_present else None) for k, v in remap_raw.items()}
+        print(f"remap (model_idx -> eval, restricted to GT-present): {remap}")
 
     # Per-class accumulators
     all_confs   = {0: [], 1: []}
@@ -247,9 +258,12 @@ def evaluate(model_path, root, n, seed, imgsz, conf_thresh, iou_thresh, gt_as_pr
             "n_gt": n_gt,
         }
 
-    aps = [m["ap"] for m in metrics.values() if m["ap"] is not None]
+    # Only average AP over classes that had GT in this dataset.
+    aps = [v["ap"] for k, v in metrics.items()
+           if isinstance(v, dict) and v.get("ap") is not None and v.get("n_gt", 0) > 0]
     map_50 = round(sum(aps) / len(aps), 4) if aps else 0.0
     metrics["mAP@0.5"] = map_50
+    metrics["_classes_evaluated"] = sorted({c for c in (gt_classes_present if not gt_as_pred and not empty_preds else gt_classes_present)})
 
     elapsed = time.time() - t0
     metrics["_meta"] = {
