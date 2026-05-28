@@ -41,5 +41,11 @@ runs/*
 .DS_Store
 Thumbs.db
 
+# Stray sample downloads (root-level only)
+/bus.jpg
+/*.jpg
+/*.jpeg
+/*.png
+
 # Notes (uncomment if you want notes private)
 # notes.md
