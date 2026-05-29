@@ -74,6 +74,20 @@ def _near_player(x, y, boxes, prox_px):
     return any(_pt_box_dist(x, y, b) <= prox_px for b in boxes)
 
 
+def _in_head_zone(x, y, boxes, frac_h, frac_w):
+    """Day-17: True if (x,y) sits in the HEAD region of any player box -- the top frac_h of the box
+    height, within the central frac_w of its width. A head is the most player-PROXIMATE round,
+    ball-sized object on court, so the Day-16 proximity prior cannot reject it; this geometric zone
+    can. (Day-17 diagnosis: heads are NOT size-separable from the ball -- median area ratio ~1.0 --
+    so the size gate is dead; head-zone geometry is the working lever.)"""
+    for b in boxes:
+        x0, y0, x1, y1 = b[0], b[1], b[2], b[3]
+        w = x1 - x0; h = y1 - y0; cxb = (x0 + x1) / 2
+        if (y0 <= y <= y0 + frac_h * h) and (abs(x - cxb) <= frac_w * w / 2):
+            return True
+    return False
+
+
 # ---------- seq info ----------
 def seq_info(source: Path, seq: str):
     cp = configparser.ConfigParser()
@@ -128,7 +142,9 @@ def gap_analysis(cache_by_frame: dict, n_frames: int):
 def run_kalman_bb(cache_by_frame: dict, n_frames: int, vel_gate_px: float, max_gap: int,
                   init_conf: float, q_pos: float, q_vel: float, r_meas: float,
                   players_by_frame: dict = None, reinit_prox_px: float = None,
-                  ingate_prox_px: float = None, reacq_frames: int = 1):
+                  ingate_prox_px: float = None, reacq_frames: int = 1,
+                  reject_head: bool = False, motion_consistency: bool = False,
+                  head_frac_h: float = 0.18, head_frac_w: float = 0.6, motion_speed: float = 8.0):
     """Constant-velocity pixel Kalman with FP velocity gate + max-predict-gap reset.
     Same logic as the football tracker; Q/R exposed so basketball's erratic motion can be tuned.
 
@@ -145,12 +161,28 @@ def run_kalman_bb(cache_by_frame: dict, n_frames: int, vel_gate_px: float, max_g
         in-gate detections before committing to 'detected' (intermediate frames stay 'predicted'),
         so a single one-frame FP cannot yank the camera before the track is re-confirmed."""
     use_prox = players_by_frame is not None and reinit_prox_px is not None
+    use_head = players_by_frame is not None and (reject_head or motion_consistency)
+
+    def head_block(x, y, f, speed):
+        """True if a detection at (x,y) should be rejected as a head FP this frame.
+        reject_head: any head-zone detection. motion_consistency: head-zone ONLY when the ball is
+        slow (a fast ball flying/arcing through head height -- pass/shot -- is allowed through)."""
+        if not use_head:
+            return False
+        boxes = players_by_frame.get(f, [])
+        if not _in_head_zone(x, y, boxes, head_frac_h, head_frac_w):
+            return False
+        if reject_head:
+            return True
+        return speed < motion_speed  # motion_consistency: only block slow (head-locked) picks
 
     def pick_init(dets, f):
         cand = [d for d in dets if d[2] >= init_conf]
         if use_prox:
             boxes = players_by_frame.get(f, [])
             cand = [d for d in cand if _near_player(d[0], d[1], boxes, reinit_prox_px)]
+        if use_head:  # at (re)init there is no velocity yet -> treat as slow (block head-zone)
+            cand = [d for d in cand if not head_block(d[0], d[1], f, 0.0)]
         return max(cand, key=lambda d: d[2]) if cand else None
 
     kf = BallKalman(q_pos=q_pos, q_vel=q_vel, r_meas=r_meas)
@@ -172,6 +204,9 @@ def run_kalman_bb(cache_by_frame: dict, n_frames: int, vel_gate_px: float, max_g
         if use_prox and ingate_prox_px is not None:
             boxes = players_by_frame.get(f, [])
             viable = [v for v in viable if _near_player(v[0], v[1], boxes, ingate_prox_px)]
+        if use_head:
+            speed = float(np.hypot(kf.state[2], kf.state[3]))  # current ball speed (px/frame)
+            viable = [v for v in viable if not head_block(v[0], v[1], f, speed)]
         if viable:
             viable.sort(key=lambda v: v[3])
             b = viable[0]
@@ -399,6 +434,14 @@ def main():
                     help="in-gate detection must be within this px of a player box (generous; shots/long passes survive)")
     ap.add_argument("--reacq-frames", type=int, default=2,
                     help="re-acquisition hysteresis: consecutive in-gate hits required after a gap before re-locking")
+    # Day-17 head-FP fixes (separately gated for A/B isolation; need --require-player for boxes)
+    ap.add_argument("--reject-head", action="store_true",
+                    help="FIX#1: reject ball detections in a player's head zone (top frac of box)")
+    ap.add_argument("--motion-consistency", action="store_true",
+                    help="FIX#3: reject head-zone detections ONLY when the ball is slow (fast pass/shot through head height survives)")
+    ap.add_argument("--head-frac-h", type=float, default=0.18, help="head zone = top this frac of player box height")
+    ap.add_argument("--head-frac-w", type=float, default=0.6, help="head zone = central this frac of player box width")
+    ap.add_argument("--motion-speed", type=float, default=8.0, help="px/frame: below this the ball is 'slow' (head-lock) for motion-consistency")
     # shot flag (pixel-only: lean on fast-vertical motion -- image-y conflates far-court w/ airborne)
     ap.add_argument("--y-high-frac", type=float, default=0.15, help="ball-y above this frac of H = upper-court/high")
     ap.add_argument("--vy-fast", type=float, default=15.0, help="|vy| above this px/frame = fast-vertical (shot/lob)")
@@ -433,17 +476,22 @@ def main():
               f"p99={ga['det_jump_p99']:.0f} max={ga['det_jump_max']:.0f}  (informs --vel-gate)")
 
         players_bf = None
-        if args.require_player:
+        if args.require_player or args.reject_head or args.motion_consistency:
             players_bf = load_player_boxes(Path(args.track_dir) / f"{seq}.txt")
             npf = sum(len(v) for v in players_bf.values())
-            print(f"  player-proximity prior ON: {len(players_bf)} frames w/ boxes ({npf} boxes) | "
-                  f"reinit<= {args.reinit_prox:.0f}px ingate<= {args.ingate_prox:.0f}px reacq={args.reacq_frames}")
+            head = (" | HEAD-FIX: reject-head" if args.reject_head else
+                    " | HEAD-FIX: motion-consistency" if args.motion_consistency else "")
+            print(f"  player priors ON: {len(players_bf)} frames w/ boxes ({npf} boxes) | "
+                  f"reinit<= {args.reinit_prox:.0f}px ingate<= {args.ingate_prox:.0f}px reacq={args.reacq_frames}{head}")
         records = run_kalman_bb(cache, n_frames, args.vel_gate, args.max_gap, args.init_conf,
                                 args.q_pos, args.q_vel, args.r_meas,
                                 players_by_frame=players_bf,
                                 reinit_prox_px=args.reinit_prox if args.require_player else None,
                                 ingate_prox_px=args.ingate_prox if args.require_player else None,
-                                reacq_frames=args.reacq_frames)
+                                reacq_frames=args.reacq_frames,
+                                reject_head=args.reject_head, motion_consistency=args.motion_consistency,
+                                head_frac_h=args.head_frac_h, head_frac_w=args.head_frac_w,
+                                motion_speed=args.motion_speed)
         st = {s: sum(1 for r in records if r["status"] == s) for s in ("detected", "predicted", "lost")}
         records = flag_shots(records, H, args.y_high_frac, args.vy_fast)
         n_shot = sum(1 for r in records if r["shot_flag"])

@@ -233,21 +233,34 @@ def _center_box_dist(px, py, c):
     return math.hypot(dx, dy)
 
 
-def a_feed_fp_latch(meta, prox_px=150.0):
-    """Day-16 PRIMARY-honesty metric: fraction of frames where the A-feed is centered on a 'ball'
-    target that is FP-suspect (ball far from EVERY player box). A smooth camera pointed at a
-    false-positive ball scores HIGH here -- this is the number that should have caught Day-15
-    (jerk could not, it only measures smoothness)."""
+def _in_head_zone_c(px, py, c, frac_h=0.18, frac_w=0.6):
+    """Head-zone test for a player given as center+size (cx,cy,w,h): top frac_h, central frac_w."""
+    cx, cy, w, h = c[0], c[1], c[2], c[3]
+    y0 = cy - h / 2
+    return (y0 <= py <= y0 + frac_h * h) and (abs(px - cx) <= frac_w * w / 2)
+
+
+def a_feed_fp_latch(meta, prox_px=150.0, head_frac_h=0.18, head_frac_w=0.6):
+    """PRIMARY-honesty metric: fraction of frames where the A-feed is centered on a 'ball' target
+    that is FP-suspect -- either far from EVERY player box (Day-16 corner FP) OR in a player's HEAD
+    zone (Day-17 head FP). A smooth camera pointed at a false ball scores HIGH here; this is the
+    number jerk could not catch."""
     bx, by, src, players = meta["bx"], meta["by"], meta["a_src"], meta["players"]
-    n = len(src); latched = 0; ball_frames = 0
+    n = len(src); latched = no_player = head = 0; ball_frames = 0
     for i in range(n):
         if src[i] != "ball" or not np.isfinite(bx[i]):
             continue
         ball_frames += 1
         boxes = players.get(i + 1, [])
-        if boxes and min(_center_box_dist(bx[i], by[i], c) for c in boxes) > prox_px:
+        if not boxes:
+            continue
+        is_noplayer = min(_center_box_dist(bx[i], by[i], c) for c in boxes) > prox_px
+        is_head = any(_in_head_zone_c(bx[i], by[i], c, head_frac_h, head_frac_w) for c in boxes)
+        if is_noplayer or is_head:
             latched += 1
+            no_player += int(is_noplayer); head += int(is_head)
     return dict(fp_latch_rate=latched / n if n else None, fp_latched_frames=latched,
+                fp_noplayer=no_player, fp_head=head,
                 ball_target_frames=ball_frames, prox_px=prox_px)
 
 
@@ -402,7 +415,7 @@ def main():
             print(f"  {lbl:<15} {vals}")
         row("ball_safezone*", "ball_in_safe_zone")   # * PRIMARY: crop centered on the real ball
         print(f"  >> A-feed FP-latch rate (PRIMARY truth metric): {fp_latch['fp_latch_rate']*100:.1f}%  "
-              f"({fp_latch['fp_latched_frames']} frames centered on a no-player FP ball)")
+              f"({fp_latch['fp_latched_frames']} frames on a FP ball: no-player={fp_latch['fp_noplayer']} head={fp_latch['fp_head']})")
         row("action_in_frame", "action_in_frame")
         row("clamp_frac", "clamp_fraction")
         row("jerk(px) [2nd]", "mean_jerk_px", "{:.4f}")  # SECONDARY: smoothness only

@@ -82,10 +82,47 @@ def nearest_player_dist(px, py, boxes):
     return min(pt_to_box_dist(px, py, b) for b in boxes)
 
 
+def load_dets_full(path):
+    """raw detection cache -> {frame: [(cx,cy,w,h,conf), ...]} (keeps box size for the size gate)."""
+    by = defaultdict(list)
+    for line in Path(path).read_text().splitlines():
+        if not line.strip():
+            continue
+        q = line.split(",")
+        f = int(float(q[0])); x = float(q[1]); y = float(q[2]); w = float(q[3]); h = float(q[4])
+        c = float(q[5]) if len(q) > 5 else 1.0
+        by[f].append((x + w / 2, y + h / 2, w, h, c))
+    return by
+
+
+def in_head_zone(px, py, box, frac_h=0.18, frac_w=0.6):
+    """True if (px,py) sits in the HEAD region of a player box: the top frac_h of the box height,
+    within the central frac_w of its width. A head is the most player-PROXIMATE round object on
+    court, so the Day-16 proximity prior cannot reject it -- this geometric zone can."""
+    x0, y0, x1, y1 = box[:4]
+    w = x1 - x0; h = y1 - y0; cxb = (x0 + x1) / 2
+    return (y0 <= py <= y0 + frac_h * h) and (abs(px - cxb) <= frac_w * w / 2)
+
+
+def any_head_zone(px, py, boxes, frac_h=0.18, frac_w=0.6):
+    return any(in_head_zone(px, py, b, frac_h, frac_w) for b in boxes)
+
+
+def match_det_size(px, py, dets_full_frame, max_d=25.0):
+    """Find the raw detection nearest the picked ball pos -> its (w,h,area). None if no det within max_d."""
+    best, bd = None, max_d
+    for (dx, dy, w, h, c) in dets_full_frame:
+        d = np.hypot(dx - px, dy - py)
+        if d <= bd:
+            bd = d; best = (w, h, w * h)
+    return best
+
+
 def diagnose(seq, args):
     base = Path(args.ball_dir) / seq
     recs = load_traj(base / "trajectory.json")
     dets = load_dets(Path(args.cache_dir) / f"{seq}.txt")
+    dets_full = load_dets_full(Path(args.cache_dir) / f"{seq}.txt")
     players = load_players_boxes(Path(args.track_dir) / f"{seq}.txt")
     n = len(recs)
 
@@ -95,6 +132,8 @@ def diagnose(seq, args):
     post_reset = np.zeros(n, bool)     # detected frame immediately after a >max_gap loss/predict run
     fp_noplayer = np.zeros(n, bool)
     fp_teleport = np.zeros(n, bool)
+    fp_head = np.zeros(n, bool)        # Day-17: picked ball in a player's head zone
+    ball_area = np.full(n, np.nan)     # picked detection's bbox area (px^2), for the size gate
 
     prev_pos = None; prev_provided_frame = None; miss_run = 0
     for i, r in enumerate(recs):
@@ -102,6 +141,11 @@ def diagnose(seq, args):
         if s == "detected":
             px, py = r["x"], r["y"]
             prox[i] = nearest_player_dist(px, py, players.get(f, []))
+            if any_head_zone(px, py, players.get(f, []), args.head_frac_h, args.head_frac_w):
+                fp_head[i] = True
+            sz = match_det_size(px, py, dets_full.get(f, []))
+            if sz:
+                ball_area[i] = sz[2]
             if prev_pos is not None:
                 tp = float(np.hypot(px - prev_pos[0], py - prev_pos[1]))
                 # normalize by the gap so a 1-frame jump and a 9-frame coast compare fairly
@@ -122,8 +166,9 @@ def diagnose(seq, args):
 
     det_idx = [i for i in range(n) if recs[i]["status"] == "detected"]
     n_det = len(det_idx)
-    fp_any = fp_noplayer | fp_teleport
+    fp_any = fp_noplayer | fp_teleport | fp_head
     n_fp = int(fp_any[det_idx].sum())
+    n_head = int(fp_head[det_idx].sum())
 
     # --- A-feed safezone-miss decomposition (uses Day-15 follow_cam.json A path) ---
     fc_path = Path(args.fc_dir) / seq / "follow_cam.json"
@@ -155,44 +200,59 @@ def diagnose(seq, args):
         safezone = dict(inside=inside, miss_fp=miss_fp, miss_clamp=miss_clamp, miss_lag=miss_lag,
                         total=tot, safezone_rate=inside / tot if tot else None)
 
+    # --- size separability: head-zone picks vs clean (non-head, has-player) picks, vs court depth ---
+    head_areas = ball_area[det_idx][fp_head[det_idx] & np.isfinite(ball_area[det_idx])]
+    clean_mask = (~fp_head[det_idx]) & (~fp_noplayer[det_idx]) & np.isfinite(ball_area[det_idx])
+    clean_areas = ball_area[det_idx][clean_mask]
+
     # --- report ---
     finite_prox = prox[det_idx][np.isfinite(prox[det_idx])]
     print(f"\n=== {seq} ===  frames={n}  detected={n_det}")
     st = {s: sum(1 for r in recs if r["status"] == s) for s in ("detected", "predicted", "lost")}
     print(f"  status: {st}")
-    print(f"  picked-ball -> nearest-PLAYER-box dist (detected frames): "
+    print(f"  picked-ball -> nearest-PLAYER-box dist (detected): "
           f"p50={np.percentile(finite_prox,50):.0f} p90={np.percentile(finite_prox,90):.0f} "
           f"max={finite_prox.max():.0f}  (>{args.prox_px:.0f}px = no-player FP)")
     print(f"  FP-SUSPECT detected frames: no-player={int(fp_noplayer[det_idx].sum())} "
           f"reset-teleport={int(fp_teleport[det_idx].sum())} "
-          f"-> ANY={n_fp}/{n_det} ({100*n_fp/max(1,n_det):.1f}% of detected)")
-    n_reset = int(post_reset.sum())
-    print(f"  post-reset re-inits (ungated): {n_reset}  "
-          f"(of which FP-teleport: {int(fp_teleport[det_idx].sum())})")
+          f"HEAD-zone={n_head} -> ANY={n_fp}/{n_det} ({100*n_fp/max(1,n_det):.1f}% of detected)")
+    print(f"  >> HEAD-FP rate: {n_head}/{n_det} = {100*n_head/max(1,n_det):.1f}% of detected "
+          f"({100*n_head/n:.1f}% of all frames)")
+    if len(head_areas) and len(clean_areas):
+        print(f"  SIZE (picked-det bbox area px^2): head-zone median={np.median(head_areas):.0f} "
+              f"(n={len(head_areas)}) vs clean-ball median={np.median(clean_areas):.0f} "
+              f"(n={len(clean_areas)})  ratio={np.median(head_areas)/max(1,np.median(clean_areas)):.2f}x")
     if safezone:
         print(f"  A-feed safezone (det frames): inside={safezone['safezone_rate']:.3f} | "
               f"misses -> FP={safezone['miss_fp']} clamp={safezone['miss_clamp']} lag={safezone['miss_lag']}")
-        print(f"    => of the safezone MISSES, FP-driven = "
-              f"{100*safezone['miss_fp']/max(1,(safezone['miss_fp']+safezone['miss_clamp']+safezone['miss_lag'])):.1f}%")
+        m = safezone['miss_fp'] + safezone['miss_clamp'] + safezone['miss_lag']
+        print(f"    => of the safezone MISSES, FP-driven (incl head) = {100*safezone['miss_fp']/max(1,m):.1f}%")
 
+    n_reset = int(post_reset.sum())
     diag = dict(seq=seq, n_frames=n, n_detected=n_det, statuses=st,
                 fp_noplayer=int(fp_noplayer[det_idx].sum()),
                 fp_reset_teleport=int(fp_teleport[det_idx].sum()),
+                fp_head=n_head, fp_head_rate=n_head / max(1, n_det),
                 fp_any=n_fp, fp_rate=n_fp / max(1, n_det),
                 n_post_reset=n_reset,
                 prox_p50=float(np.percentile(finite_prox, 50)),
                 prox_p90=float(np.percentile(finite_prox, 90)),
-                prox_max=float(finite_prox.max()), safezone=safezone,
-                params=dict(prox_px=args.prox_px, vel_gate=args.vel_gate, max_gap=args.max_gap))
+                prox_max=float(finite_prox.max()),
+                head_area_median=float(np.median(head_areas)) if len(head_areas) else None,
+                clean_area_median=float(np.median(clean_areas)) if len(clean_areas) else None,
+                safezone=safezone,
+                params=dict(prox_px=args.prox_px, vel_gate=args.vel_gate, max_gap=args.max_gap,
+                            head_frac_h=args.head_frac_h, head_frac_w=args.head_frac_w))
 
     # --- debug-overlay video (the human eye) ---
     if not args.no_video:
         render_overlay(seq, recs, dets, players, prox, fp_noplayer, fp_teleport, post_reset,
-                       fc_path, args)
+                       fc_path, args, fp_head=fp_head)
     return diag
 
 
-def render_overlay(seq, recs, dets, players, prox, fp_noplayer, fp_teleport, post_reset, fc_path, args):
+def render_overlay(seq, recs, dets, players, prox, fp_noplayer, fp_teleport, post_reset, fc_path, args,
+                   fp_head=None):
     frames_dir = Path(args.source) / seq / "img1"
     img0 = cv2.imread(str(frames_dir / "000001.jpg"))
     H, W = img0.shape[:2]
@@ -217,6 +277,12 @@ def render_overlay(seq, recs, dets, players, prox, fp_noplayer, fp_teleport, pos
             cv2.circle(img, (int(dx), int(dy)), 6, (180, 180, 180), 1)
             cv2.putText(img, f"{dc:.2f}", (int(dx) + 6, int(dy)), cv2.FONT_HERSHEY_SIMPLEX,
                         0.4, (180, 180, 180), 1)
+        # head zones (top frac_h of each player box, central frac_w) -- magenta, thin
+        for b in players.get(f, []):
+            x0, y0, x1, y1 = [int(v) for v in b[:4]]
+            w = x1 - x0; h = y1 - y0; cxb = (x0 + x1) // 2
+            hw = int(args.head_frac_w * w / 2); hh = int(args.head_frac_h * h)
+            cv2.rectangle(img, (cxb - hw, y0), (cxb + hw, y0 + hh), (200, 80, 200), 1)
         # picked Kalman ball, color by status; FP-suspect -> red ring + label
         if r["status"] in ("detected", "predicted") and r["x"] is not None:
             bx, by = int(r["x"]), int(r["y"])
@@ -228,9 +294,11 @@ def render_overlay(seq, recs, dets, players, prox, fp_noplayer, fp_teleport, pos
                 if pj:
                     nb = min(pj, key=lambda b: pt_to_box_dist(r["x"], r["y"], b))
                     cv2.line(img, (bx, by), (int(nb[4]), int(nb[5])), (90, 90, 90), 1)
-                if fp_noplayer[i] or fp_teleport[i]:
+                head = fp_head is not None and fp_head[i]
+                if fp_noplayer[i] or fp_teleport[i] or head:
                     cv2.circle(img, (bx, by), 20, (0, 0, 255), 3)
-                    tag = "FP:no-player" if fp_noplayer[i] else "FP:reset-teleport"
+                    tag = ("FP:HEAD" if head else
+                           "FP:no-player" if fp_noplayer[i] else "FP:reset-teleport")
                     cv2.putText(img, tag, (bx + 14, by + 6), cv2.FONT_HERSHEY_SIMPLEX,
                                 0.6, (0, 0, 255), 2)
                 if post_reset[i]:
@@ -263,6 +331,8 @@ def main():
     ap.add_argument("--source", default="datasets/sportsmot_basketball")
     ap.add_argument("--prox-px", type=float, default=150.0,
                     help="picked ball farther than this from EVERY player box = no-player FP")
+    ap.add_argument("--head-frac-h", type=float, default=0.18, help="head zone = top this frac of a player box height")
+    ap.add_argument("--head-frac-w", type=float, default=0.6, help="head zone = central this frac of a player box width")
     ap.add_argument("--vel-gate", type=float, default=100.0, help="Day-14 gate (for reset-teleport flag)")
     ap.add_argument("--max-gap", type=int, default=8, help="Day-14 max-predict-gap (reset boundary)")
     ap.add_argument("--safe-frac", type=float, default=0.7)

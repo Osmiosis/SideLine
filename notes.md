@@ -1415,3 +1415,70 @@ thresholds camera-distance dependent (school re-tune). Proximity prior depends o
 - `outputs/follow_cam_bb/<seq>/debug_overlay_A.mp4` -- per-seq diagnostic overlay (local).
 - `outputs/deliverables/day16_sample/` -- whitelisted: before/after FP stills (f275 scoreboard,
   f1130 banner→handoff), shot f49, + `day16_metrics.md`.
+
+## Day 17 — Head-FP Fix (FINAL cheap attempt before TrackNet) — basketball ball track DONE
+
+**Goal:** Kill the residual HEAD-as-basketball FPs — the class Day-16's proximity prior CAN'T catch
+(a head is the most player-proximate object on court). Diagnose head-latching, test three targeted
+fixes independently against a hard PASS/FAIL bar; if it fails, TrackNet is the evidenced next step.
+This was the 3rd basketball-ball-FP session (15 wobble → 16 corner-FP → 17 head-FP).
+
+### Per-Part status
+- **Part 0 -- diagnose head-latching:** ✅ confirmed residual; SIZE GATE ruled out (heads ≈ ball size).
+- **Part A -- 3 fixes measured independently:** ✅ #1 head-zone wins; #2 dead; #3 weaker.
+- **Part B -- re-render + RE-WATCH vs bar:** ✅ **PASS** (head-FP-latch <2%, shots survived).
+- **Part C -- decision + log + commit:** ✅ PASS → basketball ball track DONE, TrackNet NOT needed.
+
+### Part 0 — head-FP confirmed; the size gate is dead on arrival
+Extended `diagnose_ball_fp.py`: flag picked balls in a player HEAD ZONE (top 18% of box, central 60%).
+Head-FP of 'detected': c001 9.5% (34/359), c007 14.9% (37/248) — the residual wobble. Crucially,
+**heads are NOT size-separable from the ball**: head-zone vs clean-ball median bbox area 429 vs 403
+(1.07×) c001, 382 vs 431 (0.89×) c007 — the detector emits a ball-sized box on the head. Any size
+threshold dropping heads drops equal balls → Fix #2 ruled out by the diagnostic before implementing.
+
+### Part A — three fixes, A/B-isolated (each separately gated; Day-16 proximity = baseline)
+1. **Head-zone exclusion** (`--reject-head`): reject any detection in a player head zone. → head-FP
+   c001 9.5%→0.0%, c007 14.9%→0.8%. **Winner.**
+2. **Size gate:** RULED OUT in Part 0 (area overlap ~1.0×) — not implemented as a dead gate.
+3. **Motion-consistency** (`--motion-consistency`, the poor-man's TrackNet): reject head-zone dets
+   ONLY when the ball is slow (a fast pass/shot through head height survives). → c001 1.5%, c007 4.7%.
+   Weaker on head-FP but lower regression risk on overhead balls — kept as the alternative default.
+Both isolated behind flags (Day-16's isolation-bug lesson). #1 chosen canonical.
+
+### Part B — effect (PRIMARY = A-feed FP-latch incl. head, + ball-in-safezone)
+| seq  | A-feed FP-latch (no-player+head) base→Fix#1 | A ball-in-safezone base→Fix#1 |
+|------|---------------------------------------------:|------------------------------:|
+| c001 | 3.4% (5+34) → **0.4%** (5+0)                | 0.749 → 0.696                 |
+| c007 | 5.2% (0+37) → **0.3%** (0+2)                | 0.879 → 0.885                 |
+
+No real-ball regression: shots survived (c001 45→45, c007 47→43); c007 detected only fell 248→243
+despite removing 37 head frames — in ~32 of them the tracker then found the REAL ball (a gain). The
+small c001 safezone dip is HONEST deflation (head-FPs sat near frame center, artificially inflating
+safezone). RE-WATCH stills: f40 head rejected → ball predicted → camera on the play (not the head);
+c007 f49 shot still tracked. Extended `a_feed_fp_latch()` to count head-zone latches (was no-player only).
+
+### THE DECISION: PASS — TrackNet NOT needed (evidenced, not jerk-guessed)
+Bar met: head-FP-latch 0.4%/0.3% (<2%); camera stays on the real ball when visible; dribble/pass/shot
+survived. **Basketball ball track DONE** — corner-FPs (Day-16) + head-FPs (Day-17) both cleared;
+follow-cam A-feed watchable; both sports at follow-cam parity → highlights next. The staged escalation
+(cheap-first, measure, escalate-with-evidence) closed all FP classes with track-level levers; TrackNet
+was never needed and that is now an evidenced conclusion.
+
+### Errors / surprises
+- Size gate intuition was wrong — heads aren't bigger than the ball in this footage (~1.0× area). The
+  Part-0 separability check caught it before wasting effort building the gate.
+- Fix#1 churns ~17 (c001) / 7 (c007) non-head detected frames via Kalman cascade (rejecting a head →
+  lost → downstream gap/reset shifts), offset by gains; net real-ball detection neutral-to-positive.
+
+### Caveats (unchanged)
+SportsMOT footage; plausibility-validated track (no ungated per-frame GT); head-zone fractions are
+pose/camera-distance dependent (school re-tune); depends on player-track quality. Fix#1 is strict
+(could drop a high-held ball → predicted); Fix#3 is the lower-regression alternative for overhead-heavy footage.
+
+### Files
+- `scripts/diagnose_ball_fp.py` -- + head-zone flagging, size-separability check, head boxes in overlay.
+- `scripts/analyze_ball_basketball.py` -- + `--reject-head` (#1) / `--motion-consistency` (#3) head-FP
+  gates; canonical `outputs/ball_track_bb/` regenerated with `--require-player --reject-head` (all 5 seqs).
+- `scripts/follow_cam_basketball.py` -- `a_feed_fp_latch()` now counts head-zone latches too.
+- `outputs/deliverables/day17_sample/` -- whitelisted: before/after head-FP stills (f40) + shot f49
+  survival + `day17_metrics.md`.
