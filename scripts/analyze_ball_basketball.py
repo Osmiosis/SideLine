@@ -442,6 +442,10 @@ def main():
     ap.add_argument("--head-frac-h", type=float, default=0.18, help="head zone = top this frac of player box height")
     ap.add_argument("--head-frac-w", type=float, default=0.6, help="head zone = central this frac of player box width")
     ap.add_argument("--motion-speed", type=float, default=8.0, help="px/frame: below this the ball is 'slow' (head-lock) for motion-consistency")
+    # Day-19 appearance filter (ball-vs-head crop classifier as a pre-Kalman veto)
+    ap.add_argument("--appearance-filter", default=None,
+                    help="path to outputs/ball_head/filter.pt -- veto non-ball (head/junk) detections by appearance before the Kalman")
+    ap.add_argument("--appear-thr", type=float, default=None, help="override the saved classifier threshold")
     # shot flag (pixel-only: lean on fast-vertical motion -- image-y conflates far-court w/ airborne)
     ap.add_argument("--y-high-frac", type=float, default=0.15, help="ball-y above this frac of H = upper-court/high")
     ap.add_argument("--vy-fast", type=float, default=15.0, help="|vy| above this px/frame = fast-vertical (shot/lob)")
@@ -457,7 +461,19 @@ def main():
         out_seq = Path(args.out) / seq
         out_seq.mkdir(parents=True, exist_ok=True)
         n_frames, W, H, im_dir, im_ext = seq_info(Path(args.source), seq)
-        cache = load_cache(Path(args.cache_dir) / f"{seq}.txt")
+        frames_dir = Path(args.source) / seq / im_dir
+        if args.appearance_filter:
+            # Day-19: appearance ball-vs-head veto BEFORE the Kalman. Operate on full (cx,cy,w,h,conf)
+            # detections (need box size to crop), then hand the survivors to the pipeline as centers.
+            from diagnose_ball_fp import load_dets_full
+            from ball_appearance_filter import filter_detections
+            full = load_dets_full(Path(args.cache_dir) / f"{seq}.txt")
+            full, afst = filter_detections(full, frames_dir, args.appearance_filter, args.appear_thr)
+            cache = {f: [(cx, cy, c) for (cx, cy, w, h, c) in dets] for f, dets in full.items()}
+            print(f"  appearance filter ({Path(args.appearance_filter).name} thr={afst['thr']:.2f}): "
+                  f"kept {afst['n_out']}/{afst['n_in']} dets (dropped {afst['n_dropped']} non-ball/head)")
+        else:
+            cache = load_cache(Path(args.cache_dir) / f"{seq}.txt")
 
         # court-region prior: drop detections above the court (banner/scoreboard static FPs)
         court_top = args.court_top_frac * H

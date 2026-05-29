@@ -1554,3 +1554,75 @@ start a TrackNet build on data we hadn't verified exists.
 - `scripts/scout_tracknet_data.py` -- scouting utility: `list-files <kaggle-slug>` (enumerate tree) +
   `inspect <instant.json>` (the make-or-break ball-GT-presence check); full scouting result in docstring.
 - (No datasets committed — `datasets/*` gitignored; downloaded ballistic sample removed after inspection.)
+
+## Day 19 — Lightweight Ball-vs-Head Appearance FP Rejection → WORKS (basketball ball track DONE)
+
+**Goal:** Before data-hungry TrackNet, test LIGHTER methods targeting the actual failure (detector
+confuses HEADS with the ball): (1) a ball-vs-not-ball crop classifier, (2) appearance-embedding
+rejection. Need single labeled crops, NOT consecutive-frame data → sidesteps the Day-18 data wall.
+
+### Per-Part status
+- **Part A/A.5 -- candidate crops + labeling:** ✅ geometric pseudo-labels CONTAMINATED (user caught it on
+  the sheets) → user HAND-SORTED 3,329 clean labels (1,045 ball / 2,284 not-ball) via `sort_crops.py`.
+- **Part B -- Method 1 classifier:** ✅ WINNER (head-reject 98.5% @thr0.50).
+- **Part C -- Method 2 embedding:** ✅ but loses (rejected 54% of real balls — not viable).
+- **Part D -- integrate + RE-WATCH:** ✅ **WORKS** (user watched: camera oscillated only once, mild; heads gone).
+- **Part E -- log + decision + commit:** ✅ basketball ball track DONE; TrackNet not needed.
+
+### The tunnel-vision reframe
+Sessions 15-18 assumed the fix was spatial-geometry (failed) or full temporal-learning (TrackNet,
+data-gated). The skipped MIDDLE ground = APPEARANCE: heads and the ball look different even at identical
+size/shape (Day-17's area ratio ~1.0 only killed the SIZE gate, not appearance), and learning that needs
+SINGLE labeled crops — no consecutive frames. That sidesteps the entire TrackNet data wall.
+
+### Labeling -- the contamination lesson (verify-the-asset, again)
+Auto pseudo-labels from geometry (head-zone vs near-player) were CONTAMINATED: the user looked at the
+contact sheets and saw balls+heads mixed in BOTH classes — because geometry is exactly the signal that
+can't separate them (it leaks both ways). I had over-claimed the sheets were clean; the user overruled
+(same eyes-beat-metrics pattern as Day-15/17). Fix: the user HAND-SORTED via an interactive keypress tool
+(`sort_crops.py`: b/n/s/u/q, autosave, resumable) → 3,329 CLEAN labels. `hand_ball.png`/`hand_notball.png`
+show the obvious appearance separation (orange-round-on-wood vs skin/hair-on-jersey).
+
+### Methods (frozen ImageNet ResNet18 embedding; 75/25 random split of hand labels)
+| method | ball-recall | ball FALSE-REJECT | head-reject | junk-reject |
+|--------|------------:|------------------:|------------:|------------:|
+| **M1 classifier** (logistic on embedding) @thr0.50 | 87.5% | 12.5% | **98.5%** | 100% |
+| M1 @thr0.32 (tuned ball-FR≤5%) | 93.8% | 6.2% | 79.6% | 99.2% |
+| M2 embedding-distance (bootstrap anchor) | 45.5% | 54.5% ✗ | 87.6% | 100% |
+M1 wins; M2's single mean-embedding anchor rejects half the real balls. M1 has a precision/recall
+tension: thr0.50 kills heads (98.5%) but drops 12.5% of balls; thr0.32 keeps balls but leaks ~20% heads.
+
+### Integration + RE-WATCH (the verdict — metrics can't settle "does it wobble", Day-15/17 lesson)
+Winner = pre-Kalman appearance veto (`ball_appearance_filter.py`): detector → ResNet18+logistic per crop
+→ drop non-ball → survivors feed the Kalman. Canonical: `--require-player --reject-head
+--appearance-filter filter.npz --appear-thr 0.5` (proximity=banners+init; geometric reject-head=in-zone
+heads; APPEARANCE=the out-of-zone heads geometry missed — the Day-17 residual). A-feed Day-17→Day-19:
+ball-in-safezone c001 0.70→**0.95**, c007 0.89→**0.98**; FP-latch →0.0%/0.1%; detection coverage
+0.68→0.51 / 0.76→0.60 (filter drops 58-76% of raw dets — most aren't balls). Lower coverage → dropped
+balls become 1-frame Kalman predictions + the possession-handoff covers gaps, so the risk shifts from
+"wobble to heads" to "coast on the play". **User RE-WATCHED the rendered A-feed: camera oscillated only
+ONCE (mild), heads no longer grab it, shots/dribbles/passes survived.** WORKS.
+
+### THE DECISION: WORKS — basketball ball track FINALLY done; TrackNet NOT needed
+A lightweight appearance classifier (single hand-labeled crops + frozen pretrained backbone + a logistic
+head, trained in minutes on the 4060) solved the head-FP four prior sessions couldn't — without the gated
+consecutive-frame data TrackNet needs. The middle ground was the answer all along. Both sports at
+follow-cam parity → highlights/deliverables next. TrackNet stays documented but unneeded.
+
+### Errors / surprises
+- Over-claimed the pseudo-label sheets were clean; the user's eye caught the contamination → hand-sort.
+  Verify the asset (labels), don't trust a glance — same family as the metric-vs-reality trap.
+- Size gate stays dead (Day-17); the discriminator is appearance (color/texture/context), not geometry.
+- `np.savez('x.pt')` silently wrote `x.pt.npz` → renamed the filter to `filter.npz`.
+
+### Files
+- `scripts/ball_head_crops.py` -- crop every candidate detection + (initial) geometric pseudo-labels + sheets.
+- `scripts/sort_crops.py` -- interactive hand-sorter (b/n/s/u/q, autosave, resumable) → `hand_labels.json`.
+- `scripts/ball_head_classifier.py` -- ResNet18 embedding; Method-1 logistic (threshold-tuned for ball-FR
+  cap) + Method-2 bootstrap embedding-distance; saves winner to `outputs/ball_head/filter.npz`.
+- `scripts/ball_appearance_filter.py` -- applies the classifier as a pre-Kalman veto (used by the tracker).
+- `scripts/analyze_ball_basketball.py` -- + `--appearance-filter`/`--appear-thr`; canonical
+  `outputs/ball_track_bb/` regenerated with appearance@0.5 + reject-head + proximity (all 5 seqs).
+- `outputs/ball_head/filter.npz` -- whitelisted (trained classifier weights; NOT the crop images).
+- `outputs/deliverables/day19_sample/` -- whitelisted: hand_ball/hand_notball sheets, after-stills
+  (f40 head-rejected, f49 shot-survives) + `day19_metrics.md`. (crops.npz / hand_labels.json NOT committed.)

@@ -68,6 +68,14 @@ outputs/deliverables/day16_sample/*
 outputs/deliverables/day17_sample/*
 !outputs/deliverables/day17_sample/*.png
 !outputs/deliverables/day17_sample/*.md
+!outputs/deliverables/day19_sample/
+outputs/deliverables/day19_sample/*
+!outputs/deliverables/day19_sample/*.png
+!outputs/deliverables/day19_sample/*.md
+# Day-19 trained ball-vs-head classifier (model weights, not crop data) -- reusable artifact
+!outputs/ball_head/
+outputs/ball_head/*
+!outputs/ball_head/filter.npz
 
 # IDE
 .vscode/
