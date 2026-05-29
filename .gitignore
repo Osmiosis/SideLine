@@ -72,6 +72,14 @@ outputs/deliverables/day17_sample/*
 outputs/deliverables/day19_sample/*
 !outputs/deliverables/day19_sample/*.png
 !outputs/deliverables/day19_sample/*.md
+# Day-20 first coach deliverable package (PDF + figures + metrics + ONE short sample clip)
+!outputs/deliverables/coach_package_football/
+outputs/deliverables/coach_package_football/*
+!outputs/deliverables/coach_package_football/*.png
+!outputs/deliverables/coach_package_football/*.md
+!outputs/deliverables/coach_package_football/*.pdf
+!outputs/deliverables/coach_package_football/*.json
+!outputs/deliverables/coach_package_football/tactical_sample.mp4
 # Day-19 trained ball-vs-head classifier (model weights, not crop data) -- reusable artifact
 !outputs/ball_head/
 outputs/ball_head/*

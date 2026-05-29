@@ -1,0 +1,191 @@
+{
+  "seq": "SNGS-118",
+  "tier_validated": {
+    "possession_pct": {
+      "TeamA": 60.6,
+      "TeamB": 39.4,
+      "n_counted": 431,
+      "n_total": 750,
+      "note": "Day-12 possession proxy: plausibility-validated, not GT-validated"
+    },
+    "team_distance_smoothed_m": {
+      "TeamA": 599.0,
+      "TeamB": 613.0
+    },
+    "team_distance_nonoutfield_m": 10.9,
+    "team_distance_total_m": 1222.8228934689132,
+    "team_distance_vs_gt_pct": 8.33417076969359,
+    "homography_median_err_m": 0.13928847014904022
+  },
+  "tier_derived": {
+    "formation": {
+      "TeamA": [
+        {
+          "tid": "55",
+          "x": 23.28,
+          "y": 13.41,
+          "n": 624
+        },
+        {
+          "tid": "65",
+          "x": 49.18,
+          "y": 1.24,
+          "n": 591
+        },
+        {
+          "tid": "8",
+          "x": 26.07,
+          "y": -8.03,
+          "n": 584
+        },
+        {
+          "tid": "3",
+          "x": 24.11,
+          "y": 12.26,
+          "n": 576
+        },
+        {
+          "tid": "91",
+          "x": 32.41,
+          "y": 14.37,
+          "n": 503
+        },
+        {
+          "tid": "47",
+          "x": 16.41,
+          "y": 20.04,
+          "n": 430
+        },
+        {
+          "tid": "6",
+          "x": 17.29,
+          "y": 14.4,
+          "n": 248
+        },
+        {
+          "tid": "1",
+          "x": 4.38,
+          "y": 17.38,
+          "n": 166
+        }
+      ],
+      "TeamB": [
+        {
+          "tid": "7",
+          "x": 32.48,
+          "y": -3.18,
+          "n": 750
+        },
+        {
+          "tid": "5",
+          "x": 28.16,
+          "y": -10.27,
+          "n": 748
+        },
+        {
+          "tid": "42",
+          "x": 27.4,
+          "y": 13.55,
+          "n": 650
+        },
+        {
+          "tid": "31",
+          "x": 24.66,
+          "y": 19.06,
+          "n": 592
+        },
+        {
+          "tid": "86",
+          "x": 29.68,
+          "y": 17.81,
+          "n": 521
+        },
+        {
+          "tid": "4",
+          "x": 19.69,
+          "y": 7.13,
+          "n": 464
+        },
+        {
+          "tid": "89",
+          "x": 23.64,
+          "y": 12.53,
+          "n": 337
+        },
+        {
+          "tid": "141",
+          "x": 26.67,
+          "y": 7.11,
+          "n": 273
+        }
+      ]
+    },
+    "territory_pct": {
+      "Left third": 0.0,
+      "Middle third": 23.7,
+      "Right third": 76.3
+    },
+    "team_shape": {
+      "TeamA": {
+        "avg_hull_area_m2": 327.5103477296061,
+        "avg_spread_m": 12.294897918192108
+      },
+      "TeamB": {
+        "avg_hull_area_m2": 316.2535965518044,
+        "avg_spread_m": 11.731591684236928
+      }
+    },
+    "intensity_zones_m": {
+      "TeamA": {
+        "bands": {
+          "Walk": 73.2,
+          "Jog": 170.8,
+          "Run": 112.4,
+          "High-speed": 79.1,
+          "Sprint": 78.0
+        },
+        "hsr_m": 157.1,
+        "artefact_m": 57.0
+      },
+      "TeamB": {
+        "bands": {
+          "Walk": 88.6,
+          "Jog": 212.9,
+          "Run": 117.5,
+          "High-speed": 79.3,
+          "Sprint": 59.2
+        },
+        "hsr_m": 138.5,
+        "artefact_m": 48.0
+      }
+    }
+  },
+  "tier_deferred": [
+    "pass networks (needs pass-detection validation)",
+    "per-player stat lines (needs ReID; AssA~0.5 ID-switch noise)"
+  ],
+  "sanity_checks": {
+    "formation_outfield_counts": {
+      "TeamA": 8,
+      "TeamB": 8
+    },
+    "territory_sums_to_100": 100.0,
+    "intensity_vs_distance": {
+      "TeamA": {
+        "bands+artefact_m": 570.5,
+        "team_smoothed_dist_all_tracks_m": 599.0,
+        "kept_frac": 0.95
+      },
+      "TeamB": {
+        "bands+artefact_m": 605.5,
+        "team_smoothed_dist_all_tracks_m": 613.0,
+        "kept_frac": 0.99
+      }
+    },
+    "compactness_hull_m2": {
+      "TeamA": 327.5103477296061,
+      "TeamB": 316.2535965518044
+    },
+    "ball_pitch_points": 583
+  }
+}

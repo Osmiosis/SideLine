@@ -1626,3 +1626,120 @@ follow-cam parity → highlights/deliverables next. TrackNet stays documented bu
 - `outputs/ball_head/filter.npz` -- whitelisted (trained classifier weights; NOT the crop images).
 - `outputs/deliverables/day19_sample/` -- whitelisted: hand_ball/hand_notball sheets, after-stills
   (f40 head-rejected, f49 shot-survives) + `day19_metrics.md`. (crops.npz / hand_labels.json NOT committed.)
+
+## Day 20 — First Coach Deliverable: Analytics PDF + Tactical Video (Football)
+
+**Goal:** PIVOT from foundation to DELIVERABLES. Assemble the validated football foundation
+(Day-10 homography+distance+heatmaps, Day-11 team assignment, Day-12 ball track+possession) into
+the first STAKEHOLDER-FACING artifacts the school proposal promised coaches: (1) a one-glance
+analytics PDF, then (2) a wide tactical "analyst-view" video. Deliberately NOT a dashboard —
+glance-and-share (WhatsApp-able). Football, SoccerNet, sample seq = SNGS-118 ("shots off target",
+the cleanest Day-10 fit to GT: median position err 0.14 m, team distance +8% vs GT).
+
+### The pivot (why this session is different from Days 1–19)
+Days 1–19 built CV capability (detection → tracking → team assignment → ball → follow-cam). This
+session is ASSEMBLY + PRESENTATION of already-validated outputs, not new CV. So the rigor shifts:
+the numbers are mostly already trust-gated; the new risk is (a) presenting derived-but-not-
+separately-validated metrics HONESTLY, and (b) making it genuinely coach-useful, not just correct.
+
+### Per-Part status
+- **Part A — derived metrics + plausibility:** ✅ Computed from existing Day-10/11/12 outputs (NO
+  re-running detection/tracking). Formation, territory/field-tilt, team shape/compactness, intensity
+  zones. All plausibility-checked (below).
+- **Part B — coach PDF:** ✅ `coach_analysis.pdf` — A4 one-pager. Header → VALIDATED band (green
+  label) with team-split heatmaps + possession + distance → DERIVED ANALYTICS band (blue label) with
+  formation/territory/compactness/intensity → honest "coming soon" footer. Reads as a glanceable
+  coach sheet, not a number dump.
+- **Part C — tactical video:** ✅ `tactical_view.mp4` (full-res 30 s, local/gitignored) + committable
+  `tactical_sample.mp4` (10 s, 960×540, 9.4 MB). Wide analyst view: team-coloured player boxes + feet
+  markers, highlighted ball (yellow; "pred" when Kalman-predicted), possession lower-third, legend.
+  Clean coach overlay, not a debug render (no conf scores / no clutter).
+- **Part D — package + log + commit:** ✅ `outputs/deliverables/coach_package_football/` (PDF +
+  preview + figures + metrics.json + contact sheet + sample clip + README). gitignore whitelists the
+  package incl. the one short mp4; full-res clip and raw SoccerNet frames stay ignored.
+
+### The validated-vs-derived split (and WHY each is which) — the honesty spine of the PDF
+**VALIDATED (trust-gated vs GSR ground truth in prior sessions — presented as validated):**
+- *Team-split positional heatmaps* (Day-10/11) — position density, identity-agnostic, ID-switch-robust.
+- *Team distance covered, smoothed* (Day-10) — team total validated to +8% vs GT on this seq; the
+  per-team split (A 599 m / B 613 m) inherits that validated total (per-track ID noise averages out
+  at team level — same basis as the Day-10 team total).
+- *Possession %* (Day-12: A 61% / B 39%) — **plausibility-validated, NOT GT-validated**; labelled as
+  a "possession proxy" with the counted-frame fraction shown (431/750).
+
+**DERIVED (geometric summaries of the validated pitch positions — inherit that trust but are NOT
+separately GT-checked; labelled "derived analytics" in the PDF):**
+- *Formation map:* per-track mean pitch position, team-coloured, on a to-scale pitch. Restricted to
+  well-tracked IDs (≥150 frames / ~6 s) so ID-switch fragments don't add phantom players → 8/team
+  (the consistently-tracked core; real outfield ~10–11, the rest are intermittently tracked).
+- *Territory / field tilt:* % of play (player + ball position points) per pitch third (by x).
+  SNGS-118: Left 0% / Middle 24% / Right 76% — the play is genuinely one-sided (attacking into the
+  right-side box), matching the Day-10 heatmap; the 0% is real, not a bug.
+- *Team shape / compactness:* per-frame convex-hull area + spread from team centroid, avg + a
+  time-series. Avg hull ≈ 320 m²/team (small because it's a congested attacking-third phase AND the
+  hull is over the *visible/tracked* players, not the full XI — caveated).
+- *Intensity zones:* smoothed per-track velocity bucketed into STANDARD football GPS speed bands
+  (walk <2, jog 2–4, run 4–5.5, high-speed 5.5–7, sprint >7 m/s). High-speed-running ≥5.5 m/s follows
+  **Bradley et al. (2009), J Sports Sci 27(2):159–168** — NOT invented. SNGS-118 HSR: A 157 m / B 139 m.
+
+**DEFERRED (PDF says "coming soon", NOT faked):** pass networks (needs pass-detection validation —
+experimental) and per-player stat lines (needs ReID to fix AssA~0.5 ID-switch noise; per-player totals
+not yet trustworthy). Stated honestly with the reasons.
+
+### Plausibility sanity checks (Part A) — all passed
+- Formation outfield counts 8 / 8 (core well-tracked IDs; sensible spread on the pitch). ✓
+- Territory % sums to 100.0. ✓ (one-sided 0/24/76 is the real clip story, cross-checked vs Day-10.)
+- Intensity bands + artefact = 95–99% of all-track smoothed distance — the small gap is the
+  fragment tracks (<60 frames) that the band split excludes but the team distance includes; reported. ✓
+- **Intensity artefact guard:** per-step speeds >10 m/s (world-class sprint peaks ~10) are treated as
+  ID-switch teleports, kept OUT of the bands and reported separately (A 57 m / B 48 m — small). Without
+  this, a single ID swap to a far player dumps a huge phantom "sprint" into the bands. ✓
+- Compactness hull areas in sane meters (~320 m²; congested-attack + visible-players-only). ✓
+
+### Coach-usability verdict
+PDF reads as a phone-glanceable tactical sheet: two big heatmaps + a possession/distance strip up top
+(validated), then formation/territory/compactness/intensity (derived), honest footer. The
+validated/derived distinction is a small coloured band label — visible but not a confidence-
+undermining disclaimer. Tactical video is a clear who's-where/team-shape/ball-location view a coach
+could learn from. Feels like a real first deliverable (foundation → usable output).
+
+### Honest caveats (carried into the PDF + package README)
+- **SoccerNet only.** Pitch metrics depend on the per-frame homography, which on SoccerNet rides on
+  GSR's provided `bbox_pitch` calibration. DPS MIS deployment on the school's own footage is pending
+  (will need manual ≥4-landmark pitch calibration per camera, per Day-10's deployment note).
+- Derived metrics inherit validated-position trust but are NOT separately GT-checked (labelled so).
+- Per-player anything deferred until ReID lifts AssA past ~0.5 (team aggregates are robust; single-
+  player totals are not).
+
+### What's next
+- Event/gameplay highlights via the A-feed (ball-faithful follow-cam crop).
+- Player highlights via the C-feed (stabilised crop path).
+- Basketball analytics need a court homography (not yet built) — football-only for now.
+
+### Errors / surprises
+- `outputs/track_results/.../SNGS-118.txt` is MOT pixel space; positions.json is pitch-meters —
+  kept the two straight (video overlay uses pixel tracks; PDF metrics use pitch positions).
+- First formation map had 12–13 "players"/team (ID-switch fragments at ≥60 frames). Raised the
+  formation cutoff to ≥150 frames → clean 8/team core. (Intensity keeps the ≥60 set for coverage;
+  the kept-fraction is reported so the trade-off is visible.)
+- Full-res 30 s tactical clip = 120 MB (mp4v) — far too big for git. Render full locally
+  (`--full-video`, gitignored); commit only a 10 s 960×540 downscaled sample (9.4 MB).
+- No reportlab/fpdf in the venv → built the PDF as a single matplotlib A4 figure (gridspec layout,
+  embedded PNG panels). No new dependency.
+
+### Time
+Wall ~2.5h: ~40 min data-format scouting + pitch/coords reuse, ~60 min `coach_deliverable.py`
+(Part A metrics + figures + matplotlib PDF + tactical overlay video), ~30 min plausibility review +
+PDF/video polish (header, formation cutoff, sample-clip sizing), ~20 min package + gitignore + notes.
+
+### Files added / changed
+- `PRD'S/PRD_Day20_coach_deliverable.md` — session plan.
+- `scripts/coach_deliverable.py` — Part A (derived metrics + plausibility) → Part B (matplotlib coach
+  PDF) → Part C (wide tactical overlay video + sample clip + contact sheet). Reuses the Day-10 pitch
+  model (105×68 m, center-origin, 25 fps, 5-frame smoothing).
+- `.gitignore` — whitelist `outputs/deliverables/coach_package_football/` (`*.png/*.md/*.pdf/*.json`
+  + the single `tactical_sample.mp4`); full-res clip + raw frames stay ignored.
+- `outputs/deliverables/coach_package_football/` — the first assembled coach deliverable: PDF +
+  preview + 6 figure PNGs + metrics.json + tactical contact sheet + 10 s sample clip + README.
+- (gitignored, regenerable) `outputs/deliverables/SNGS-118/coach/` — working outputs incl. full-res
+  `tactical_view.mp4`.
