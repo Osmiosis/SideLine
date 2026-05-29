@@ -187,7 +187,30 @@ def main():
     cv2.destroyAllWindows()
 
 
-def save(args, m, lm, placed, out_dir, frame):
+def prune_outliers(placed, lm, thresh_m=2.0, min_keep=4):
+    """Iteratively drop clicks whose court-space reconstruction error exceeds thresh_m -- catches
+    misclicks and points marked for landmarks that aren't actually visible in the frame. Returns
+    (kept, dropped). Keeps at least min_keep best points."""
+    keep = list(placed)
+    dropped = []
+    while len(keep) > min_keep:
+        img = [tuple(p["img"]) for p in keep]; court = [tuple(lm[p["name"]]) for p in keep]
+        H_ic, H_ci = bc.solve_H(img, court)
+        proj = bc.apply_H(H_ci, img)
+        errs = [float(np.hypot(proj[i][0] - court[i][0], proj[i][1] - court[i][1])) for i in range(len(keep))]
+        worst = int(np.argmax(errs))
+        if errs[worst] <= thresh_m:
+            break
+        dropped.append((keep[worst]["name"], round(errs[worst], 2)))
+        keep.pop(worst)
+    return keep, dropped
+
+
+def save(args, m, lm, placed_all, out_dir, frame):
+    placed, dropped = prune_outliers(placed_all, lm)
+    if dropped:
+        print(f"  pruned {len(dropped)} outlier click(s) (likely misclick / landmark not visible): "
+              + ", ".join(f"{n} ({e}m)" for n, e in dropped))
     img_pts = [tuple(p["img"]) for p in placed]
     court_pts = [tuple(lm[p["name"]]) for p in placed]
     names = [p["name"] for p in placed]
@@ -205,6 +228,8 @@ def save(args, m, lm, placed, out_dir, frame):
         "H_img_from_court": H_ic.tolist(), "H_court_from_img": H_ci.tolist(),
         "points": [{"name": p["name"], "img": p["img"], "court": list(lm[p["name"]])} for p in placed],
         "method": "MANUAL marking (human-clicked)",
+        "n_clicked": len(placed_all), "n_used": len(placed),
+        "pruned_outliers": [{"name": n, "err_m": e} for n, e in dropped],
         "holdout_mean_err_m": mean_err, "holdout_errs": errs,
         "landmark_recon_err_m": direct, "landmark_recon_mean_m": direct_mean,
     }, indent=2))

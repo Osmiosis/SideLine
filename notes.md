@@ -1773,6 +1773,23 @@ the overlay. There is no reliable automatic calibration signal on this broadcast
   a human marks via `mark_court.py`. **The auto-register result below is therefore NOT trusted** — the
   method/pipeline/honesty structure stand; only the calibration source changed to human-in-the-loop.
 
+**OUTCOME — manual marking done, calibration now TRUSTED.** The user ran `mark_court.py` and marked
+16 landmarks; the frame (c007 f540) shows only the RIGHT half-court, so 8 clicks were off (the 4
+left-half landmarks marked at the frame edge as guesses + 3 free-throw clicks that landed on the
+basket + 1). Added **auto-outlier-pruning** to `mark_court.py save()` (iteratively drop any click
+with court-space reconstruction error > 2 m): it pruned those 8, leaving **8 clean well-spread
+points -> 0.20 m mean / 0.30 m leave-one-out landmark reconstruction** (sub-metre, on par with
+football's 0.2 m GT). The overlay now sits correctly on the real court (yellow lines on painted
+lines). Regenerated the full analytics from the trusted H: total distance 68.5 m / 17 tracks
+(~4 m/player in 4 s), territory 0/1/99 % (the half-court set is at the right-end basket — correct),
+max speed 9.0 m/s, bands+artefact = total ✓, in-bounds 100%. Refreshed `coach_package_basketball/`
+(provisional banner removed; calibration = "MANUAL marking, 0.2 m"). NOTE the homography is now
+landmark-reconstruction-validated to 0.2-0.3 m (the marks are the reference); the downstream
+analytics still inherit tracking/ID-switch noise and have no independent court-metre GT, so they
+stay plausibility-level. Lesson reinforced: LOOK at the overlay -- in-bounds % and chamfer residual
+both lie. Also improved: `mark_court.py` is now robust to a few misclicks / non-visible-landmark
+guesses (auto-prune + report), and only >=4 good spread points are needed.
+
 ### The two things that make basketball homography DIFFERENT from football's Day-10
 1. **No GT.** Football's GSR shipped `bbox_pitch` -> GT-validated to 0.2 m. Basketball has NO
    court-metre GT (SportsMOT = pixel boxes only; Day-18 confirmed the GT hunt is dead). So this is

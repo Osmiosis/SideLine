@@ -1,18 +1,12 @@
 # Coach Package — Basketball (team-agnostic, plausibility-level)
 
-> ⚠ **PROVISIONAL — calibration not yet trusted.** The court homography in this package came from
-> the **automatic** camera-pose registration, whose projected-court overlay turned out **visually
-> VERY WRONG** (it passed the players-in-bounds metric while being misaligned — see `overlay.png`,
-> kept here as evidence of *why* auto is unreliable). So **every court-metre number below is NOT
-> trustworthy yet.** Calibration is now a **manual, human-marked** step:
->
-> 1. `python scripts/mark_court.py v_00HRwkvvjtQ_c007 --frame 540` — click the court points, watch the
->    yellow overlay snap onto the real lines, save.
-> 2. `python scripts/coach_deliverable_basketball.py v_00HRwkvvjtQ_c007 --win 493 591` — regenerate
->    the PDF/video/metrics from the trusted manual homography.
->
-> The method, pipeline, and honesty structure are correct; only the calibration source needs the
-> human-in-the-loop step (which is also the real deployment workflow: fixed camera, mark once).
+> **Calibration: MANUAL (human-marked) — trusted.** A human marked the court points with
+> `scripts/mark_court.py`; the tool auto-pruned 8 stray clicks (3 free-throw misclicks + 4 left-half
+> landmarks not visible in this right-half frame + 1), leaving 8 well-spread points. Held-out
+> landmark reconstruction = **0.20 m mean / 0.30 m leave-one-out** — sub-metre, on par with
+> football's 0.2 m. See `overlay.png` (yellow court sits on the real lines). The earlier *automatic*
+> registration was discarded — its overlay was visually wrong despite passing the in-bounds metric;
+> manual marking is the required path (and the real deployment workflow: fixed camera, mark once).
 
 
 Sample: **v_00HRwkvvjtQ_c007** (SportsMOT, NCAA tournament broadcast), stable-camera window
@@ -44,18 +38,16 @@ team assignment yet → team-agnostic).
 - `metrics_basketball.json` — all numbers + plausibility sanity checks.
 
 ## How the court was calibrated (Day-21 method)
-- **Auto-detect** (tried first): blackhat+Hough finds court-line candidates + a blue centre-logo
-  blob, but **cannot reliably LABEL** which line is which on broadcast footage (logos, painted
-  text, crowd, players occluding the lane) — so it defers to manual. (Expected; the reason the
-  manual fallback exists.)
-- **Auto-register** (used here): camera-pose chamfer matching — optimise a real camera (focal +
-  look-at extrinsics) projecting the 3D court plane to align projected court lines with detected
-  court edges, with a *players-stay-in-bounds* prior that rules out the degenerate low-cost-but-
-  wrong fits a free homography falls into. Result: 100% players in-bounds, ~12 px line-alignment
-  residual.
-- **Manual fallback** (deployment path, `basketball_court.py --mark`): click ≥4 known court points
-  on one frame (corners are most robust — present on nearly any court, even faded/multi-sport).
-  Fixed camera ⇒ mark once. This is the real, easier deployment route.
+- **Manual marking (USED here — `scripts/mark_court.py`):** a human clicks known court points on one
+  frame; the app draws the projected court back LIVE so you re-mark until the yellow lines sit on the
+  real lines, then auto-prunes stray clicks (court-space recon error > 2 m) and saves. Here: 8 clean
+  points, 0.20 m mean / 0.30 m leave-one-out reconstruction. Corners are the most robust landmarks
+  (present on nearly any court — faded/multi-sport/outdoor). Fixed deployment camera ⇒ mark once.
+- **Auto-detect (`--auto`, retired):** blackhat+Hough finds court-line candidates but **can't
+  reliably LABEL** which line is which on broadcast (logos/text/crowd/occlusion) → defers to manual.
+- **Auto-register (`--register`, retired):** camera-pose chamfer matching. Discarded — its overlay
+  was **visually wrong** while still passing the players-in-bounds metric (an in-bounds score is
+  satisfiable by a misaligned pose). Kept in code only to document the dead-end.
 
 ## Intensity speed bands
 Basketball lacks football's single standardised GPS band set. Adapted from basketball time-motion

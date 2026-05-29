@@ -1,0 +1,58 @@
+[
+  {
+    "name": "r_baseline_far",
+    "img": [
+      793,
+      211
+    ]
+  },
+  {
+    "name": "r_baseline_near",
+    "img": [
+      1105,
+      558
+    ]
+  },
+  {
+    "name": "r_lane_base_far",
+    "img": [
+      889,
+      319
+    ]
+  },
+  {
+    "name": "r_lane_base_near",
+    "img": [
+      961,
+      398
+    ]
+  },
+  {
+    "name": "r_arc_top",
+    "img": [
+      472,
+      400
+    ]
+  },
+  {
+    "name": "r_basket",
+    "img": [
+      824,
+      366
+    ]
+  },
+  {
+    "name": "center",
+    "img": [
+      25,
+      435
+    ]
+  },
+  {
+    "name": "center_near",
+    "img": [
+      41,
+      672
+    ]
+  }
+]
