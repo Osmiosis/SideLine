@@ -47,12 +47,13 @@ SPEED_ARTEFACT = 9.0    # m/s; above basketball peak (~8.5) -> ID-switch telepor
 HIGH_THRESH = 4.5
 PLAYER_BGR = (40, 200, 40)   # team-agnostic fallback (when no team labels)
 BALL_BGR = (0, 215, 255)
-# Day-22 team colours (TeamA = cluster0 = Kentucky blue; TeamB = cluster1 = Wichita white).
-# Drawn in high-contrast blue/red for readability; PDF legend notes the real jersey mapping.
-TEAM_BGR = {"TeamA": (235, 140, 30), "TeamB": (40, 60, 235), "Referee": (0, 215, 255),
+# Day-22 team colours. Mapping is by jersey colour (set in bball_team_assign): TeamA = Wichita
+# white, TeamB = Kentucky blue (the user's labeling convention: white = A, blue = B). Drawn in
+# high-contrast amber/blue for readability (white wouldn't show); legend names the jerseys.
+TEAM_BGR = {"TeamA": (40, 170, 245), "TeamB": (235, 140, 30), "Referee": (0, 215, 255),
             "Excluded": (150, 150, 150)}
-TEAM_RGB = {"TeamA": (0.12, 0.45, 0.85), "TeamB": (0.85, 0.20, 0.15)}
-TEAM_LABEL = {"TeamA": "Team A (blue)", "TeamB": "Team B (white)"}
+TEAM_RGB = {"TeamA": (0.96, 0.55, 0.0), "TeamB": (0.12, 0.45, 0.85)}
+TEAM_LABEL = {"TeamA": "Team A (white)", "TeamB": "Team B (blue)"}
 POSSESSION_MAX_M = 3.0       # nearest on-court player within this -> in possession (Day-12 method)
 
 
@@ -348,7 +349,7 @@ def build_pdf(seq, win, metrics, val, outdir, pdf_path):
     if teamed:
         lab1 = fig.add_subplot(gs[35:38, :]); lab1.axis("off")
         lab1.add_patch(Rectangle((0, 0), 1, 1, color="#2e7d32"))
-        lab1.text(0.01, 0.5, f"  TEAM ANALYTICS  -  team assignment {team_val_txt}  ·  A = blue jerseys, B = white",
+        lab1.text(0.01, 0.5, f"  TEAM ANALYTICS  -  team assignment {team_val_txt}  ·  A = white jerseys, B = blue",
                   color="white", fontsize=7.4, fontweight="bold", va="center")
         img(gs[39:60, 0:100], outdir / "fig_team_heatmaps.png")
         derived_top = 62

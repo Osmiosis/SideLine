@@ -1,0 +1,26 @@
+{
+  "n_labeled": 717,
+  "n_matched_to_track": 717,
+  "team_accuracy_post_alignment": 0.7959,
+  "acc_A_TeamA": 0.7959,
+  "acc_A_TeamB": 0.2041,
+  "best_alignment": {
+    "A": "TeamA",
+    "B": "TeamB"
+  },
+  "per_class_accuracy": {
+    "A": 0.983,
+    "B": 0.6518
+  },
+  "n_team_pairs_scored": 676,
+  "team_crops_excluded_frac": 0.0231,
+  "ref_bench_exclusion_recall": 0.16,
+  "n_ref_bench": 25,
+  "label_counts": {
+    "A": 302,
+    "B": 390,
+    "bench": 13,
+    "ref": 12
+  },
+  "note": "hand-label-validated (labels ARE the reference; possible label noise). Random 2-team floor = 50%; football Day-11 GT-validated 88-92%."
+}

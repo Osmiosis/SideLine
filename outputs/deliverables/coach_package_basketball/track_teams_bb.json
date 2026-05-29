@@ -1,7 +1,7 @@
 {
   "v_00HRwkvvjtQ_c001": {
     "1": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 179,
       "vote_purity": 0.922,
@@ -13,7 +13,7 @@
       }
     },
     "2": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 37,
       "vote_purity": 0.784,
@@ -25,7 +25,7 @@
       }
     },
     "3": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 138,
       "vote_purity": 0.514,
@@ -37,7 +37,7 @@
       }
     },
     "4": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 39,
       "vote_purity": 0.564,
@@ -49,7 +49,7 @@
       }
     },
     "5": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 57,
       "vote_purity": 0.667,
@@ -61,7 +61,7 @@
       }
     },
     "6": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 28,
       "vote_purity": 0.857,
@@ -73,7 +73,7 @@
       }
     },
     "7": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -84,7 +84,7 @@
       }
     },
     "8": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 29,
       "vote_purity": 0.897,
@@ -96,7 +96,7 @@
       }
     },
     "14": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 27,
       "vote_purity": 0.852,
@@ -108,7 +108,7 @@
       }
     },
     "17": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 318,
       "vote_purity": 1.0,
@@ -119,7 +119,7 @@
       }
     },
     "21": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 3,
       "vote_purity": 0.667,
@@ -131,7 +131,7 @@
       }
     },
     "23": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -142,7 +142,7 @@
       }
     },
     "29": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 31,
       "vote_purity": 0.935,
@@ -154,7 +154,7 @@
       }
     },
     "57": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 410,
       "vote_purity": 0.839,
@@ -166,7 +166,7 @@
       }
     },
     "72": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 353,
       "vote_purity": 0.564,
@@ -178,7 +178,7 @@
       }
     },
     "74": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 9,
       "vote_purity": 1.0,
@@ -189,7 +189,7 @@
       }
     },
     "77": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -200,7 +200,7 @@
       }
     },
     "87": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -211,7 +211,7 @@
       }
     },
     "92": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 142,
       "vote_purity": 0.979,
@@ -223,7 +223,7 @@
       }
     },
     "115": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -234,7 +234,7 @@
       }
     },
     "118": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 405,
       "vote_purity": 0.615,
@@ -246,7 +246,7 @@
       }
     },
     "121": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 170,
       "vote_purity": 0.965,
@@ -258,7 +258,7 @@
       }
     },
     "128": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 101,
       "vote_purity": 0.574,
@@ -270,7 +270,7 @@
       }
     },
     "131": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 334,
       "vote_purity": 0.997,
@@ -282,7 +282,7 @@
       }
     },
     "134": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -293,7 +293,7 @@
       }
     },
     "139": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 5,
       "vote_purity": 0.8,
@@ -305,7 +305,7 @@
       }
     },
     "143": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 15,
       "vote_purity": 0.8,
@@ -317,7 +317,7 @@
       }
     },
     "150": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -328,7 +328,7 @@
       }
     },
     "160": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -339,7 +339,7 @@
       }
     },
     "165": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -362,7 +362,7 @@
       }
     },
     "200": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -373,7 +373,7 @@
       }
     },
     "190": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -384,7 +384,7 @@
       }
     },
     "214": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -395,7 +395,7 @@
       }
     },
     "220": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -406,7 +406,7 @@
       }
     },
     "228": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 117,
       "vote_purity": 0.564,
@@ -418,7 +418,7 @@
       }
     },
     "232": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -429,7 +429,7 @@
       }
     },
     "235": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 7,
       "vote_purity": 1.0,
@@ -440,7 +440,7 @@
       }
     },
     "240": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 6,
       "vote_purity": 1.0,
@@ -451,7 +451,7 @@
       }
     },
     "243": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 393,
       "vote_purity": 0.697,
@@ -463,7 +463,7 @@
       }
     },
     "250": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -474,7 +474,7 @@
       }
     },
     "257": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -485,7 +485,7 @@
       }
     },
     "265": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 155,
       "vote_purity": 1.0,
@@ -496,7 +496,7 @@
       }
     },
     "269": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 7,
       "vote_purity": 1.0,
@@ -507,7 +507,7 @@
       }
     },
     "266": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 373,
       "vote_purity": 0.735,
@@ -519,7 +519,7 @@
       }
     },
     "274": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -530,7 +530,7 @@
       }
     },
     "275": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -541,7 +541,7 @@
       }
     },
     "282": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -552,7 +552,7 @@
       }
     },
     "288": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -563,7 +563,7 @@
       }
     },
     "292": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 163,
       "vote_purity": 0.638,
@@ -586,7 +586,7 @@
       }
     },
     "312": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -597,7 +597,7 @@
       }
     },
     "307": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 7,
       "vote_purity": 1.0,
@@ -608,7 +608,7 @@
       }
     },
     "322": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -630,7 +630,7 @@
       }
     },
     "324": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -641,7 +641,7 @@
       }
     },
     "333": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 155,
       "vote_purity": 0.884,
@@ -653,7 +653,7 @@
       }
     },
     "342": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 11,
       "vote_purity": 1.0,
@@ -664,7 +664,7 @@
       }
     },
     "361": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 11,
       "vote_purity": 1.0,
@@ -675,7 +675,7 @@
       }
     },
     "366": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -697,7 +697,7 @@
       }
     },
     "379": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -708,7 +708,7 @@
       }
     },
     "382": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -719,7 +719,7 @@
       }
     },
     "396": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 89,
       "vote_purity": 1.0,
@@ -730,7 +730,7 @@
       }
     },
     "404": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 23,
       "vote_purity": 1.0,
@@ -741,7 +741,7 @@
       }
     },
     "405": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 147,
       "vote_purity": 1.0,
@@ -763,7 +763,7 @@
       }
     },
     "425": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -774,7 +774,7 @@
       }
     },
     "428": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 29,
       "vote_purity": 0.69,
@@ -786,7 +786,7 @@
       }
     },
     "439": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -797,7 +797,7 @@
       }
     },
     "445": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 10,
       "vote_purity": 1.0,
@@ -808,7 +808,7 @@
       }
     },
     "453": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 12,
       "vote_purity": 1.0,
@@ -819,7 +819,7 @@
       }
     },
     "465": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 137,
       "vote_purity": 0.92,
@@ -831,7 +831,7 @@
       }
     },
     "467": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 0.667,
@@ -843,7 +843,7 @@
       }
     },
     "468": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 35,
       "vote_purity": 0.514,
@@ -855,7 +855,7 @@
       }
     },
     "475": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -866,7 +866,7 @@
       }
     },
     "479": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 152,
       "vote_purity": 0.987,
@@ -878,7 +878,7 @@
       }
     },
     "480": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 19,
       "vote_purity": 1.0,
@@ -900,7 +900,7 @@
       }
     },
     "492": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 73,
       "vote_purity": 1.0,
@@ -911,7 +911,7 @@
       }
     },
     "495": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 140,
       "vote_purity": 0.993,
@@ -923,7 +923,7 @@
       }
     },
     "497": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 139,
       "vote_purity": 1.0,
@@ -934,7 +934,7 @@
       }
     },
     "510": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 118,
       "vote_purity": 0.627,
@@ -946,7 +946,7 @@
       }
     },
     "511": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 9,
       "vote_purity": 1.0,
@@ -957,7 +957,7 @@
       }
     },
     "514": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -968,7 +968,7 @@
       }
     },
     "528": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -979,7 +979,7 @@
       }
     },
     "538": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 87,
       "vote_purity": 0.977,
@@ -991,7 +991,7 @@
       }
     },
     "539": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -1002,7 +1002,7 @@
       }
     },
     "544": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 81,
       "vote_purity": 0.556,
@@ -1014,7 +1014,7 @@
       }
     },
     "547": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 74,
       "vote_purity": 0.851,
@@ -1026,7 +1026,7 @@
       }
     },
     "553": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 25,
       "vote_purity": 1.0,
@@ -1037,7 +1037,7 @@
       }
     },
     "556": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 4,
       "vote_purity": 1.0,
@@ -1048,7 +1048,7 @@
       }
     },
     "569": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -1059,7 +1059,7 @@
       }
     },
     "572": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -1070,7 +1070,7 @@
       }
     },
     "587": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 11,
       "vote_purity": 0.636,
@@ -1084,7 +1084,7 @@
   },
   "v_00HRwkvvjtQ_c003": {
     "1": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 361,
       "vote_purity": 0.97,
@@ -1096,7 +1096,7 @@
       }
     },
     "2": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 197,
       "vote_purity": 1.0,
@@ -1107,7 +1107,7 @@
       }
     },
     "3": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 548,
       "vote_purity": 0.98,
@@ -1119,7 +1119,7 @@
       }
     },
     "4": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 113,
       "vote_purity": 0.566,
@@ -1131,7 +1131,7 @@
       }
     },
     "5": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 332,
       "vote_purity": 0.599,
@@ -1143,7 +1143,7 @@
       }
     },
     "6": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 109,
       "vote_purity": 0.67,
@@ -1155,7 +1155,7 @@
       }
     },
     "7": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 61,
       "vote_purity": 0.754,
@@ -1167,7 +1167,7 @@
       }
     },
     "8": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 283,
       "vote_purity": 0.986,
@@ -1179,7 +1179,7 @@
       }
     },
     "9": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 274,
       "vote_purity": 1.0,
@@ -1190,7 +1190,7 @@
       }
     },
     "10": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 335,
       "vote_purity": 0.946,
@@ -1202,7 +1202,7 @@
       }
     },
     "13": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -1213,7 +1213,7 @@
       }
     },
     "21": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 10,
       "vote_purity": 0.9,
@@ -1225,7 +1225,7 @@
       }
     },
     "31": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 87,
       "vote_purity": 0.736,
@@ -1237,7 +1237,7 @@
       }
     },
     "44": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 5,
       "vote_purity": 1.0,
@@ -1248,7 +1248,7 @@
       }
     },
     "49": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 50,
       "vote_purity": 0.66,
@@ -1260,7 +1260,7 @@
       }
     },
     "50": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 306,
       "vote_purity": 0.719,
@@ -1284,7 +1284,7 @@
       }
     },
     "66": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -1295,7 +1295,7 @@
       }
     },
     "74": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -1306,7 +1306,7 @@
       }
     },
     "76": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -1317,7 +1317,7 @@
       }
     },
     "70": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 143,
       "vote_purity": 0.818,
@@ -1329,7 +1329,7 @@
       }
     },
     "78": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 183,
       "vote_purity": 0.705,
@@ -1341,7 +1341,7 @@
       }
     },
     "88": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -1352,7 +1352,7 @@
       }
     },
     "98": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -1363,7 +1363,7 @@
       }
     },
     "109": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 4,
       "vote_purity": 1.0,
@@ -1374,7 +1374,7 @@
       }
     },
     "111": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 340,
       "vote_purity": 0.712,
@@ -1386,7 +1386,7 @@
       }
     },
     "128": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -1397,7 +1397,7 @@
       }
     },
     "132": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -1408,7 +1408,7 @@
       }
     },
     "135": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -1430,7 +1430,7 @@
       }
     },
     "148": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 13,
       "vote_purity": 0.538,
@@ -1442,7 +1442,7 @@
       }
     },
     "152": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -1453,7 +1453,7 @@
       }
     },
     "156": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 10,
       "vote_purity": 0.9,
@@ -1465,7 +1465,7 @@
       }
     },
     "167": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 127,
       "vote_purity": 0.992,
@@ -1477,7 +1477,7 @@
       }
     },
     "169": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -1488,7 +1488,7 @@
       }
     },
     "172": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 119,
       "vote_purity": 0.697,
@@ -1500,7 +1500,7 @@
       }
     },
     "170": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -1511,7 +1511,7 @@
       }
     },
     "173": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 50,
       "vote_purity": 0.9,
@@ -1523,7 +1523,7 @@
       }
     },
     "174": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 17,
       "vote_purity": 0.647,
@@ -1535,7 +1535,7 @@
       }
     },
     "176": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -1546,7 +1546,7 @@
       }
     },
     "183": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 91,
       "vote_purity": 0.747,
@@ -1558,7 +1558,7 @@
       }
     },
     "186": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -1569,7 +1569,7 @@
       }
     },
     "189": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 11,
       "vote_purity": 1.0,
@@ -1580,7 +1580,7 @@
       }
     },
     "196": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -1591,7 +1591,7 @@
       }
     },
     "195": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 64,
       "vote_purity": 1.0,
@@ -1602,7 +1602,7 @@
       }
     },
     "200": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 151,
       "vote_purity": 1.0,
@@ -1613,7 +1613,7 @@
       }
     },
     "209": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 79,
       "vote_purity": 0.595,
@@ -1625,7 +1625,7 @@
       }
     },
     "211": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 49,
       "vote_purity": 0.571,
@@ -1648,7 +1648,7 @@
       }
     },
     "231": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 5,
       "vote_purity": 1.0,
@@ -1659,7 +1659,7 @@
       }
     },
     "234": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -1670,7 +1670,7 @@
       }
     },
     "253": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 28,
       "vote_purity": 0.536,
@@ -1682,7 +1682,7 @@
       }
     },
     "265": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 10,
       "vote_purity": 1.0,
@@ -1693,7 +1693,7 @@
       }
     },
     "277": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 54,
       "vote_purity": 0.944,
@@ -1705,7 +1705,7 @@
       }
     },
     "282": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 10,
       "vote_purity": 0.5,
@@ -1717,7 +1717,7 @@
       }
     },
     "295": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 113,
       "vote_purity": 0.991,
@@ -1729,7 +1729,7 @@
       }
     },
     "304": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 110,
       "vote_purity": 0.591,
@@ -1741,7 +1741,7 @@
       }
     },
     "303": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 3,
       "vote_purity": 0.667,
@@ -1753,7 +1753,7 @@
       }
     },
     "315": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 65,
       "vote_purity": 0.8,
@@ -1765,7 +1765,7 @@
       }
     },
     "318": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -1776,7 +1776,7 @@
       }
     },
     "317": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -1787,7 +1787,7 @@
       }
     },
     "321": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 96,
       "vote_purity": 0.573,
@@ -1799,7 +1799,7 @@
       }
     },
     "323": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -1810,7 +1810,7 @@
       }
     },
     "334": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 27,
       "vote_purity": 0.63,
@@ -1822,7 +1822,7 @@
       }
     },
     "336": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 46,
       "vote_purity": 0.978,
@@ -1845,7 +1845,7 @@
       }
     },
     "352": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -1856,7 +1856,7 @@
       }
     },
     "362": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 0.667,
@@ -1868,7 +1868,7 @@
       }
     },
     "364": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -1879,7 +1879,7 @@
       }
     },
     "366": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 44,
       "vote_purity": 0.545,
@@ -1891,7 +1891,7 @@
       }
     },
     "374": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 72,
       "vote_purity": 0.944,
@@ -1903,7 +1903,7 @@
       }
     },
     "376": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -1914,7 +1914,7 @@
       }
     },
     "377": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 53,
       "vote_purity": 1.0,
@@ -1925,7 +1925,7 @@
       }
     },
     "382": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 73,
       "vote_purity": 0.904,
@@ -1937,7 +1937,7 @@
       }
     },
     "383": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -1948,7 +1948,7 @@
       }
     },
     "385": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 9,
       "vote_purity": 0.778,
@@ -1960,7 +1960,7 @@
       }
     },
     "394": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 3,
       "vote_purity": 0.667,
@@ -1972,7 +1972,7 @@
       }
     },
     "405": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 30,
       "vote_purity": 0.767,
@@ -1984,7 +1984,7 @@
       }
     },
     "406": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 32,
       "vote_purity": 0.812,
@@ -1996,7 +1996,7 @@
       }
     },
     "408": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -2007,7 +2007,7 @@
       }
     },
     "420": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -2018,7 +2018,7 @@
       }
     },
     "425": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 4,
       "vote_purity": 1.0,
@@ -2029,7 +2029,7 @@
       }
     },
     "427": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -2040,7 +2040,7 @@
       }
     },
     "428": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -2051,7 +2051,7 @@
       }
     },
     "440": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 28,
       "vote_purity": 0.929,
@@ -2063,7 +2063,7 @@
       }
     },
     "448": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 23,
       "vote_purity": 0.957,
@@ -2086,7 +2086,7 @@
       }
     },
     "457": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -2097,7 +2097,7 @@
       }
     },
     "458": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 24,
       "vote_purity": 1.0,
@@ -2108,7 +2108,7 @@
       }
     },
     "459": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 21,
       "vote_purity": 1.0,
@@ -2119,7 +2119,7 @@
       }
     },
     "463": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 25,
       "vote_purity": 0.72,
@@ -2131,7 +2131,7 @@
       }
     },
     "464": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 25,
       "vote_purity": 0.6,
@@ -2143,7 +2143,7 @@
       }
     },
     "465": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 17,
       "vote_purity": 0.882,
@@ -2155,7 +2155,7 @@
       }
     },
     "466": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -2177,7 +2177,7 @@
       }
     },
     "470": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 5,
       "vote_purity": 0.6,
@@ -2189,7 +2189,7 @@
       }
     },
     "447": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 7,
       "vote_purity": 1.0,
@@ -2200,7 +2200,7 @@
       }
     },
     "483": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 7,
       "vote_purity": 0.714,
@@ -2223,7 +2223,7 @@
       }
     },
     "489": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -2236,7 +2236,7 @@
   },
   "v_00HRwkvvjtQ_c005": {
     "1": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 28,
       "vote_purity": 0.893,
@@ -2248,7 +2248,7 @@
       }
     },
     "2": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 114,
       "vote_purity": 0.974,
@@ -2260,7 +2260,7 @@
       }
     },
     "3": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 149,
       "vote_purity": 0.517,
@@ -2272,7 +2272,7 @@
       }
     },
     "4": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 278,
       "vote_purity": 0.896,
@@ -2284,7 +2284,7 @@
       }
     },
     "5": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 141,
       "vote_purity": 0.972,
@@ -2296,7 +2296,7 @@
       }
     },
     "6": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 92,
       "vote_purity": 0.978,
@@ -2308,7 +2308,7 @@
       }
     },
     "7": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 135,
       "vote_purity": 0.859,
@@ -2320,7 +2320,7 @@
       }
     },
     "8": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 151,
       "vote_purity": 0.589,
@@ -2332,7 +2332,7 @@
       }
     },
     "9": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -2343,7 +2343,7 @@
       }
     },
     "12": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 39,
       "vote_purity": 1.0,
@@ -2354,7 +2354,7 @@
       }
     },
     "13": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 85,
       "vote_purity": 0.894,
@@ -2366,7 +2366,7 @@
       }
     },
     "27": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 230,
       "vote_purity": 0.613,
@@ -2378,7 +2378,7 @@
       }
     },
     "28": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -2400,7 +2400,7 @@
       }
     },
     "38": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -2411,7 +2411,7 @@
       }
     },
     "43": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 5,
       "vote_purity": 1.0,
@@ -2422,7 +2422,7 @@
       }
     },
     "47": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 80,
       "vote_purity": 1.0,
@@ -2433,7 +2433,7 @@
       }
     },
     "48": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -2444,7 +2444,7 @@
       }
     },
     "60": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -2455,7 +2455,7 @@
       }
     },
     "77": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -2466,7 +2466,7 @@
       }
     },
     "80": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 62,
       "vote_purity": 0.968,
@@ -2478,7 +2478,7 @@
       }
     },
     "84": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 55,
       "vote_purity": 1.0,
@@ -2489,7 +2489,7 @@
       }
     },
     "85": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -2500,7 +2500,7 @@
       }
     },
     "88": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 13,
       "vote_purity": 1.0,
@@ -2511,7 +2511,7 @@
       }
     },
     "91": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -2522,7 +2522,7 @@
       }
     },
     "100": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 42,
       "vote_purity": 1.0,
@@ -2533,7 +2533,7 @@
       }
     },
     "109": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 24,
       "vote_purity": 0.958,
@@ -2556,7 +2556,7 @@
       }
     },
     "113": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 32,
       "vote_purity": 1.0,
@@ -2567,7 +2567,7 @@
       }
     },
     "114": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 4,
       "vote_purity": 1.0,
@@ -2578,7 +2578,7 @@
       }
     },
     "126": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -2589,7 +2589,7 @@
       }
     },
     "134": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 138,
       "vote_purity": 0.986,
@@ -2601,7 +2601,7 @@
       }
     },
     "137": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -2612,7 +2612,7 @@
       }
     },
     "138": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 126,
       "vote_purity": 0.762,
@@ -2624,7 +2624,7 @@
       }
     },
     "143": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 7,
       "vote_purity": 0.714,
@@ -2636,7 +2636,7 @@
       }
     },
     "145": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 7,
       "vote_purity": 0.714,
@@ -2648,7 +2648,7 @@
       }
     },
     "154": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -2659,7 +2659,7 @@
       }
     },
     "156": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 116,
       "vote_purity": 0.871,
@@ -2671,7 +2671,7 @@
       }
     },
     "161": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -2682,7 +2682,7 @@
       }
     },
     "177": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -2693,7 +2693,7 @@
       }
     },
     "180": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 83,
       "vote_purity": 0.952,
@@ -2705,7 +2705,7 @@
       }
     },
     "188": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -2716,7 +2716,7 @@
       }
     },
     "190": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 3,
       "vote_purity": 0.667,
@@ -2728,7 +2728,7 @@
       }
     },
     "199": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 63,
       "vote_purity": 1.0,
@@ -2739,7 +2739,7 @@
       }
     },
     "203": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 38,
       "vote_purity": 0.553,
@@ -2751,7 +2751,7 @@
       }
     },
     "210": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -2762,7 +2762,7 @@
       }
     },
     "212": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 95,
       "vote_purity": 0.589,
@@ -2774,7 +2774,7 @@
       }
     },
     "215": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 77,
       "vote_purity": 0.584,
@@ -2797,7 +2797,7 @@
       }
     },
     "229": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -2808,7 +2808,7 @@
       }
     },
     "246": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 16,
       "vote_purity": 0.75,
@@ -2820,7 +2820,7 @@
       }
     },
     "248": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -2831,7 +2831,7 @@
       }
     },
     "254": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -2842,7 +2842,7 @@
       }
     },
     "256": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -2853,7 +2853,7 @@
       }
     },
     "263": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -2864,7 +2864,7 @@
       }
     },
     "264": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 11,
       "vote_purity": 0.545,
@@ -2876,7 +2876,7 @@
       }
     },
     "283": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -2887,7 +2887,7 @@
       }
     },
     "287": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 34,
       "vote_purity": 0.941,
@@ -2899,7 +2899,7 @@
       }
     },
     "295": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 6,
       "vote_purity": 1.0,
@@ -2910,7 +2910,7 @@
       }
     },
     "326": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -2921,7 +2921,7 @@
       }
     },
     "332": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 8,
       "vote_purity": 0.625,
@@ -2935,7 +2935,7 @@
   },
   "v_00HRwkvvjtQ_c007": {
     "1": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 15,
       "vote_purity": 0.733,
@@ -2971,7 +2971,7 @@
       }
     },
     "4": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 46,
       "vote_purity": 0.87,
@@ -2983,7 +2983,7 @@
       }
     },
     "5": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 51,
       "vote_purity": 0.902,
@@ -2995,7 +2995,7 @@
       }
     },
     "6": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 21,
       "vote_purity": 1.0,
@@ -3006,7 +3006,7 @@
       }
     },
     "7": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 124,
       "vote_purity": 0.968,
@@ -3041,7 +3041,7 @@
       }
     },
     "17": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 80,
       "vote_purity": 1.0,
@@ -3063,7 +3063,7 @@
       }
     },
     "20": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 30,
       "vote_purity": 0.6,
@@ -3075,7 +3075,7 @@
       }
     },
     "21": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 301,
       "vote_purity": 0.9,
@@ -3087,7 +3087,7 @@
       }
     },
     "38": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 77,
       "vote_purity": 0.701,
@@ -3099,7 +3099,7 @@
       }
     },
     "40": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 42,
       "vote_purity": 0.976,
@@ -3111,7 +3111,7 @@
       }
     },
     "51": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -3122,7 +3122,7 @@
       }
     },
     "52": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -3133,7 +3133,7 @@
       }
     },
     "68": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 65,
       "vote_purity": 0.615,
@@ -3145,7 +3145,7 @@
       }
     },
     "70": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 285,
       "vote_purity": 0.537,
@@ -3157,7 +3157,7 @@
       }
     },
     "82": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -3168,7 +3168,7 @@
       }
     },
     "104": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 130,
       "vote_purity": 0.692,
@@ -3180,7 +3180,7 @@
       }
     },
     "128": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 7,
       "vote_purity": 1.0,
@@ -3191,7 +3191,7 @@
       }
     },
     "142": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -3202,7 +3202,7 @@
       }
     },
     "149": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 11,
       "vote_purity": 0.727,
@@ -3214,7 +3214,7 @@
       }
     },
     "154": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -3225,7 +3225,7 @@
       }
     },
     "162": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 205,
       "vote_purity": 0.644,
@@ -3237,7 +3237,7 @@
       }
     },
     "167": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 132,
       "vote_purity": 0.992,
@@ -3249,7 +3249,7 @@
       }
     },
     "179": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 101,
       "vote_purity": 0.594,
@@ -3273,7 +3273,7 @@
       }
     },
     "202": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 224,
       "vote_purity": 0.982,
@@ -3285,7 +3285,7 @@
       }
     },
     "211": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 217,
       "vote_purity": 0.945,
@@ -3297,7 +3297,7 @@
       }
     },
     "222": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 190,
       "vote_purity": 0.647,
@@ -3320,7 +3320,7 @@
       }
     },
     "232": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 0.5,
@@ -3332,7 +3332,7 @@
       }
     },
     "233": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 57,
       "vote_purity": 0.965,
@@ -3356,7 +3356,7 @@
       }
     },
     "238": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -3367,7 +3367,7 @@
       }
     },
     "250": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -3378,7 +3378,7 @@
       }
     },
     "261": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 8,
       "vote_purity": 1.0,
@@ -3389,7 +3389,7 @@
       }
     },
     "268": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -3400,7 +3400,7 @@
       }
     },
     "277": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 4,
       "vote_purity": 1.0,
@@ -3411,7 +3411,7 @@
       }
     },
     "282": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 32,
       "vote_purity": 0.906,
@@ -3423,7 +3423,7 @@
       }
     },
     "290": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 2,
       "vote_purity": 0.5,
@@ -3435,7 +3435,7 @@
       }
     },
     "291": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 94,
       "vote_purity": 1.0,
@@ -3446,7 +3446,7 @@
       }
     },
     "299": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 34,
       "vote_purity": 0.676,
@@ -3458,7 +3458,7 @@
       }
     },
     "310": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 130,
       "vote_purity": 0.746,
@@ -3481,7 +3481,7 @@
       }
     },
     "330": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -3492,7 +3492,7 @@
       }
     },
     "329": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 4,
       "vote_purity": 1.0,
@@ -3503,7 +3503,7 @@
       }
     },
     "332": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -3514,7 +3514,7 @@
       }
     },
     "341": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 89,
       "vote_purity": 0.551,
@@ -3526,7 +3526,7 @@
       }
     },
     "355": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -3537,7 +3537,7 @@
       }
     },
     "356": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 13,
       "vote_purity": 1.0,
@@ -3548,7 +3548,7 @@
       }
     },
     "372": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 0.667,
@@ -3560,7 +3560,7 @@
       }
     },
     "384": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 64,
       "vote_purity": 0.5,
@@ -3572,7 +3572,7 @@
       }
     },
     "389": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -3594,7 +3594,7 @@
       }
     },
     "395": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -3605,7 +3605,7 @@
       }
     },
     "412": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 11,
       "vote_purity": 1.0,
@@ -3616,7 +3616,7 @@
       }
     },
     "422": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -3627,7 +3627,7 @@
       }
     },
     "423": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 5,
       "vote_purity": 0.8,
@@ -3639,7 +3639,7 @@
       }
     },
     "425": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 21,
       "vote_purity": 0.905,
@@ -3664,7 +3664,7 @@
   },
   "v_00HRwkvvjtQ_c008": {
     "1": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 164,
       "vote_purity": 0.738,
@@ -3676,7 +3676,7 @@
       }
     },
     "2": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 273,
       "vote_purity": 0.722,
@@ -3688,7 +3688,7 @@
       }
     },
     "3": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 211,
       "vote_purity": 0.787,
@@ -3700,7 +3700,7 @@
       }
     },
     "4": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 98,
       "vote_purity": 0.806,
@@ -3712,7 +3712,7 @@
       }
     },
     "6": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 105,
       "vote_purity": 1.0,
@@ -3723,7 +3723,7 @@
       }
     },
     "7": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 187,
       "vote_purity": 0.957,
@@ -3735,7 +3735,7 @@
       }
     },
     "8": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 50,
       "vote_purity": 0.9,
@@ -3747,7 +3747,7 @@
       }
     },
     "9": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -3758,7 +3758,7 @@
       }
     },
     "12": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 180,
       "vote_purity": 0.906,
@@ -3770,7 +3770,7 @@
       }
     },
     "13": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 365,
       "vote_purity": 0.773,
@@ -3782,7 +3782,7 @@
       }
     },
     "14": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 314,
       "vote_purity": 0.994,
@@ -3794,7 +3794,7 @@
       }
     },
     "15": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -3816,7 +3816,7 @@
       }
     },
     "45": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -3827,7 +3827,7 @@
       }
     },
     "50": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 118,
       "vote_purity": 1.0,
@@ -3838,7 +3838,7 @@
       }
     },
     "53": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -3849,7 +3849,7 @@
       }
     },
     "62": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -3860,7 +3860,7 @@
       }
     },
     "64": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -3871,7 +3871,7 @@
       }
     },
     "80": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 0.5,
@@ -3883,7 +3883,7 @@
       }
     },
     "82": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 61,
       "vote_purity": 0.918,
@@ -3895,7 +3895,7 @@
       }
     },
     "88": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 4,
       "vote_purity": 1.0,
@@ -3906,7 +3906,7 @@
       }
     },
     "92": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 197,
       "vote_purity": 0.985,
@@ -3918,7 +3918,7 @@
       }
     },
     "96": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -3929,7 +3929,7 @@
       }
     },
     "107": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -3951,7 +3951,7 @@
       }
     },
     "124": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 156,
       "vote_purity": 0.609,
@@ -3963,7 +3963,7 @@
       }
     },
     "125": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -3974,7 +3974,7 @@
       }
     },
     "128": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -3985,7 +3985,7 @@
       }
     },
     "138": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -3996,7 +3996,7 @@
       }
     },
     "140": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -4007,7 +4007,7 @@
       }
     },
     "146": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 2,
       "vote_purity": 0.5,
@@ -4019,7 +4019,7 @@
       }
     },
     "147": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 114,
       "vote_purity": 0.851,
@@ -4043,7 +4043,7 @@
       }
     },
     "157": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 54,
       "vote_purity": 0.648,
@@ -4055,7 +4055,7 @@
       }
     },
     "162": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 4,
       "vote_purity": 0.75,
@@ -4067,7 +4067,7 @@
       }
     },
     "164": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 108,
       "vote_purity": 0.861,
@@ -4079,7 +4079,7 @@
       }
     },
     "165": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 12,
       "vote_purity": 1.0,
@@ -4090,7 +4090,7 @@
       }
     },
     "172": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -4101,7 +4101,7 @@
       }
     },
     "175": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -4112,7 +4112,7 @@
       }
     },
     "177": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 71,
       "vote_purity": 0.69,
@@ -4124,7 +4124,7 @@
       }
     },
     "179": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 273,
       "vote_purity": 0.835,
@@ -4136,7 +4136,7 @@
       }
     },
     "182": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -4147,7 +4147,7 @@
       }
     },
     "189": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -4158,7 +4158,7 @@
       }
     },
     "204": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 2,
       "vote_purity": 0.5,
@@ -4181,7 +4181,7 @@
       }
     },
     "220": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -4192,7 +4192,7 @@
       }
     },
     "223": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -4203,7 +4203,7 @@
       }
     },
     "231": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -4214,7 +4214,7 @@
       }
     },
     "238": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 4,
       "vote_purity": 1.0,
@@ -4225,7 +4225,7 @@
       }
     },
     "245": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 231,
       "vote_purity": 0.784,
@@ -4259,7 +4259,7 @@
       }
     },
     "275": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 206,
       "vote_purity": 1.0,
@@ -4270,7 +4270,7 @@
       }
     },
     "277": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 4,
       "vote_purity": 1.0,
@@ -4281,7 +4281,7 @@
       }
     },
     "282": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 192,
       "vote_purity": 0.646,
@@ -4315,7 +4315,7 @@
       }
     },
     "289": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 194,
       "vote_purity": 0.979,
@@ -4327,7 +4327,7 @@
       }
     },
     "293": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -4338,7 +4338,7 @@
       }
     },
     "294": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -4349,7 +4349,7 @@
       }
     },
     "300": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 9,
       "vote_purity": 0.778,
@@ -4361,7 +4361,7 @@
       }
     },
     "317": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 80,
       "vote_purity": 0.938,
@@ -4373,7 +4373,7 @@
       }
     },
     "318": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -4384,7 +4384,7 @@
       }
     },
     "319": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 60,
       "vote_purity": 0.533,
@@ -4396,7 +4396,7 @@
       }
     },
     "327": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 34,
       "vote_purity": 0.971,
@@ -4408,7 +4408,7 @@
       }
     },
     "331": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 4,
       "vote_purity": 1.0,
@@ -4419,7 +4419,7 @@
       }
     },
     "338": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 5,
       "vote_purity": 1.0,
@@ -4430,7 +4430,7 @@
       }
     },
     "350": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 104,
       "vote_purity": 0.673,
@@ -4442,7 +4442,7 @@
       }
     },
     "352": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 0.5,
@@ -4454,7 +4454,7 @@
       }
     },
     "359": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 58,
       "vote_purity": 0.948,
@@ -4466,7 +4466,7 @@
       }
     },
     "367": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 5,
       "vote_purity": 1.0,
@@ -4477,7 +4477,7 @@
       }
     },
     "381": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 103,
       "vote_purity": 0.757,
@@ -4489,7 +4489,7 @@
       }
     },
     "386": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 45,
       "vote_purity": 0.756,
@@ -4501,7 +4501,7 @@
       }
     },
     "398": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 85,
       "vote_purity": 0.588,
@@ -4513,7 +4513,7 @@
       }
     },
     "409": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 5,
       "vote_purity": 1.0,
@@ -4524,7 +4524,7 @@
       }
     },
     "412": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -4535,7 +4535,7 @@
       }
     },
     "419": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -4546,7 +4546,7 @@
       }
     },
     "430": {
-      "role": "TeamA",
+      "role": "TeamB",
       "cluster": 0,
       "n_dets": 70,
       "vote_purity": 0.957,
@@ -4558,7 +4558,7 @@
       }
     },
     "432": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,
@@ -4569,7 +4569,7 @@
       }
     },
     "442": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 55,
       "vote_purity": 1.0,
@@ -4580,7 +4580,7 @@
       }
     },
     "446": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 49,
       "vote_purity": 0.959,
@@ -4592,7 +4592,7 @@
       }
     },
     "452": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 2,
       "vote_purity": 1.0,
@@ -4603,7 +4603,7 @@
       }
     },
     "454": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 3,
       "vote_purity": 1.0,
@@ -4614,7 +4614,7 @@
       }
     },
     "469": {
-      "role": "TeamB",
+      "role": "TeamA",
       "cluster": 1,
       "n_dets": 1,
       "vote_purity": 1.0,

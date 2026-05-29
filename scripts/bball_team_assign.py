@@ -95,6 +95,10 @@ def main():
     args = ap.parse_args()
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
 
+    if args.validate_only:
+        validate(out)            # uses existing track_teams_bb.json + hand_labels.json
+        return
+
     # ---- feature extraction across clips ----
     print("=== Part C: torso a/b features across clips ===")
     recs_by_seq = {}
@@ -111,9 +115,14 @@ def main():
     labels, centers = ta.kmeans_lab(feats_ab, k=2)
     centers_bgr = np.array([feats_bgr[labels == c].mean(0) for c in range(2)])
     sizes = [int((labels == c).sum()) for c in range(2)]
+    # Map clusters -> teams by COLOUR (robust to KMeans cluster numbering): the higher-b (more
+    # neutral/white) cluster = TeamA (white jerseys), the lower-b (blue) cluster = TeamB. This
+    # matches the user's labeling convention (white = A, blue = B) without depending on cluster IDs.
+    white_cluster = int(np.argmax(centers[:, 1]))   # b channel: higher = whiter/neutral
+    cluster_team = {white_cluster: "TeamA", 1 - white_cluster: "TeamB"}
     print(f"\n=== Part C: KMeans k=2 on a/b (blind) ===")
     for c in range(2):
-        print(f"  cluster {c}: n={sizes[c]}  mean a/b={centers[c].round(1).tolist()}  BGR={centers_bgr[c].astype(int).tolist()}")
+        print(f"  cluster {c} [{cluster_team[c]}]: n={sizes[c]}  mean a/b={centers[c].round(1).tolist()}  BGR={centers_bgr[c].astype(int).tolist()}")
 
     # split labels back per seq, per detection
     det_cluster = {}; det_dist = {}
@@ -160,7 +169,7 @@ def main():
             elif md >= ref_thr:
                 role = "Referee"             # colour outlier
             else:
-                role = "TeamA" if maj == 0 else "TeamB"
+                role = cluster_team[maj]     # white-cluster -> TeamA, blue -> TeamB
             seq_out[str(tid)] = {"role": role, "cluster": maj, "n_dets": bt_n[tid],
                                  "vote_purity": round(max(cnt.values()) / bt_n[tid], 3),
                                  "mean_dist_to_team": round(md, 2),
@@ -234,6 +243,11 @@ def validate(out, track_teams=None):
         return np.mean([mp[h] == a for h, a in team_pairs]) if team_pairs else 0.0
     a1 = acc({"A": "TeamA", "B": "TeamB"}); a2 = acc({"A": "TeamB", "B": "TeamA"})
     team_acc = max(a1, a2)
+    best_mp = {"A": "TeamA", "B": "TeamB"} if a1 >= a2 else {"A": "TeamB", "B": "TeamA"}
+    per_class = {}
+    for hl in ("A", "B"):
+        cp = [a for h, a in team_pairs if h == hl]
+        per_class[hl] = round(np.mean([a == best_mp[hl] for a in cp]), 4) if cp else None
 
     # how many A/B crops got excluded (Referee/Excluded) instead of a team -> coverage loss
     ab_total = sum(1 for h, _ in pairs if h in ("A", "B"))
@@ -246,6 +260,7 @@ def validate(out, track_teams=None):
         "n_labeled": len(labels), "n_matched_to_track": len(pairs),
         "team_accuracy_post_alignment": round(team_acc, 4),
         "acc_A_TeamA": round(a1, 4), "acc_A_TeamB": round(a2, 4),
+        "best_alignment": best_mp, "per_class_accuracy": per_class,
         "n_team_pairs_scored": len(team_pairs),
         "team_crops_excluded_frac": round(ab_excluded / ab_total, 4) if ab_total else None,
         "ref_bench_exclusion_recall": round(rb_excluded / len(rb), 4) if rb else None,
@@ -259,6 +274,7 @@ def validate(out, track_teams=None):
     print(f"  labeled: {res['n_labeled']}  matched-to-track: {res['n_matched_to_track']}  "
           f"team-pairs scored: {res['n_team_pairs_scored']}")
     print(f"  TEAM ACCURACY (post-alignment): {team_acc:.3f}  (A->TeamA {a1:.3f} / A->TeamB {a2:.3f})")
+    print(f"    per-class: A={per_class['A']}  B={per_class['B']}  (best map {best_mp})")
     print(f"  team crops wrongly excluded: {res['team_crops_excluded_frac']}")
     print(f"  ref/bench exclusion recall: {res['ref_bench_exclusion_recall']}  (n={len(rb)})")
     print(f"  label counts: {res['label_counts']}")

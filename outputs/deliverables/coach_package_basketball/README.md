@@ -20,10 +20,13 @@ possession added). Team A = Kentucky blue jerseys, Team B = Wichita white.
   football's Day-10 homography, GT-validated to 0.2 m. Same honesty level as the Day-19 basketball
   ball track. The PDF's "validated" band is deliberately thin and labelled plausibility-level.
 - **Team assignment (Day-22)**: torso-colour a/b-chroma clustering (court-position aided), per-
-  tracklet majority vote. Unlocks **team-split heatmaps + possession** (now in the PDF; were deferred
-  in Day-21). **Accuracy validation is PENDING** — a human labels a crop set with
-  `scripts/label_crops.py`, then `scripts/bball_team_assign.py --validate-only` produces the
-  hand-label team-accuracy number. The PDF currently says "validation pending" until that runs.
+  tracklet majority vote. Unlocks **team-split heatmaps + possession** (now in the PDF). **Hand-label
+  validated on 717 crops: 79.6% team accuracy** (post-alignment; random floor 50%, football Day-11
+  was 88-92% GT). Per class: **Team A / white = 98%**, **Team B / blue = 65%** — the neutral/white
+  cluster over-absorbs ambiguous (shadowed/blurred) blue crops, so some blue tracks majority-vote
+  white. Team A = white (Wichita), Team B = blue (Kentucky), matching the labeler's convention. Only
+  2.3% of team crops were wrongly excluded. Ref/bench exclusion recall is weak (16%, n=25) — grey
+  refs look like the white team by colour; the court-position filter only covers the c007 window.
 - **~4 s method demo**: SportsMOT broadcast pans constantly, so a single homography only holds for a
   short stable window. A fixed deployment camera (mark once, holds the match) removes this limit —
   the broadcast is the *harder* stress test.
@@ -40,6 +43,7 @@ possession added). Team A = Kentucky blue jerseys, Team B = Wichita white.
 - `fig_*.png` — PDF panels (heatmap, average positions, territory, intensity, team heatmaps).
 - `sample_torsos.png` — the 2 team clusters' torso swatches (spot-check: blue vs white).
 - `track_teams_bb.json` / `cluster_summary_bb.json` — per-track team roles + cluster colours.
+- `validation_bb.json` — hand-label validation (79.6% team accuracy, per-class, exclusion recall).
 - `homography.json` / `validation.json` — H + calibration method + plausibility metrics.
 - `metrics_basketball.json` — all numbers (incl. possession) + plausibility sanity checks.
 
@@ -49,8 +53,12 @@ would overfit this broadcast and break on DPS kits), per-tracklet majority vote,
 position filter** (Day-21 homography excludes off-court bench/refs) and a colour-distance outlier for
 refs. Blind clustering (never sees the labels). 2 clean clusters: cluster 0 = Kentucky blue, cluster
 1 = Wichita white (`sample_torsos.png`). Possession = nearest on-court player to the ball, by team
-(Day-12 football method). **Hand-label validation pending** (see above); random 2-team floor = 50%,
-football Day-11 was GT-validated at 88–92%.
+(Day-12 football method). **Hand-label validated: 79.6% team accuracy** (717 crops; white 98% / blue
+65%; `validation_bb.json`). Random 2-team floor = 50%, football Day-11 was GT-validated at 88–92%.
+The white-98%/blue-65% asymmetry: a/b clustering's neutral cluster absorbs ambiguous blue crops.
+Deployment levers: per-match colour calibration + ReID (Day-9 arm) for similar/shadowed kits. Note:
+a/b-chroma is the deployment-honest feature — adding luminance (L) would lift THIS proxy but overfit
+(DPS kits won't follow the NCAA light/dark convention) — so we keep a/b and report 79.6%.
 
 ## How the court was calibrated (Day-21 method)
 - **Manual marking (USED here — `scripts/mark_court.py`):** a human clicks known court points on one
@@ -72,10 +80,10 @@ stand/walk <1.4, jog 1.4–3, run 3–4.5, high-intensity 4.5–6, sprint >6. Pe
 basketball peak ~8.5) is treated as an ID-switch teleport artefact (Day-20 guard, basketball-tuned).
 
 ## What's next
-- **Validate team assignment**: label crops (`scripts/label_crops.py`) → `bball_team_assign.py
-  --validate-only` → regenerate this PDF with the real team-accuracy number.
+- Lift blue-team accuracy / ref exclusion: per-match colour calibration + ReID (Day-9 arm) for
+  shadowed/similar kits; extend the court-position filter beyond the c007 window.
 - Highlights (A-feed events, C-feed player reels) — both sports now fully analytics-equipped.
 - Real **deployment calibration + per-match colour calibration** on DPS's own court/kits.
 
-Regenerate (after labelling): `python scripts/bball_team_assign.py` then
+Regenerate: `python scripts/bball_team_assign.py` then
 `python scripts/coach_deliverable_basketball.py v_00HRwkvvjtQ_c007 --win 493 591`

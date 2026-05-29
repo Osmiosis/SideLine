@@ -1939,14 +1939,18 @@ whatever DPS wears; a luminance shortcut would overfit this broadcast proxy and 
   clips pooled — one game, consistent teams). 2 clean clusters: **cluster 0 = Kentucky blue (b≈99),
   cluster 1 = Wichita white (b≈129)** — `sample_torsos.png` confirms clean blue-vs-white. Per-(seq,
   tid) majority vote; colour-distance outlier (>92nd pct) → Referee; off-court → Excluded.
-- **Part D — hand-label validation:** ⏳ PENDING user labeling. `bball_team_assign.py` validation is
-  built (permutation-aligned team accuracy + ref/bench exclusion recall) and runs once
-  `hand_labels.json` exists (`--validate-only`). The PDF says "validation PENDING" until then — NOT
-  claiming an accuracy number we don't have yet.
+- **Part D — hand-label validation:** ✅ user labeled **717 crops** (A/white 302, B/blue 390, ref 12,
+  bench 13). Permutation-aligned **TEAM ACCURACY = 79.6%** (random floor 50%; football Day-11 was
+  88-92% GT). Per-class: **A/white 98.3%, B/blue 65.2%** — the neutral/white a/b cluster over-absorbs
+  ambiguous (shadowed/blurred/small) blue crops, so some blue tracks majority-vote white. Only 2.3%
+  of team crops wrongly excluded. **Ref/bench exclusion recall weak: 16% (n=25)** — grey refs are
+  neutral-chroma like the white team, and the court-position filter only covers the c007 window.
 - **Part E — team-aware PDF + video:** ✅ regenerated the c007 deliverable WITH the deferred panels:
-  team-split heatmaps (Team A n=176 / Team B n=694 over the window) + possession (nearest on-court
-  player to ball, Day-12 method: **A 19% / B 81%**, counted 36/99 frames — Wichita on offense this
-  clip). Tactical video now TEAM-COLOURED (A blue / B red, was single green).
+  team-split heatmaps (Team A/white n=694 / Team B/blue n=176 over the window) + possession (nearest
+  on-court player to ball, Day-12 method: **A 81% / B 19%**, counted 36/99 — Wichita/white on offense
+  this clip). Tactical video now TEAM-COLOURED (was single green). **Cluster→team mapped by COLOUR**
+  (white cluster = TeamA) so it's robust to KMeans numbering AND matches the user's labeling
+  convention (white = A, blue = B); PDF/video/heatmaps all reflect it.
 
 ### What the contamination looks like (honest)
 White/neutral cluster (Wichita) also absorbs refs (grey/striped) + skin-dominant crops + light
@@ -1957,8 +1961,13 @@ to the white team — the hand-label validation will quantify this once labels e
 (Kentucky) is clean (distinct chroma).
 
 ### Honest level
-- Team assignment is **hand-label-validated** (the user's labels ARE the reference → possible label
-  noise), NOT GT-validated like football's 88-92% GSR number. Number pending.
+- Team assignment is **hand-label-validated at 79.6%** (the user's labels ARE the reference →
+  possible label noise), NOT GT-validated like football's 88-92% GSR number. Below the 85% target;
+  the gap is almost entirely the blue team (65%) — white is 98%.
+- **Kept a/b-chroma, did NOT add luminance** even though L would likely lift blue accuracy on THIS
+  proxy: white (bright) vs blue (dark) separates on L, but DPS kits won't follow the NCAA light/dark
+  convention, so an L shortcut would overfit the proxy and break at deployment (the PRD's core
+  reasoning). 79.6% on the deployment-honest feature is the number we report.
 - Team-split heatmaps + possession inherit tracking ID-switch noise → still plausibility-level
   downstream, like football's possession.
 - ~4 s single-homography window (c007), as Day-21; deployment fixed camera removes that limit.
@@ -1970,7 +1979,8 @@ Day-11 found the a/b constants aren't universal). Similar-kit DPS teams are the 
 embeddings / the Day-9 ReID arm would help there.
 
 ### What's next
-- User labels crops → run validation → regenerate PDF with the real team-accuracy number.
+- Lift blue-team accuracy (65%) + ref exclusion (16%): per-match colour calibration + Day-9 ReID for
+  shadowed/similar kits; extend the court-position filter beyond the c007 window.
 - Highlights (A-feed events, C-feed player reels) — both sports now fully analytics-equipped.
 
 ### Errors / surprises
@@ -1982,6 +1992,12 @@ embeddings / the Day-9 ReID arm would help there.
 - `crops.npz` is 52 MB (780 crops) → gitignored (regenerable via `label_crops.py --build`); only the
   small JSON/PNG team artifacts + the package are committed. `hand_labels.json` is the user's data,
   also gitignored.
+- The installed OpenCV is the **headless** build (no highgui) → `cv2.namedWindow` crashed the
+  labeling app. Rebuilt the GUI on **Tkinter + PIL** (stdlib, no install). (`mark_court.py` has the
+  same cv2-GUI dependency — would need the same treatment if re-run.)
+- White-98% / blue-65% asymmetry was the surprise — expected the chromatic blue to be the CLEAN one;
+  instead the neutral white cluster is the attractor for any ambiguous crop, so blue (not white) is
+  where the errors land.
 
 ### Time
 Wall ~3 h: ~30 min study Day-11 method + basketball data + confirm 2-team a/b separation; ~40 min
