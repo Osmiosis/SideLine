@@ -44,6 +44,10 @@ outputs/deliverables/day10_sample/*
 outputs/deliverables/day11_sample/*
 !outputs/deliverables/day11_sample/*.png
 !outputs/deliverables/day11_sample/*.md
+!outputs/deliverables/day12_sample/
+outputs/deliverables/day12_sample/*
+!outputs/deliverables/day12_sample/*.png
+!outputs/deliverables/day12_sample/*.md
 
 # IDE
 .vscode/
