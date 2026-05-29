@@ -1119,3 +1119,129 @@ deliverable + this writeup + commit.
 - `outputs/deliverables/day13_sample/` -- whitelisted: SNGS-118 path+speed plots, SNGS-118 +
   SNGS-120 contact sheets, SNGS-118 + SNGS-116 A/B/C frame grids, `day13_metrics.md`.
 
+## Day 14 — Basketball Ball Tracking (pixel-space Kalman, basketball-tuned) — football Day-12 parity
+
+**Goal:** Build basketball ball tracking (the Day-12 equivalent) so basketball can reach
+follow-cam parity with football. Pixel-space CV Kalman over the Day-5 fine-tuned ball detector
+(`basketball_ft.pt`, OOD ball AP 0.618), bridging detection gaps. SportsMOT basketball, 5 seqs
+(v_00HRwkvvjtQ_c001/c003/c005/c007/c008, 1280×720 @25fps). Reused `analyze_ball.py`'s Kalman.
+
+### Per-Part status
+- **Part 0 -- GT check + method survey:** ✅ validation path = **PLAUSIBILITY** (honest).
+- **Part A -- detections + gaps:** ✅ `basketball_ft.pt`@1280 conf0.25 → `outputs/det_cache/bb_ball/`.
+- **Part B -- basketball-tuned Kalman:** ✅ (after fixing a banner-FP failure, below).
+- **Part C -- shot/high-ball flag:** ✅ pixel-only, coarse (caveat below).
+- **Part D -- validate:** ✅ plausibility + visual (no GT RMSE — stated honestly).
+- **Part E -- render, log, commit:** ✅ overlay videos (local) + sample frames + this writeup.
+
+### Part 0 — basketball ball GT availability (gates validation) + considered alternatives
+- **WASB** (Widely Applicable Strong Baseline, BMVC 2023; `github.com/nttcom/WASB-SBDT`, MIT):
+  tracking-by-detection — HRNet-style high-res ball **heatmap** + position-aware training +
+  **temporal-consistency** linking across frames; validated on 5 sports **incl. basketball**.
+  Confirms our detect-then-Kalman (temporal-reasoning) family is sound. Its basketball
+  ball-center GT (`basketball_annos.zip`, MIT) is publicly downloadable — **but** the source
+  frames (Rui Yan SAM/NBA page) are **HTTP 404 upstream**, and that GT is for WASB's *own*
+  videos, not our SportsMOT clips. So WASB gives no usable RMSE for our eval clips.
+- **TrackNet** (arXiv 1907.03698) — THE documented escalation path (chosen NOT to use today):
+  CNN+DeconvNet on **N consecutive frames** → a 2D Gaussian heatmap at the ball center; folds
+  temporal reasoning **into the detector** (learns motion), recovering occluded/blurred balls a
+  single-frame detector misses. Tennis/badminton only (P/R/F1 95.3/75.7/84.3), no basketball.
+  **Escalation trigger:** if Day-14's detect+Kalman track is too jumpy/gappy to feed a watchable
+  follow-cam "A" feed (judged next session), TrackNet is the justified upgrade.
+- **No ungated per-frame basketball ball-trajectory GT** for our clips: SportsMOT = players only
+  (ball excluded by spec); DeepSportradar = gated + 3D-oracle on still instants (not 2D video
+  tracks); UniqueData = loose screenshots (the rejected 72-frame commercial set). 
+- **Validation path → PLAUSIBILITY** (in-frame %, sane pixel velocity, continuity, + visual).
+
+### Part A — detection rate + gap distribution (vs football)
+| seq | det-rate (any det) | gaps mean / p90 / max | detected consec-jump p90 / p99 (px) |
+|---|---:|---|---:|
+| c001 | 0.72 | 2.9 / 7 / 20 | 684 / 1077 |
+| c003 | 0.71 | 2.9 / 6 / 18 | 522 / 1069 |
+| c005 | 0.70 | 2.2 / 4 / 14 | 372 / 803 |
+| c007 | 0.69 | 3.4 / 8 / 19 | 553 / 1148 |
+| c008 | 0.75 | 2.4 / 5 / 18 | 570 / 982 |
+
+**Two surprises vs football:** (1) raw det-rate is HIGHER than football's 51% (the Day-5 ball
+detector is strong) — but (2) **detected consec-jumps are enormous (p90 ~370–680 px, p99 ~1100 px
+on a 1280-wide frame)** = heavy FALSE POSITIVES (the detector fires on multiple ball-like
+objects). Gaps themselves are SHORT (p90 ≤ 8, max ≤ 20) — much shorter than football's (football
+p99 consec-jumps were inflated by real long balls; basketball's are FP-driven). Short gaps →
+short max-predict-gap is right.
+
+### The failure we hit + fixed (the report-worthy thing): banner false-positives
+First run: the Kalman spent **~33% of frames in the top 12% of the frame** (c001 y_p10=46,
+y_min=−78 = predicted above the image). Cause: the broadcast banner/scoreboard ("NCAA THIRD
+ROUND / BASKETBALL" text, logos) is detected as "Basketball" with **as-high confidence as the
+real ball** (c001 top-band conf p50 0.38 vs court 0.39) — so a **conf floor can't remove them**
+without killing recall. And they're **static**, so the velocity gate (which rejects fast FP
+jumps) can't reject them either — the Kalman initialises on one and locks.
+**Fix: a court-region prior** — drop detections with y < 0.10·H (the banner strip above the
+court). Removed 16% of c001's dets (≈ the banner FPs), ~1–8% on the others; top-band locking and
+the bogus shot-flag both collapsed. This is a genuine basketball-broadcast-specific failure mode
+(football's pitch fills the frame; basketball's scoreboard/banner sits above the court).
+
+### Part B — basketball Kalman tuning (and WHY it differs from football)
+| param | football (Day 12) | basketball (Day 14) | why |
+|---|---|---|---|
+| velocity gate | 150 px/frame | **100 px/frame** | smaller frame (1280 vs 1920) + recalibrated to detected-jump dist |
+| max-predict-gap | 15 frames | **8 frames** | occlusion-heavy; gaps are short (p90 ≤ 8); a held ball reappears elsewhere — don't coast a long gap into fiction |
+| court-region prior | n/a | **drop y < 0.10·H** | reject static high-confidence banner/scoreboard FPs the velocity gate can't |
+| process noise Q | (4,4,16,16) | same | erratic motion handled by gate + short gap; raising Q wasn't needed |
+
+**Effective-recall lift (coverage, NO within-tol — no GT):** raw gate-accepted **0.45** → Kalman-
+provided (detected+predicted) **0.90 (+44.8 pp)**; in-frame 0.98–0.99; longest predict streak = 8
+(= max_gap, so no runaway coasting). Note the asymmetry vs football: basketball's raw det-rate is
+higher but FP-heavy, so the *gate-accepted* "real detection" rate (~0.45) is ≈ football's 0.52
+raw; the +44pp coverage is real but a larger share is short-gap extrapolation.
+
+### Part C — shot/high-ball flag (coarse, honest)
+Pixel-only flag: `|vy| > 15 px/frame` (fast-vertical, shot/lob) OR `y < 0.15·H` (upper-court).
+Fraction flagged 3–22% per seq (mean ~12%). **Honest caveat:** with a single broadcast camera and
+NO court projection, image-y conflates "far court end" with "high in the air" — so unlike
+football's pitch-speed aerial flag, this is a coarse "fast-vertical / upper-court = lower-confidence"
+marker, not precise shot detection. Flag, don't model (per scope).
+
+### Part D — validation (rigor: PLAUSIBILITY-ONLY, no GT RMSE)
+No ball GT exists for these SportsMOT clips (and WASB's GT is for other, currently-404 videos),
+so — per the PRD — we do NOT fake RMSE. Evidence: coverage lift (+44.8 pp); in-frame 98–99%;
+pixel-velocity sane (provided-trajectory speed p90 ≈ 16–28 px/frame); continuity (longest predict
+= 8); **visual**: sample overlays show on-court coherent trails through gaps (e.g. c001 f357 — a
+smooth predicted curve toward a pass target; c008 f291 — trail among the players), not banner-locked.
+
+### PARITY CHECK
+**Basketball now has ball tracking → follow-cam is UNBLOCKED (next session).** Honest asymmetry:
+football ball is **RMSE-validated** (SoccerNet-GSR `bbox_image`); basketball ball is
+**PLAUSIBILITY-validated** — a ground-truth-availability gap, not a method gap (same pixel-Kalman
+architecture, basketball-tuned). If the next session finds the track too jumpy to feed a watchable
+"A" follow-cam, TrackNet (heatmap-from-consecutive-frames) is the pre-identified upgrade.
+
+### Errors hit
+- **Banner/scoreboard high-confidence false positives** locked the Kalman to the top of the frame
+  (33% of c001 frames in top 12%). Diagnosed via y-distribution (y_min −78) + conf split (FPs as
+  confident as the ball → conf floor useless). Fixed with the court-region prior. The headline
+  basketball-specific lesson.
+- **Initial shot flag (y < 0.30·H) fired 49%** — image-y conflates far-court with airborne in a
+  single broadcast cam. Retuned to fast-vertical + strict top-band (→ ~12%).
+- Pre-flight: confirmed `models/basketball.pt` already == `basketball_ft.pt` (SHA `9c91654…`) —
+  the Day-5 fine-tuned-weight swap was already applied; used `basketball_ft.pt` explicitly anyway.
+
+### What this unlocks / next
+- `outputs/ball_track_bb/<seq>/trajectory.json` (per-frame pixel ball + status + shot_flag) is the
+  basketball analogue of Day-12's football ball track → feeds **basketball follow-cam** next.
+
+### Time
+Wall ~2.5h: 20 min Part-0 (parallel research agent: WASB/TrackNet + GT) + asset survey, 35 min
+ball-detection cache build (GPU, background) + gap analysis, 45 min adapting the Kalman + the
+banner-FP diagnosis + court-region fix, 20 min shot-flag retune + plausibility validation, 20 min
+render + sample frames, 30 min writeup + deliverable + commit.
+
+### Files added / changed
+- `scripts/analyze_ball_basketball.py` -- basketball ball tracker: reuses `analyze_ball.BallKalman`
+  + cache loader; adds gap analysis, court-region FP filter, basketball-tuned Kalman, pixel shot
+  flag, plausibility validation (+ optional `--gt` RMSE hook), sample-frame + overlay-video render.
+- `outputs/det_cache/bb_ball/` -- 5 basketball ball-detection caches; gitignored.
+- `outputs/ball_track_bb/<seq>/{trajectory.json, validation.json, sample_frame.png, track_overlay.mp4}`
+  -- per-seq; gitignored (mp4 local-only).
+- `outputs/deliverables/day14_sample/` -- whitelisted: ball-track sample frames + `day14_metrics.md`.
+
