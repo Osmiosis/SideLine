@@ -1482,3 +1482,75 @@ pose/camera-distance dependent (school re-tune); depends on player-track quality
 - `scripts/follow_cam_basketball.py` -- `a_feed_fp_latch()` now counts head-zone latches too.
 - `outputs/deliverables/day17_sample/` -- whitelisted: before/after head-FP stills (f40) + shot f49
   survival + `day17_metrics.md`.
+
+## Day 18 — TrackNet Data Scouting (cheap pre-step gate, NOT the build) → NO-GO (off-the-shelf)
+
+**Goal:** Before committing to a TrackNet build, find ONE accessible dataset of CONSECUTIVE basketball
+frames + PER-FRAME ball pixel position. Pure scouting: acquire / inspect / verify, NO training.
+
+### Per-Part status
+- **Part A -- scout 4 sources (priority order):** ✅ none clean (all miss frames OR coords OR consecutiveness).
+- **Part B -- verify the candidate hands-on:** ✅ winner-candidate (DeepSport ballistic) had NO ball GT on disk.
+- **Part C -- log + GO/NO-GO + commit:** ✅ **NO-GO** on an off-the-shelf source; recommendation below.
+
+### Day-17 FAIL reconciliation (the SAME metric-vs-reality trap, third time)
+Day-17 reported PASS on A-feed head-FP-latch 0.4%/0.3% — but watching the NEW clips, heads STILL grab
+the camera. Eyes overrule the metric (as Day 15, again). WHY the metric under-counted: the head-FP
+latch metric only flags a 'ball'-source crop whose target falls in a GEOMETRIC head zone (top 18% of a
+player box). It misses: (a) head-latches where the ball is picked at chin/shoulder or on a loose/large
+player box (outside the strict zone), (b) PREDICTED coasts that drift the crop onto a head (not a
+'ball'-source frame), (c) head-latches on a frame with no player box. The spatial signal has a CEILING:
+Day-17 proved heads are NOT size-separable (area ratio ~1.0), and geometry can't fully separate a
+held/near-head ball from a head. The discriminating signal is TEMPORAL (a head bobs with its player;
+a ball flies/bounces/decouples) — exactly TrackNet's domain. So TrackNet is the EVIDENCED next step;
+the blocker is its training data.
+
+### Part A/B — scouting results (skepticism rule: leads != confirmed assets; verified hands-on)
+| source | frames | consecutive? | per-frame ball coords | verdict |
+|--------|--------|--------------|-----------------------|---------|
+| **WASB-SBDT** (nttcom/WASB-SBDT, MIT) | GATED (NBA_data ~135GB; SAM.html 404 → email request + Baidu) | yes | LIVE — CVAT XML per-frame x,y (GDrive ~5MB) | **BLOCKED** (frames) |
+| **DeepSport ballistic** (kaggle gabrielvanzandycke/ballistic-raw-sequences, CC BY-NC-SA) | LIVE ~4.27GB (free Kaggle token) | yes (2-frame 40ms pairs; instants ~160ms) | **NONE in files** | **NO BALL GT** |
+| DeepSport instants (basketball-instants-dataset) | LIVE | NO (single instants) | yes (3D, calib→2D) | not consecutive |
+| SportsTrack (Han 2024, AppSci 14:1376) | author-request only | yes | yes (~1.5k bball) | BLOCKED (no public DL) |
+| TrackID3x3 (open-starlab, CC BY) | LIVE | yes | **player/pose only, no ball** | DOES-NOT-FIT |
+
+Hands-on (the data-trust gate): with the user's Kaggle token I downloaded a ballistic instant JSON and
+inspected it directly — keys = {calibration, timestamp, sequence_timestamps(2), players:[{status,level,
+pos_feet}]×120}; "ball"/"center"/"Point3D" appear ZERO times. The first (description-based) scout had
+called ballistic "USABLE" by inferring `Ball.center` from deepsport_utilities CODE — the actual files
+disproved it. (Confirmed via the repos: ballistic ball-trajectory GT is withheld to the EvalAI server;
+the only DeepSport ball GT is the SINGLE-INSTANT basketball-instants set.) So DeepSport gives
+consecutive-frames OR ball-GT, never both. No no-credential source provides both + consecutiveness.
+
+### THE DECISION: NO-GO on an off-the-shelf TrackNet source
+No publicly, no-credential-downloadable dataset gives consecutive-frame basketball ball coordinates.
+The ONE real consecutive-frame basketball ball set is WASB's **NBA_data frames + WASB CVAT ball XML**
+(the XML is already downloadable; the frames need an academic email request to ruiyan@njust.edu.cn,
+~135GB, academic-only) — a GO-pending-ACCESS path, not a clean download. Per the skepticism rule, an
+un-rendered, un-downloaded source is NOT "usable" — so: NO-GO now.
+
+**Recommendation (the honest fork):**
+1. **Defer TrackNet; ship the CLEAN deliverables next** — football highlights on the RMSE-validated
+   football ball track (Day-10/12), and the basketball **C-feed** (player-stabilized; unaffected by
+   ball FPs by design). This delivers value now and sidesteps the unsolved basketball A-feed head-FP.
+2. **If basketball A-feed (ball-faithful gameplay) becomes a hard requirement:** the real data path is
+   WASB NBA_data via the academic email request (async, 1-2 wk) + the in-hand WASB ball XML → a genuine
+   consecutive-frame basketball ball training set → then write the TrackNet build PRD around it.
+   Fallback (no external dependency): hand-label ball x,y on our OWN SportsMOT clips — realistic cost
+   ~2-3k consecutive frames for a usable fine-tune (~3-5 h with a click tool), the frames are already
+   on disk; the single-instant DeepSport ball GT (~233-364) could seed a detector but gives no sequences.
+
+Either outcome is clean — the staged "cheap-first, escalate-with-evidence" discipline held: we did NOT
+start a TrackNet build on data we hadn't verified exists.
+
+### Errors / surprises
+- The description-based scout's "USABLE" verdict for ballistic was wrong; only the hands-on JSON
+  inspection (PRD's data-trust gate) caught the missing ball GT. Reinforces: verify the asset, don't
+  trust the description — the same lesson as the metric-vs-reality trap, applied to data.
+- Kaggle auth worked via the user-provided access token (`~/.kaggle/access_token`); `kaggle datasets
+  files` + `-f` single-file download both functioned (no NDA/competition gate on the public dataset).
+
+### Files
+- `scripts/scout_tracknet_data.py` -- scouting utility: `list-files <kaggle-slug>` (enumerate tree) +
+  `inspect <instant.json>` (the make-or-break ball-GT-presence check); full scouting result in docstring.
+- (No datasets committed — `datasets/*` gitignored; downloaded ballistic sample removed after inspection.)
