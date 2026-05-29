@@ -1245,3 +1245,90 @@ render + sample frames, 30 min writeup + deliverable + commit.
   -- per-seq; gitignored (mp4 local-only).
 - `outputs/deliverables/day14_sample/` -- whitelisted: ball-track sample frames + `day14_metrics.md`.
 
+## Day 15 — Basketball Follow-Cam (A/B/C + possession-handoff) — football Day-13 parity
+
+**Goal:** Build basketball follow-cam (the Day-13 equivalent) to bring basketball to full
+follow-cam parity. Reuse the A/B/C virtual-camera architecture (digital crop steered out of a
+wide frame, VEO/Pixellot-style), basketball-tuned, and add a **possession-handoff** fallback to
+the A-feed so it survives held-ball occlusion. Test whether the handoff removes the need for
+TrackNet. SportsMOT basketball; defaults c001 (held-ball-heavy) + c007 (shot-heavy). New
+script `scripts/follow_cam_basketball.py` reuses the football signal helpers (the FIXED
+braking-distance limiter, bidir smoother, centroid, blend-weight) verbatim from `follow_cam.py`.
+
+### Per-Part status
+- **Part A -- A-feed ball-faithful + possession-handoff:** ✅ (THE new piece; hypothesis confirmed).
+- **Part B -- B-feed ball+player blend:** ✅ (Day-13 confidence-weighted blend, shot-suppressed).
+- **Part C -- C-feed player-stabilized:** ✅ (centroid-led, heavily smoothed, no handoff).
+- **Part D -- perceptual eval + TrackNet decision:** ✅ → **TrackNet NOT needed** (evidence below).
+- **Part E -- render finals, notes, commit:** ✅ A+C feeds rendered both seqs + sample frames.
+
+### The three feeds (mapped to deliverables, kept DISTINCT — not merged)
+- **A — ball-faithful + possession-handoff** → gameplay / event highlights. Follows the ball when
+  detected; trusts short Kalman-predicted gaps (≤8 frames); on a truly-lost (hands-occluded held)
+  ball, hands off to the **last-holder player** (nearest player to the last confident ball — a held
+  ball IS at that player); only a long no-holder gap → team centroid. THE hypothesis under test.
+- **B — ball+player confidence-weighted blend** → comparison variant (`w·ball + (1-w)·centroid`).
+- **C — player-stabilized** → player highlights / celebrations. Centroid-led, heavily smoothed
+  (cutoff 0.5 Hz vs A/B 0.9 Hz); unaffected by ball dropouts by design (no handoff needed).
+
+### Basketball-specific tuning (vs football Day-13) — re-tuned by eye, NOT football constants
+- **Frame 1280×720** (football 1920×1080). Crop **640×360** (zoom 2.0, clean half-frame 16:9) —
+  tighter than football's effective crop, as basketball court is smaller.
+- **Faster pace / quick reversals** → higher pan caps: `vmax 40` (football 30), `a_accel 4 / a_decel 2`.
+- **`shot_flag`** (Day-14) plays football's `aerial_suspect` role: A chases the shot to the rim;
+  B/C suppress it (weight-capped) to stay grounded — keeps the three variants distinct.
+- **Counterintuitive zoom finding:** A's edge-clamp DROPS as the crop gets tighter (more centering
+  freedom). A's residual clamp (~0.60 on c001) is INHERENT — the basketball reaches frame edges
+  (rim shots, full-court) and the crop honestly pins there; it is not a tracking fault.
+
+### Possession-handoff result — A-feed target source (THE held-ball hypothesis)
+| seq  | ball | pred | **holder (handoff)** | centroid | held/lost covered by holder |
+|------|-----:|-----:|---------------------:|---------:|-----------------------------|
+| c001 |  447 |  568 | **142**              | 5        | 142 / 147 (96.6%)           |
+| c007 |  337 |  303 | **63**               | 4        | 63 / 67 (94.0%)             |
+
+The handoff covers **~95% of held/lost frames** by following the ball-holder; the crude team
+centroid fires only 5/4 frames. Handoff segments are coherent multi-frame blocks (see
+`day15_sample/*_handoff.png`), not single-frame flicker — the camera stays locked on the holder
+through each occlusion. **The held-ball dropout the user saw on the Day-14 track is solved.**
+
+### Proxy metrics (supporting only — eval is PERCEPTUAL; basketball has no ungated per-frame GT)
+c001: jerk RAW 39.4 → A 1.99 / B 1.11 / C 0.81; ball-safezone A 0.51 / B 0.40 / C 0.13;
+action-in-frame A 0.38 / B 0.57 / C 0.79; clamp A 0.60 / B 0.20 / C 0.09.
+c007: jerk RAW 35.5 → A 1.68 / B 0.84 / C 0.93; ball-safezone A 0.76 / B 0.70 / C 0.25;
+action-in-frame A 0.43 / B 0.65 / C 0.84; clamp A 0.33 / B 0.04 / C 0.04.
+A/B/C cut jerk ~20–35× vs RAW. Ordering is by design: A centers the ball (high safezone), C
+keeps players (high action-in-frame), B between.
+
+### THE TrackNet decision: NOT NEEDED (the pre-set escalation was not triggered)
+The cheap possession-handoff (reuse of Day-9 tracks + Day-12/14 possession logic) makes held-ball
+moments watchable in the A-feed — no swing-to-nowhere, camera stays on the player holding the ball.
+The Day-14 escalation trigger ("if the track is too gappy to feed a watchable A-feed") did not fire.
+Residual failure modes (bounded; monitor, do not yet justify TrackNet):
+1. **Pass/shot released DURING a true detection gap** → camera lags on the passer until the ball
+   re-detects at the receiver. Mitigated: Kalman `pred` covers in-flight momentum for short gaps;
+   only fully-lost (held) frames hand to the holder, where the holder is correct by definition.
+2. **Simultaneous loss of ball AND holder track** → team centroid (5/4 frames), coarse but brief.
+3. **Holder ID switch mid-occlusion** — tracker-quality dependent; drops to centroid if the bound
+   track ends. Revisit TrackNet only on *systematic* pass-during-occlusion loss in future footage.
+
+### Parity status
+Basketball now has **A (gameplay/event highlights) + C (player highlights/celebrations)** feeds —
+same deliverable mapping as football Day-13. **Both sports at follow-cam parity.** These tracked
+views feed the basketball highlights/reels work next.
+
+### Caveats
+- SportsMOT broadcast footage; upstream ball track is plausibility-validated (Day-14), not RMSE
+  (no per-frame ungated ball GT for these clips).
+- Crop ratio / pan limits are camera-distance dependent — re-tune by eye for school footage.
+
+### Files
+- `scripts/follow_cam_basketball.py` -- basketball follow-cam; bb loaders (ball trajectory +
+  players-with-IDs), possession-handoff target cascade, reuses `follow_cam.py` signal helpers.
+- `outputs/follow_cam_bb/<seq>/{follow_cam.json, metrics.json, path_plot.png, speed_plot.png,
+  handoff_plot.png, contact_sheet_A.png, abc_frames.png, follow_A.mp4, follow_C.mp4,
+  abc_montage.mp4}` -- per-seq; gitignored (mp4 local-only). `follow_cam.json` carries A/B/C
+  crop-center paths + the A-feed per-frame target source (ball/pred/holder/centroid + holder_id).
+- `outputs/deliverables/day15_sample/` -- whitelisted: A/B/C frames, A-feed contact sheets,
+  handoff plots (c001+c007) + `day15_metrics.md`.
+
