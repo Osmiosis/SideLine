@@ -1743,3 +1743,131 @@ PDF/video polish (header, formation cutoff, sample-clip sizing), ~20 min package
   preview + 6 figure PNGs + metrics.json + tactical contact sheet + 10 s sample clip + README.
 - (gitignored, regenerable) `outputs/deliverables/SNGS-118/coach/` — working outputs incl. full-res
   `tactical_view.mp4`.
+
+## Day 21 — Basketball Court Homography (auto + manual fallback) + Team-Agnostic Analytics PDF/Video
+
+**Goal:** Unlock basketball analytics parity by building a basketball court homography (pixel ->
+court-metres) robust to messy/missing school-court lines (AUTO-detect + MANUAL one-time
+point-marking fallback for the fixed-camera deployment), then assemble the first basketball coach
+analytics PDF/video on top. PLAUSIBILITY-validated (no court-metre GT exists). Basketball,
+SportsMOT, sample = v_00HRwkvvjtQ_c007 (NCAA broadcast), stable window f493-591 (~4 s).
+
+### The two things that make basketball homography DIFFERENT from football's Day-10
+1. **No GT.** Football's GSR shipped `bbox_pitch` -> GT-validated to 0.2 m. Basketball has NO
+   court-metre GT (SportsMOT = pixel boxes only; Day-18 confirmed the GT hunt is dead). So this is
+   PLAUSIBILITY-validated, NOT GT-validated -- same honesty level as the Day-19 ball track. Labelled
+   so everywhere; the PDF's "validated" band is deliberately thin.
+2. **Deployment-court uncertainty (user-flagged).** The school court's lines may be faded / missing /
+   multi-sport-overlaid / non-regulation / outdoor. Method must NOT assume clean markings -> AUTO
+   with MANUAL fallback. Fixed deployment camera = mark once, holds the match (the EASIER real case;
+   SportsMOT's panning broadcast is the harder stress test).
+
+### Scope honesty — basketball is ONE COMPONENT BEHIND football
+Football's PDF had team-split heatmaps + possession because Day-11 built football team assignment.
+**Basketball has NO team assignment yet** -> this PDF is TEAM-AGNOSTIC (all-players heatmap, total
+distance, court territory, intensity, average positions). Team-split + possession DEFERRED to a
+future basketball-team-assignment session. Parity of METHOD, not yet of completeness.
+
+### A headless-execution constraint (decided with the user, two questions)
+This session is headless: (a) the MANUAL marking tool needs a human clicker (it's the deployment
+path), and (b) the harness downscales displayed frames below the precision needed to mark points by
+eye, and auto-LABELLING court lines is unreliable on broadcast (logos/text/crowd/occlusion). User
+chose: **programmatic best-effort calibration** + **short stable-window (~4 s) analytics demo**.
+
+### Part A — court homography: method + the calibration that actually worked
+- **Court model:** NCAA men's 94x50 ft (28.65 x 15.24 m; this is the 2014 NCAA tournament) with FIBA
+  (28x15) provided as an alt. Landmark world coords (corners, centre, centre circle, both keys/FT
+  circles, 3pt arcs, baskets) encoded as the manual-marking vocabulary.
+- **AUTO-detect (try first):** blackhat+HoughLinesP finds court-line candidates + a blue centre-logo
+  blob, but CANNOT reliably LABEL which line is which on broadcast -> defers to manual. Honest,
+  expected outcome (and the reason the manual fallback exists).
+- **MANUAL fallback (deployment path):** interactive cv2 click-and-label tool (`--mark`), saves a
+  points JSON; reproducible/headless via `--points`. Degrades to just the 4 corners + known dims.
+- **What FAILED before what worked (the honest path):** (1) rough eyeball marks -> 7 m reconstruction
+  error; (2) line-snapping refine from a bad seed -> globally degenerate pose (far points project
+  off-screen); (3) free-8-DOF chamfer -> degenerate COLLAPSE (low cost, court crushed to a sliver).
+  (4) **WORKED: camera-pose chamfer registration** (`--register`) -- optimise a REAL camera (focal +
+  look-at extrinsics) projecting the 3D court plane, so it can't collapse, PLUS a players-stay-in-
+  bounds prior that rules out the low-chamfer-but-wrong fits. Multi-start over plausible broadcast
+  cameras. Result on c007 f540: realistic camera (height ~15 m, focal 1215), ~12 px line-alignment
+  residual, **100% of players project in-bounds**, sensible half-court spread.
+
+### Part B — plausibility validation (the honest trust level, no GT)
+- **Court-line alignment residual** ~12 px (the projected court model overlaid on the frame visually
+  sits on the real lines -- `overlay.png` is the eye-test).
+- **In-bounds:** 100% of the calibration frame's 10 players project inside the 28.65x15.24 m court
+  (`court_diagram.png` -- a clean half-court-offense spread).
+- **Speed sanity:** max player speed 8.3 m/s over the window (< the 9 m/s teleport guard; basketball
+  peak ~8.5) -- physically plausible, no fliers.
+- Verdict: PLAUSIBILITY-validated. Explicitly NOT GT-validated (cf. football 0.2 m). Same honesty
+  level as Day-19. Good enough for a method demo; real validation pending the school's own footage.
+
+### Part C — team-agnostic analytics over the ~4 s window (f493-591), all plausibility-checked
+- All-players court heatmap (density on the calibrated half; looks like real half-court usage).
+- Total distance 81.7 m across 17 tracks (~5 m/player in 4 s -- sensible), +1.8 m teleport-guarded.
+- Court territory: Left 49 / Middle 51 / Right 0 % (sums 100; the far half is out of the view, so 0%
+  is honest, not a bug).
+- Intensity zones (basketball-adapted bands, m/s: stand/walk <1.4, jog 1.4-3, run 3-4.5,
+  high-intensity 4.5-6, sprint >6; cited McInnes 1995 / Stojanović 2018, with the "no single standard
+  basketball band set" caveat). high-intensity distance 23 m. **bands+artefact (83.6) == total+
+  artefact (83.5)** -- the invariant holds.
+- Average positions: 9 well-tracked IDs (>=40 frames) -> mean court positions.
+- >10 m/s -> here >9 m/s (basketball-tuned) ID-switch teleport guard reused from Day-20.
+
+### Part D — basketball coach PDF + tactical video
+- `coach_analysis_basketball.pdf`: same VALIDATED-vs-DERIVED honesty structure as football BUT the
+  validated band is brown + thinner + explicitly "plausibility-validated, NO ground-truth (cf.
+  football's 0.2 m)". DERIVED band = positions/territory/intensity. "Coming soon (team assignment
+  needed)" footer defers team-split/possession with the honest reason. Reads as a coach one-pager.
+- `tactical_sample_basketball.mp4` (~4 s, 960x540, 5.5 MB): wide tactical view, TEAM-AGNOSTIC (single
+  green marker -- no team colours yet), player boxes + feet markers + IDs + highlighted ball
+  (yellow; "pred" when predicted). Clean coach overlay, not a debug render.
+- Packaged -> `outputs/deliverables/coach_package_basketball/`.
+
+### Honest status + deployment note
+Basketball analytics now at **parity of METHOD** with football (court-metre heatmap/distance/
+territory/intensity/positions) but **one component behind** (no team assignment -> no team-split or
+possession). The homography approach -- especially the manual marking -- is designed to transfer to
+the school's actual court whatever its line state (fixed camera, mark once); real validation pends
+own footage. Numbers here are a ~4 s plausibility demo, not a full-game report.
+
+### What's next
+- Basketball **team assignment** (unlocks team-split heatmaps + possession -> football parity).
+- Football + basketball **highlights** (A-feed events, C-feed player reels).
+- Deployment calibration on the school's real court footage.
+
+### Errors / surprises
+- Auto line-intersection candidates locked onto PLAYER silhouettes, not court lines -> confirmed
+  auto-labelling is unreliable on cluttered broadcast (the PRD's premise).
+- Free-DOF homography fits to an edge map have low-cost DEGENERATE solutions (court collapses to a
+  sliver / mirrors to the wrong half). Fix = parametrise a REAL camera pose (can't collapse) +
+  players-in-bounds prior. The prior was decisive: pure chamfer gave 20% in-bounds at lower cost;
+  adding it gave 100% in-bounds.
+- Registration put the visible half on -x (mirrored) -- fine, the court is symmetric; analytics are
+  orientation-agnostic. Territory "Right third 0%" is the unviewed far half, correctly.
+- Harness frame-downscaling blocked pixel-precise manual marking in headless mode -> drove the whole
+  auto-register approach (which is arguably the better deliverable anyway).
+
+### Time
+Wall ~3.5 h: ~70 min data/court scouting + calibration-method dead-ends (eyeball, line-snap,
+chamfer-collapse) before camera-pose registration worked; ~50 min `basketball_court.py` (model +
+manual tool + auto-detect + line-snap + pose-register + validation); ~50 min
+`coach_deliverable_basketball.py` (team-agnostic analytics + PDF + tactical video); ~30 min package
++ gitignore + notes.
+
+### Files added / changed
+- `PRD'S/PRD_Day21_basketball_homography.md` — session plan.
+- `scripts/basketball_court.py` — court model (NCAA+FIBA) + landmark vocabulary + interactive manual
+  marking tool + reproducible `--points` + auto-detect (honest deferral) + line-snapping refine +
+  **camera-pose chamfer registration** (`--register`, the calibration that worked) + plausibility
+  validation (held-out reconstruction / in-bounds) + overlay & court-diagram rendering.
+- `scripts/coach_deliverable_basketball.py` — applies the homography to Day-9 player + Day-19 ball
+  tracks -> team-agnostic court-metre analytics (heatmap, distance, territory, intensity, avg
+  positions) + matplotlib coach PDF + team-agnostic tactical video. Reuses Day-20 patterns + the
+  >9 m/s teleport guard.
+- `.gitignore` — whitelist `outputs/deliverables/coach_package_basketball/` (png/md/pdf/json + the
+  single `tactical_sample_basketball.mp4`).
+- `outputs/deliverables/coach_package_basketball/` — PDF + preview + 4 figure PNGs + court overlay +
+  court diagram + homography.json + validation.json + metrics + tactical contact sheet + ~4 s sample
+  clip + README.
+- (gitignored, regenerable) `outputs/deliverables/v_00HRwkvvjtQ_c007/{court,coach}/` — working outputs.

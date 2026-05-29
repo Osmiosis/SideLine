@@ -1,0 +1,20 @@
+{
+  "method": "auto-register (pose-chamfer)",
+  "register": {
+    "method": "pose-chamfer+inbounds",
+    "cost": 11.87,
+    "cam": [
+      1215.49,
+      0.0,
+      -25.03,
+      14.87,
+      -3.88,
+      0.0
+    ]
+  },
+  "landmark_recon_mean_m": null,
+  "holdout_mean_err_m": null,
+  "refined": false,
+  "in_bounds_frac": 1.0,
+  "trust_level": "PLAUSIBILITY-validated (no court-meter GT; cf. football 0.2m GT). Same honesty level as the Day-19 basketball ball track."
+}

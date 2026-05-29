@@ -80,6 +80,14 @@ outputs/deliverables/coach_package_football/*
 !outputs/deliverables/coach_package_football/*.pdf
 !outputs/deliverables/coach_package_football/*.json
 !outputs/deliverables/coach_package_football/tactical_sample.mp4
+# Day-21 basketball coach deliverable package (court homography + team-agnostic analytics)
+!outputs/deliverables/coach_package_basketball/
+outputs/deliverables/coach_package_basketball/*
+!outputs/deliverables/coach_package_basketball/*.png
+!outputs/deliverables/coach_package_basketball/*.md
+!outputs/deliverables/coach_package_basketball/*.pdf
+!outputs/deliverables/coach_package_basketball/*.json
+!outputs/deliverables/coach_package_basketball/tactical_sample_basketball.mp4
 # Day-19 trained ball-vs-head classifier (model weights, not crop data) -- reusable artifact
 !outputs/ball_head/
 outputs/ball_head/*

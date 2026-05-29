@@ -1,0 +1,89 @@
+{
+  "seq": "v_00HRwkvvjtQ_c007",
+  "window": [
+    493,
+    591
+  ],
+  "n_tracks": 17,
+  "total_distance_m": 81.7,
+  "distance_artefact_m": 1.8,
+  "intensity_bands_m": {
+    "Stand/walk": 12.3,
+    "Jog": 26.1,
+    "Run": 20.4,
+    "High-intensity": 14.3,
+    "Sprint": 8.7
+  },
+  "high_intensity_m": 23.0,
+  "intensity_artefact_m": 1.8,
+  "territory_pct": {
+    "Left third": 49.4,
+    "Middle third": 50.6,
+    "Right third": 0.0
+  },
+  "max_speed_ms": 8.3,
+  "avg_positions": [
+    {
+      "tid": 202,
+      "x": -3.67,
+      "y": -4.57,
+      "n": 98
+    },
+    {
+      "tid": 70,
+      "x": -4.58,
+      "y": -3.97,
+      "n": 97
+    },
+    {
+      "tid": 222,
+      "x": -2.29,
+      "y": -6.58,
+      "n": 99
+    },
+    {
+      "tid": 21,
+      "x": -9.18,
+      "y": -2.56,
+      "n": 98
+    },
+    {
+      "tid": 162,
+      "x": -5.27,
+      "y": 1.37,
+      "n": 99
+    },
+    {
+      "tid": 291,
+      "x": -8.39,
+      "y": 2.24,
+      "n": 90
+    },
+    {
+      "tid": 310,
+      "x": -7.12,
+      "y": -2.62,
+      "n": 99
+    },
+    {
+      "tid": 211,
+      "x": -3.7,
+      "y": -7.99,
+      "n": 99
+    },
+    {
+      "tid": 341,
+      "x": -2.15,
+      "y": -2.91,
+      "n": 77
+    }
+  ],
+  "ball_court_points": 36,
+  "plausibility": {
+    "territory_sum": 100.0,
+    "bands_plus_artefact_m": 83.6,
+    "total_plus_artefact_m": 83.5,
+    "max_speed_ms": 8.3,
+    "in_bounds_frac": 1.0
+  }
+}
