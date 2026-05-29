@@ -27,10 +27,12 @@ Run it yourself (interactive window):
   .venv\\Scripts\\python scripts\\label_crops.py              # label them
 """
 import argparse, json, sys
-from collections import defaultdict
+from collections import defaultdict, Counter
 from pathlib import Path
 import numpy as np
 import cv2
+# GUI uses Tkinter (stdlib) + PIL, NOT cv2.imshow -- the installed OpenCV is the headless build
+# (no highgui), so cv2 windows raise "function not implemented". Tkinter needs no extra install.
 
 SEQS = ["v_00HRwkvvjtQ_c001", "v_00HRwkvvjtQ_c003", "v_00HRwkvvjtQ_c005",
         "v_00HRwkvvjtQ_c007", "v_00HRwkvvjtQ_c008"]
@@ -111,6 +113,9 @@ def main():
     if args.build:
         build(args); return
 
+    import tkinter as tk
+    from PIL import Image, ImageTk
+
     d = np.load(Path(args.out) / "crops.npz", allow_pickle=True)
     imgs = d["imgs"]; manifest = json.loads(str(d["manifest"]))
     n = len(imgs)
@@ -122,32 +127,69 @@ def main():
         lab_path.write_text(json.dumps(labels))
 
     def counts():
-        from collections import Counter
         c = Counter(labels.values())
-        return f"A={c['A']} B={c['B']} ref={c['ref']} bench={c['bench']}"
+        return f"A={c['A']} B={c['B']} ref={c['ref']} bench={c['bench']}  labeled={len(labels)}/{n}"
 
-    win = "label crops: a=TeamA b=TeamB r=ref o=bench s=skip u=undo q=quit"
-    cv2.namedWindow(win)
-    history = []
-    i = 0
-    while i < n:
-        if str(i) in labels:
-            i += 1; continue
-        view = context_view(imgs[i], manifest[i], args.frames_root)
-        bar = np.zeros((40, view.shape[1], 3), np.uint8)
-        cv2.putText(bar, f"#{i}/{n}  {counts()}  [{manifest[i]['seq'][-4:]}]",
-                    (10, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (40, 240, 40), 1, cv2.LINE_AA)
-        cv2.imshow(win, np.vstack([bar, view]))
-        key = cv2.waitKey(0) & 0xFF
-        if key in (ord("q"), 27):
-            break
-        elif chr(key) in CLASSES:
-            labels[str(i)] = CLASSES[chr(key)]; history.append(i); save(); i += 1
-        elif key == ord("s"):
+    state = {"i": 0, "history": []}
+
+    root = tk.Tk()
+    root.title("label crops")
+    status = tk.Label(root, font=("Consolas", 13), fg="#0a0", anchor="w", justify="left")
+    status.pack(fill="x", padx=6, pady=4)
+    legend = tk.Label(root, font=("Consolas", 11),
+                      text="a=Team A   b=Team B   r=referee   o=bench/other   s=skip   u=undo   q=save+quit")
+    legend.pack(fill="x", padx=6)
+    panel = tk.Label(root)
+    panel.pack(padx=6, pady=6)
+
+    def show():
+        i = state["i"]
+        while i < n and str(i) in labels:
             i += 1
-        elif key == ord("u") and history:
-            last = history.pop(); labels.pop(str(last), None); save(); i = last
-    cv2.destroyAllWindows()
+        state["i"] = i
+        if i >= n:
+            status.config(text=f"ALL DONE  {counts()}  -- press q to quit")
+            panel.config(image="")
+            return
+        view = context_view(imgs[i], manifest[i], args.frames_root)        # BGR
+        im = Image.fromarray(cv2.cvtColor(view, cv2.COLOR_BGR2RGB))
+        photo = ImageTk.PhotoImage(im)
+        panel.config(image=photo); panel.image = photo                     # keep ref
+        status.config(text=f"#{i}/{n}  [{manifest[i]['seq'][-4:]}]   {counts()}")
+
+    def do_label(cls):
+        i = state["i"]
+        if i >= n:
+            return
+        labels[str(i)] = cls; state["history"].append(i); save()
+        state["i"] = i + 1; show()
+
+    def do_skip():
+        state["i"] += 1; show()
+
+    def do_undo():
+        if state["history"]:
+            last = state["history"].pop(); labels.pop(str(last), None); save()
+            state["i"] = last; show()
+
+    def do_quit():
+        save(); root.destroy()
+
+    def on_key(e):
+        k = (e.char or "").lower()
+        if k in CLASSES:
+            do_label(CLASSES[k])
+        elif k == "s":
+            do_skip()
+        elif k == "u":
+            do_undo()
+        elif k == "q" or e.keysym == "Escape":
+            do_quit()
+
+    root.bind("<Key>", on_key)
+    root.protocol("WM_DELETE_WINDOW", do_quit)
+    show()
+    root.mainloop()
     save()
     print(f"\nsaved {len(labels)} labels -> {lab_path}  ({counts()})")
     print("Re-run to continue, or tell Claude to validate once you have a few hundred.")
