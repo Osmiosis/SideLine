@@ -1,0 +1,3244 @@
+{
+  "v_00HRwkvvjtQ_c001": {
+    "1": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 179,
+      "mean_dist": 0.538,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "2": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 37,
+      "mean_dist": 0.478,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "3": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 138,
+      "mean_dist": 0.503,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "4": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 39,
+      "mean_dist": 0.499,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "5": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 57,
+      "mean_dist": 0.491,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "6": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 28,
+      "mean_dist": 0.547,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "7": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 3,
+      "mean_dist": 0.541,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "8": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 29,
+      "mean_dist": 0.556,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "14": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 27,
+      "mean_dist": 0.519,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "17": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 318,
+      "mean_dist": 0.54,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "21": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 3,
+      "mean_dist": 0.542,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "23": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.495,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "29": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 31,
+      "mean_dist": 0.524,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "57": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 410,
+      "mean_dist": 0.496,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "72": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 353,
+      "mean_dist": 0.53,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "74": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 9,
+      "mean_dist": 0.59,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "77": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.52,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "87": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.494,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "92": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 142,
+      "mean_dist": 0.54,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "115": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.527,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "118": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 405,
+      "mean_dist": 0.5,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "121": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 170,
+      "mean_dist": 0.54,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "128": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 101,
+      "mean_dist": 0.512,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "131": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 334,
+      "mean_dist": 0.576,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "134": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.608,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "139": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 5,
+      "mean_dist": 0.616,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "143": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 15,
+      "mean_dist": 0.532,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "150": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.549,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "160": {
+      "role_raw": "Referee",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.62,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "165": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.485,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "186": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.55,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "200": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.572,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "190": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.523,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "214": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 3,
+      "mean_dist": 0.577,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "220": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.611,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "228": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 117,
+      "mean_dist": 0.501,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "232": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.696,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "235": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 7,
+      "mean_dist": 0.507,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "240": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 6,
+      "mean_dist": 0.596,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "243": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 393,
+      "mean_dist": 0.513,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "250": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.551,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "257": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.595,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "265": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 155,
+      "mean_dist": 0.546,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "269": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 7,
+      "mean_dist": 0.549,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "266": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 373,
+      "mean_dist": 0.515,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "274": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.461,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "275": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 3,
+      "mean_dist": 0.533,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "282": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.505,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "288": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 3,
+      "mean_dist": 0.573,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "292": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 163,
+      "mean_dist": 0.503,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "309": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.477,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "312": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.64,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "307": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 7,
+      "mean_dist": 0.572,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "322": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.489,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "323": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.531,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "324": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.518,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "333": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 155,
+      "mean_dist": 0.508,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "342": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 11,
+      "mean_dist": 0.579,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "361": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 11,
+      "mean_dist": 0.596,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "366": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.583,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "371": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.541,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "379": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 3,
+      "mean_dist": 0.6,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "382": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.516,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "396": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 89,
+      "mean_dist": 0.531,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "404": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 23,
+      "mean_dist": 0.62,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "405": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 147,
+      "mean_dist": 0.537,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "424": {
+      "role_raw": "Referee",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.672,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "425": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.409,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "428": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 29,
+      "mean_dist": 0.446,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "439": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.552,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "445": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 10,
+      "mean_dist": 0.586,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "453": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 12,
+      "mean_dist": 0.535,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "465": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 137,
+      "mean_dist": 0.524,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "467": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 3,
+      "mean_dist": 0.444,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "468": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 35,
+      "mean_dist": 0.488,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "475": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.468,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "479": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 152,
+      "mean_dist": 0.523,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "480": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 19,
+      "mean_dist": 0.617,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "487": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.617,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "492": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 73,
+      "mean_dist": 0.552,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "495": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 140,
+      "mean_dist": 0.574,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "497": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 139,
+      "mean_dist": 0.54,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "510": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 118,
+      "mean_dist": 0.493,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "511": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 9,
+      "mean_dist": 0.501,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "514": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.445,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "528": {
+      "role_raw": "Referee",
+      "cluster": 0,
+      "n_dets": 3,
+      "mean_dist": 0.638,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "538": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 87,
+      "mean_dist": 0.523,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "539": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.54,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "544": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 81,
+      "mean_dist": 0.504,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "547": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 74,
+      "mean_dist": 0.488,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "553": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 25,
+      "mean_dist": 0.553,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "556": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 4,
+      "mean_dist": 0.456,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "569": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.52,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "572": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 3,
+      "mean_dist": 0.536,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "587": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 11,
+      "mean_dist": 0.514,
+      "on_court_frac": null,
+      "role": "TeamB"
+    }
+  },
+  "v_00HRwkvvjtQ_c003": {
+    "1": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 361,
+      "mean_dist": 0.551,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "2": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 197,
+      "mean_dist": 0.531,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "3": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 548,
+      "mean_dist": 0.561,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "4": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 113,
+      "mean_dist": 0.496,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "5": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 332,
+      "mean_dist": 0.502,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "6": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 109,
+      "mean_dist": 0.479,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "7": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 61,
+      "mean_dist": 0.503,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "8": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 283,
+      "mean_dist": 0.548,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "9": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 274,
+      "mean_dist": 0.544,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "10": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 335,
+      "mean_dist": 0.505,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "13": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.516,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "21": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 10,
+      "mean_dist": 0.548,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "31": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 87,
+      "mean_dist": 0.506,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "44": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 5,
+      "mean_dist": 0.519,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "49": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 50,
+      "mean_dist": 0.497,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "50": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 306,
+      "mean_dist": 0.522,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "64": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 3,
+      "mean_dist": 0.479,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "66": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.591,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "74": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 3,
+      "mean_dist": 0.576,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "76": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.625,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "70": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 143,
+      "mean_dist": 0.531,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "78": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 183,
+      "mean_dist": 0.484,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "88": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 3,
+      "mean_dist": 0.618,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "98": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.575,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "109": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 4,
+      "mean_dist": 0.582,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "111": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 340,
+      "mean_dist": 0.509,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "128": {
+      "role_raw": "Referee",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.715,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "132": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.581,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "135": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.595,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "143": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.56,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "148": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 13,
+      "mean_dist": 0.481,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "152": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 3,
+      "mean_dist": 0.528,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "156": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 10,
+      "mean_dist": 0.489,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "167": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 127,
+      "mean_dist": 0.529,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "169": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.584,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "172": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 119,
+      "mean_dist": 0.513,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "170": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 3,
+      "mean_dist": 0.555,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "173": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 50,
+      "mean_dist": 0.557,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "174": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 17,
+      "mean_dist": 0.457,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "176": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.493,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "183": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 91,
+      "mean_dist": 0.505,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "186": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.558,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "189": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 11,
+      "mean_dist": 0.5,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "196": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.59,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "195": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 64,
+      "mean_dist": 0.525,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "200": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 151,
+      "mean_dist": 0.555,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "209": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 79,
+      "mean_dist": 0.509,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "211": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 49,
+      "mean_dist": 0.484,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "227": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.626,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "231": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 5,
+      "mean_dist": 0.531,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "234": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.599,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "253": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 28,
+      "mean_dist": 0.5,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "265": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 10,
+      "mean_dist": 0.512,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "277": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 54,
+      "mean_dist": 0.537,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "282": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 10,
+      "mean_dist": 0.49,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "295": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 113,
+      "mean_dist": 0.57,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "304": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 110,
+      "mean_dist": 0.502,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "303": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 3,
+      "mean_dist": 0.593,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "315": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 65,
+      "mean_dist": 0.484,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "318": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 3,
+      "mean_dist": 0.513,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "317": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.506,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "321": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 96,
+      "mean_dist": 0.512,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "323": {
+      "role_raw": "Referee",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.667,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "334": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 27,
+      "mean_dist": 0.532,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "336": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 46,
+      "mean_dist": 0.562,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "351": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.638,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "352": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.54,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "362": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 3,
+      "mean_dist": 0.497,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "364": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.54,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "366": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 44,
+      "mean_dist": 0.486,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "374": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 72,
+      "mean_dist": 0.513,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "376": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.585,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "377": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 53,
+      "mean_dist": 0.519,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "382": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 73,
+      "mean_dist": 0.553,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "383": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.462,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "385": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 9,
+      "mean_dist": 0.487,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "394": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 3,
+      "mean_dist": 0.438,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "405": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 30,
+      "mean_dist": 0.514,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "406": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 32,
+      "mean_dist": 0.507,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "408": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.612,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "420": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.684,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "425": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 4,
+      "mean_dist": 0.594,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "427": {
+      "role_raw": "Referee",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.619,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "428": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.58,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "440": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 28,
+      "mean_dist": 0.56,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "448": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 23,
+      "mean_dist": 0.584,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "454": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.575,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "457": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 3,
+      "mean_dist": 0.546,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "458": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 24,
+      "mean_dist": 0.586,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "459": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 21,
+      "mean_dist": 0.565,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "463": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 25,
+      "mean_dist": 0.5,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "464": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 25,
+      "mean_dist": 0.496,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "465": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 17,
+      "mean_dist": 0.492,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "466": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.526,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "468": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.598,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "470": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 5,
+      "mean_dist": 0.512,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "447": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 7,
+      "mean_dist": 0.534,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "483": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 7,
+      "mean_dist": 0.515,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "485": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.511,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "489": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.564,
+      "on_court_frac": null,
+      "role": "TeamB"
+    }
+  },
+  "v_00HRwkvvjtQ_c005": {
+    "1": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 28,
+      "mean_dist": 0.447,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "2": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 114,
+      "mean_dist": 0.54,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "3": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 149,
+      "mean_dist": 0.486,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "4": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 278,
+      "mean_dist": 0.523,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "5": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 141,
+      "mean_dist": 0.56,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "6": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 92,
+      "mean_dist": 0.524,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "7": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 135,
+      "mean_dist": 0.545,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "8": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 151,
+      "mean_dist": 0.498,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "9": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.655,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "12": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 39,
+      "mean_dist": 0.565,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "13": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 85,
+      "mean_dist": 0.479,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "27": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 230,
+      "mean_dist": 0.48,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "28": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.524,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "36": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 26,
+      "mean_dist": 0.559,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "38": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.575,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "43": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 5,
+      "mean_dist": 0.424,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "47": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 80,
+      "mean_dist": 0.522,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "48": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.53,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "60": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.597,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "77": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.552,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "80": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 62,
+      "mean_dist": 0.516,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "84": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 55,
+      "mean_dist": 0.495,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "85": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.663,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "88": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 13,
+      "mean_dist": 0.694,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "91": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.459,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "100": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 42,
+      "mean_dist": 0.579,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "109": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 24,
+      "mean_dist": 0.523,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "110": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 4,
+      "mean_dist": 0.71,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "113": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 32,
+      "mean_dist": 0.596,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "114": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 4,
+      "mean_dist": 0.577,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "126": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.655,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "134": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 138,
+      "mean_dist": 0.55,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "137": {
+      "role_raw": "Referee",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.743,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "138": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 126,
+      "mean_dist": 0.54,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "143": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 7,
+      "mean_dist": 0.511,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "145": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 7,
+      "mean_dist": 0.544,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "154": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 3,
+      "mean_dist": 0.526,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "156": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 116,
+      "mean_dist": 0.539,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "161": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.528,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "177": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.598,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "180": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 83,
+      "mean_dist": 0.543,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "188": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.511,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "190": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 3,
+      "mean_dist": 0.525,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "199": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 63,
+      "mean_dist": 0.558,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "203": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 38,
+      "mean_dist": 0.519,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "210": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.603,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "212": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 95,
+      "mean_dist": 0.499,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "215": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 77,
+      "mean_dist": 0.488,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "217": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.684,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "229": {
+      "role_raw": "Referee",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.634,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "246": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 16,
+      "mean_dist": 0.49,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "248": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.543,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "254": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 3,
+      "mean_dist": 0.579,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "256": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.483,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "263": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.618,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "264": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 11,
+      "mean_dist": 0.555,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "283": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.521,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "287": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 34,
+      "mean_dist": 0.477,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "295": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 6,
+      "mean_dist": 0.515,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "326": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.597,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "332": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 8,
+      "mean_dist": 0.593,
+      "on_court_frac": null,
+      "role": "TeamA"
+    }
+  },
+  "v_00HRwkvvjtQ_c007": {
+    "1": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 15,
+      "mean_dist": 0.501,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "2": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 15,
+      "mean_dist": 0.54,
+      "on_court_frac": 1.0,
+      "role": "TeamA"
+    },
+    "3": {
+      "role_raw": "Excluded",
+      "cluster": 1,
+      "n_dets": 57,
+      "mean_dist": 0.581,
+      "on_court_frac": 0.25,
+      "role": "Excluded"
+    },
+    "4": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 46,
+      "mean_dist": 0.516,
+      "on_court_frac": 0.65,
+      "role": "TeamB"
+    },
+    "5": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 51,
+      "mean_dist": 0.53,
+      "on_court_frac": 1.0,
+      "role": "TeamA"
+    },
+    "6": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 21,
+      "mean_dist": 0.484,
+      "on_court_frac": 0.95,
+      "role": "TeamB"
+    },
+    "7": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 124,
+      "mean_dist": 0.565,
+      "on_court_frac": 0.54,
+      "role": "TeamA"
+    },
+    "8": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 63,
+      "mean_dist": 0.521,
+      "on_court_frac": 0.97,
+      "role": "TeamB"
+    },
+    "9": {
+      "role_raw": "Excluded",
+      "cluster": 1,
+      "n_dets": 15,
+      "mean_dist": 0.606,
+      "on_court_frac": 0.0,
+      "role": "Excluded"
+    },
+    "17": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 80,
+      "mean_dist": 0.543,
+      "on_court_frac": 1.0,
+      "role": "TeamA"
+    },
+    "19": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 8,
+      "mean_dist": 0.605,
+      "on_court_frac": 0.88,
+      "role": "TeamA"
+    },
+    "20": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 30,
+      "mean_dist": 0.495,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "21": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 301,
+      "mean_dist": 0.552,
+      "on_court_frac": 0.93,
+      "role": "TeamA"
+    },
+    "38": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 77,
+      "mean_dist": 0.494,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "40": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 42,
+      "mean_dist": 0.555,
+      "on_court_frac": 0.83,
+      "role": "TeamA"
+    },
+    "51": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.434,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "52": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.471,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "68": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 65,
+      "mean_dist": 0.509,
+      "on_court_frac": 0.55,
+      "role": "TeamB"
+    },
+    "70": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 285,
+      "mean_dist": 0.504,
+      "on_court_frac": 0.91,
+      "role": "TeamB"
+    },
+    "82": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.542,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "104": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 130,
+      "mean_dist": 0.49,
+      "on_court_frac": 0.76,
+      "role": "TeamB"
+    },
+    "128": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 7,
+      "mean_dist": 0.515,
+      "on_court_frac": 1.0,
+      "role": "TeamA"
+    },
+    "142": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.543,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "149": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 11,
+      "mean_dist": 0.487,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "154": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.548,
+      "on_court_frac": 1.0,
+      "role": "TeamA"
+    },
+    "162": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 205,
+      "mean_dist": 0.511,
+      "on_court_frac": 0.89,
+      "role": "TeamB"
+    },
+    "167": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 132,
+      "mean_dist": 0.549,
+      "on_court_frac": 0.98,
+      "role": "TeamA"
+    },
+    "179": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 101,
+      "mean_dist": 0.484,
+      "on_court_frac": 0.93,
+      "role": "TeamB"
+    },
+    "192": {
+      "role_raw": "Excluded",
+      "cluster": 1,
+      "n_dets": 6,
+      "mean_dist": 0.529,
+      "on_court_frac": 0.17,
+      "role": "Excluded"
+    },
+    "202": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 224,
+      "mean_dist": 0.534,
+      "on_court_frac": 1.0,
+      "role": "TeamA"
+    },
+    "211": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 217,
+      "mean_dist": 0.552,
+      "on_court_frac": 0.98,
+      "role": "TeamA"
+    },
+    "222": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 190,
+      "mean_dist": 0.498,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "227": {
+      "role_raw": "Excluded",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.665,
+      "on_court_frac": 0.0,
+      "role": "Excluded"
+    },
+    "232": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.499,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "233": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 57,
+      "mean_dist": 0.545,
+      "on_court_frac": 0.79,
+      "role": "TeamA"
+    },
+    "236": {
+      "role_raw": "Excluded",
+      "cluster": 1,
+      "n_dets": 4,
+      "mean_dist": 0.621,
+      "on_court_frac": 0.25,
+      "role": "Excluded"
+    },
+    "238": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.451,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "250": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.567,
+      "on_court_frac": 0.5,
+      "role": "TeamA"
+    },
+    "261": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 8,
+      "mean_dist": 0.504,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "268": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.465,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "277": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 4,
+      "mean_dist": 0.516,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "282": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 32,
+      "mean_dist": 0.518,
+      "on_court_frac": 1.0,
+      "role": "TeamA"
+    },
+    "290": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.573,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "291": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 94,
+      "mean_dist": 0.559,
+      "on_court_frac": 1.0,
+      "role": "TeamA"
+    },
+    "299": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 34,
+      "mean_dist": 0.514,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "310": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 130,
+      "mean_dist": 0.501,
+      "on_court_frac": 0.99,
+      "role": "TeamB"
+    },
+    "312": {
+      "role_raw": "Referee",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.648,
+      "on_court_frac": 1.0,
+      "role": "Referee"
+    },
+    "330": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.552,
+      "on_court_frac": 1.0,
+      "role": "TeamA"
+    },
+    "329": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 4,
+      "mean_dist": 0.605,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "332": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.61,
+      "on_court_frac": 1.0,
+      "role": "TeamA"
+    },
+    "341": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 89,
+      "mean_dist": 0.504,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "355": {
+      "role_raw": "Referee",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.623,
+      "on_court_frac": 1.0,
+      "role": "Referee"
+    },
+    "356": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 13,
+      "mean_dist": 0.556,
+      "on_court_frac": 1.0,
+      "role": "TeamA"
+    },
+    "372": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 3,
+      "mean_dist": 0.56,
+      "on_court_frac": 1.0,
+      "role": "TeamA"
+    },
+    "384": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 64,
+      "mean_dist": 0.528,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "389": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.493,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "391": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.544,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "395": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.488,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "412": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 11,
+      "mean_dist": 0.549,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "422": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.44,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "423": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 5,
+      "mean_dist": 0.503,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "425": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 21,
+      "mean_dist": 0.518,
+      "on_court_frac": 1.0,
+      "role": "TeamB"
+    },
+    "448": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 4,
+      "mean_dist": 0.644,
+      "on_court_frac": 1.0,
+      "role": "Referee"
+    }
+  },
+  "v_00HRwkvvjtQ_c008": {
+    "1": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 164,
+      "mean_dist": 0.509,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "2": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 273,
+      "mean_dist": 0.511,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "3": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 211,
+      "mean_dist": 0.518,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "4": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 98,
+      "mean_dist": 0.499,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "6": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 105,
+      "mean_dist": 0.555,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "7": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 187,
+      "mean_dist": 0.549,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "8": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 50,
+      "mean_dist": 0.581,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "9": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.593,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "12": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 180,
+      "mean_dist": 0.55,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "13": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 365,
+      "mean_dist": 0.505,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "14": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 314,
+      "mean_dist": 0.55,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "15": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.566,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "42": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.556,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "45": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.42,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "50": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 118,
+      "mean_dist": 0.54,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "53": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.598,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "62": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.494,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "64": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.528,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "80": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.413,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "82": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 61,
+      "mean_dist": 0.493,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "88": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 4,
+      "mean_dist": 0.504,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "92": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 197,
+      "mean_dist": 0.541,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "96": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.473,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "107": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.535,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "123": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.472,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "124": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 156,
+      "mean_dist": 0.498,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "125": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.527,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "128": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.567,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "138": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.472,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "140": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.496,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "146": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.53,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "147": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 114,
+      "mean_dist": 0.525,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "145": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.521,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "157": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 54,
+      "mean_dist": 0.521,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "162": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 4,
+      "mean_dist": 0.469,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "164": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 108,
+      "mean_dist": 0.518,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "165": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 12,
+      "mean_dist": 0.55,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "172": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.61,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "175": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.549,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "177": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 71,
+      "mean_dist": 0.489,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "179": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 273,
+      "mean_dist": 0.489,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "182": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 3,
+      "mean_dist": 0.586,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "189": {
+      "role_raw": "Referee",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.624,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "204": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.488,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "216": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 5,
+      "mean_dist": 0.515,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "220": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 3,
+      "mean_dist": 0.587,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "223": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.582,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "231": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.554,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "238": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 4,
+      "mean_dist": 0.565,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "245": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 231,
+      "mean_dist": 0.523,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "257": {
+      "role_raw": "Referee",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.642,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "263": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.472,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "275": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 206,
+      "mean_dist": 0.535,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "277": {
+      "role_raw": "Referee",
+      "cluster": 0,
+      "n_dets": 4,
+      "mean_dist": 0.741,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "282": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 192,
+      "mean_dist": 0.518,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "285": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.531,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "288": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.616,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "289": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 194,
+      "mean_dist": 0.536,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "293": {
+      "role_raw": "Referee",
+      "cluster": 0,
+      "n_dets": 3,
+      "mean_dist": 0.726,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "294": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 1,
+      "mean_dist": 0.511,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "300": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 9,
+      "mean_dist": 0.502,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "317": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 80,
+      "mean_dist": 0.509,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "318": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.394,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "319": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 60,
+      "mean_dist": 0.502,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "327": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 34,
+      "mean_dist": 0.552,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "331": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 4,
+      "mean_dist": 0.568,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "338": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 5,
+      "mean_dist": 0.522,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "350": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 104,
+      "mean_dist": 0.482,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "352": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 2,
+      "mean_dist": 0.547,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "359": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 58,
+      "mean_dist": 0.542,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "367": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 5,
+      "mean_dist": 0.506,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "381": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 103,
+      "mean_dist": 0.516,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "386": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 45,
+      "mean_dist": 0.491,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "398": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 85,
+      "mean_dist": 0.489,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "409": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 5,
+      "mean_dist": 0.541,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "412": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.723,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "419": {
+      "role_raw": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.751,
+      "on_court_frac": null,
+      "role": "Referee"
+    },
+    "430": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 70,
+      "mean_dist": 0.517,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "432": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.507,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "442": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 55,
+      "mean_dist": 0.539,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "446": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 49,
+      "mean_dist": 0.519,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "452": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 2,
+      "mean_dist": 0.459,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "454": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 3,
+      "mean_dist": 0.533,
+      "on_court_frac": null,
+      "role": "TeamA"
+    },
+    "469": {
+      "role_raw": "cluster1",
+      "cluster": 1,
+      "n_dets": 1,
+      "mean_dist": 0.572,
+      "on_court_frac": null,
+      "role": "TeamB"
+    },
+    "475": {
+      "role_raw": "cluster0",
+      "cluster": 0,
+      "n_dets": 4,
+      "mean_dist": 0.595,
+      "on_court_frac": null,
+      "role": "TeamA"
+    }
+  }
+}

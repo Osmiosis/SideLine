@@ -1,0 +1,44 @@
+{
+  "backbone": "frozen ImageNet ResNet18 (512-d), L2-norm, PCA50",
+  "winner_region": "torso",
+  "verdict": "PASS",
+  "day22_colour": {
+    "overall": 0.796,
+    "A_white": 0.983,
+    "B_blue": 0.652,
+    "ref_excl": 0.16
+  },
+  "torso": {
+    "overall": 0.9462,
+    "per_class": {
+      "A": 0.9371,
+      "B": 0.9534
+    },
+    "best_align": {
+      "A": "TeamA",
+      "B": "TeamB"
+    },
+    "ref_bench_exclusion_recall": 0.48,
+    "n_ref_bench": 25,
+    "team_crops_excluded_frac": 0.0058,
+    "n_team_pairs": 688,
+    "n_matched": 717
+  },
+  "full": {
+    "overall": 0.8968,
+    "per_class": {
+      "A": 0.8046,
+      "B": 0.9689
+    },
+    "best_align": {
+      "A": "TeamA",
+      "B": "TeamB"
+    },
+    "ref_bench_exclusion_recall": 0.64,
+    "n_ref_bench": 25,
+    "team_crops_excluded_frac": 0.0058,
+    "n_team_pairs": 688,
+    "n_matched": 717
+  },
+  "note": "hand-label-validated (717 labels = reference; possible label noise). Blind clustering; Hungarian permutation-aligned. TeamA=white, TeamB=blue."
+}

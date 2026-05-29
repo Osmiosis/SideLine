@@ -450,7 +450,7 @@ def main():
     ap.add_argument("--track", default="outputs/track_results/bball_ftdet_bytetrack")
     ap.add_argument("--ball", default="outputs/ball_track_bb")
     ap.add_argument("--frames-root", default="datasets/sportsmot_basketball")
-    ap.add_argument("--team-assign", default="outputs/team_assign_bb/track_teams_bb.json")
+    ap.add_argument("--team-assign", default="outputs/team_assign_bb/track_teams_emb.json")
     ap.add_argument("--no-video", action="store_true")
     args = ap.parse_args()
     seq, win = args.seq, tuple(args.win)
@@ -472,9 +472,14 @@ def main():
     calib = calib_quality(hj, val)
     team_map = load_team_map(args.team_assign, seq)
     possession = compute_possession(by_frame, traj, win, H_ci, m, team_map) if team_map else None
-    valbb_path = Path(args.team_assign).parent / "validation_bb.json"
-    team_acc = (json.loads(valbb_path.read_text()).get("team_accuracy_post_alignment")
-                if valbb_path.exists() else None)
+    # validation file mirrors the team-assign file name (track_teams_*.json -> validation_*.json)
+    valbb_path = Path(args.team_assign).with_name(Path(args.team_assign).name.replace("track_teams", "validation"))
+    team_acc = None
+    if valbb_path.exists():
+        vj = json.loads(valbb_path.read_text())
+        team_acc = vj.get("team_accuracy_post_alignment")          # Day-22 colour format
+        if team_acc is None and vj.get("winner_region"):           # Day-23 embedding format
+            team_acc = (vj.get(vj["winner_region"]) or {}).get("overall")
     if team_map:
         from collections import Counter as _C
         print(f"  TEAM-AWARE: {dict(_C(team_map.get(t) for t in proj))}  | "
@@ -508,7 +513,6 @@ def main():
     metrics["plausibility"] = {"territory_sum": round(sum(terr.values()), 1),
                                "bands_plus_artefact_m": band_sum, "total_plus_artefact_m": round(tot + tot_art, 1),
                                "max_speed_ms": mxs, "in_bounds_frac": inb}
-    (outdir / "metrics_basketball.json").write_text(json.dumps(metrics, indent=2))
 
     fig_heatmap(proj, m, outdir / "fig_heatmap.png", f"All-players court density  -  {seq} f{win[0]}-{win[1]}")
     fig_positions(avg, m, outdir / "fig_positions.png", f"Average positions (team-agnostic)  -  {seq}")
@@ -518,6 +522,7 @@ def main():
         fig_team_heatmaps(proj, team_map, m, outdir / "fig_team_heatmaps.png", seq, win)
         metrics["possession"] = possession
         metrics["team_counts"] = {t: sum(1 for x in proj if team_map.get(x) == t) for t in ("TeamA", "TeamB")}
+    (outdir / "metrics_basketball.json").write_text(json.dumps(metrics, indent=2))
 
     pdf = outdir / "coach_analysis_basketball.pdf"
     build_pdf(seq, win, metrics, {"in_bounds_frac": inb, "calib": calib, "team_map": team_map,

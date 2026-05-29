@@ -2021,3 +2021,93 @@ pending-validation wording); ~20 min package + notes.
   fig + team-coloured sample clip/contact sheet + `track_teams_bb.json` + `cluster_summary_bb.json`
   + `sample_torsos.png`.
 - (gitignored, regenerable) `outputs/team_assign_bb/{crops.npz, hand_labels.json}`.
+
+## Day 23 — Team Assignment via Frozen Appearance Embeddings (fix the white-attractor ceiling)
+
+**Goal:** Replace Day-22's mean-colour team clustering with FROZEN PRETRAINED appearance embeddings
+to fix the STRUCTURAL white-attractor (Day-22: Blue 65.2%, ref-exclusion 16%, overall 79.6%).
+Validate on the SAME 717 hand-labels for a clean before/after. Success = Blue AND ref-exclusion
+specifically improve, not just the average. Basketball, SportsMOT (proxy for DPS).
+
+### The structural diagnosis (why colour had a ceiling)
+Mean a/b colour collapses shadowed-blue + grey-ref + white-jersey all toward "neutral" → the white
+KMeans cluster became an ATTRACTOR absorbing every ambiguous crop. Not a tuning bug: it's what mean
+chroma DOES. Embeddings separate on texture/pattern/structure, not mean chroma, so the attractor
+should dissolve. DPS kits (often white/pale/bibs) would likely make the colour failure WORSE.
+
+### Method (Part A)
+- Frozen **ImageNet ResNet18** penultimate features (512-d, L2-norm), reused from the Day-19
+  ball-vs-head front-end. NO training/fine-tuning — frozen only (the DPS-transfer property: nothing
+  fit to NCAA → carries to DPS kits unchanged). PCA→50 before KMeans k=2. Per-(seq,tid) majority
+  vote + the Day-21 court-position filter (orthogonal pre-filter) + embedding-distance ref-outlier.
+- Tested **torso-only vs full-body** crops. Cluster→team mapped by torso brightness (whiter cluster =
+  TeamA) to match the user's white=A convention. Blind clustering; Hungarian permutation at validation.
+
+### Before/after on the SAME 717 hand-labels (Part B) — PASS
+| Metric | Day-22 colour | Day-23 torso emb | Day-23 full-body emb |
+|---|---|---|---|
+| Overall team accuracy | 79.6% | **94.6%** | 89.7% |
+| Team A (white) | 98.3% | 93.7% | 80.5% |
+| Team B (blue) | 65.2% | **95.3%** | 96.9% |
+| Ref/bench exclusion recall | 16% | **48%** | 64% |
+| Team crops wrongly excluded | 2.3% | 0.6% | 0.6% |
+
+**STRUCTURAL FIX = PASS:** the specific failures both improved — Blue 65→95% (+30 pts), refs
+16→48% (+32 pts). The white-attractor dissolved (white dropped slightly 98→94% as the clusters
+balanced, but that's the attractor releasing its over-claimed crops, not a regression). **Winner =
+torso** (94.6% overall, balanced A/B). Full-body pushed blue + refs even higher (97% / 64%) but cost
+Team A (80%) — full body adds court/background/skin variation that muddies the white jersey; torso is
+the cleaner team signal. Chose torso for the deliverable.
+
+### Part C — regenerated the deliverable (PASS path)
+Regenerated the c007 basketball PDF + tactical video on the embedding teams: team-split heatmaps now
+balanced (A/white n=485 / B/blue n=553, vs the colour version's lopsided 694/176), PDF reads
+"hand-label-validated (95% team accuracy)".
+**Possession shifted hard: white A 81%→3%, blue B 19%→97%.** This is the fix showing its effect —
+Day-22 mis-labelled the blue defenders crowding the ball as white (the attractor), inflating white
+possession; with correct teams those near-ball defenders are blue. It ALSO exposes that the
+nearest-player possession proxy (Day-12 method) conflates the ball-handler with nearby defenders, so
+the split is plausibility-level, not a true on-ball metric (noted in the PDF + README).
+
+### Honest level
+- Hand-label-validated at **94.6%** (717 labels = reference; possible label noise), NOT GT-validated.
+  Now ABOVE football's 88-92% GT band on this proxy — but that's a hand-label number, caveat stands.
+- Downstream team-split heatmaps + possession still inherit tracking ID-switch noise + the
+  nearest-player proxy limitation → plausibility-level.
+- Frozen embedder transfers to DPS (nothing fit to NCAA); per-match calibration likely still needed,
+  but embeddings should degrade more gracefully than colour on similar/pale kits.
+
+### ReID note (scope boundary)
+The Day-9 ReID model is a DIFFERENT, LATER tool for PER-PLAYER identity (individual highlights, both
+sports). ReID maximises INTER-individual distinctness — wrong for team-grouping (which wants
+intra-team similarity). Today used a generic appearance encoder + unsupervised 2-means, not ReID.
+
+### Errors / surprises
+- Expected the chromatic blue to be the clean team; instead embeddings lifted BLUE the most
+  (65→95%) — confirming the Day-22 errors were the neutral cluster swallowing blue, not blue being
+  intrinsically hard.
+- Bug: `metrics_basketball.json` was written BEFORE the team block appended possession/team_counts →
+  the saved JSON had `possession: null` while the PDF (fed possession separately) was correct. Moved
+  the metrics write to after the team block.
+- Embedding 22k crops ×2 regions ran fine on the 4060 (frozen ResNet18, bs=256, in_px=64); frame
+  reads dominate. Ran it as a background job.
+
+### Time
+Wall ~2.5h: ~20 min diagnosis + backbone check; ~60 min `bball_team_embed.py` (patch extract + embed
++ PCA + cluster + court filter + ref outlier + before/after validation, torso vs full); ~40 min
+regenerate deliverable + fix the metrics-write-order bug + possession-shift analysis; ~30 min
+package + README + notes.
+
+### Files added / changed
+- `PRD'S/PRD_Day23_team_embeddings.md` — session plan.
+- `scripts/bball_team_embed.py` — frozen-ResNet18 embedding team assignment: torso/full patch
+  extraction, embed (reuses Day-19 `embed_all`), PCA-50, KMeans k=2 blind, court-position filter +
+  ref-distance-outlier, per-tracklet vote, colour-based white=A mapping, before/after validation on
+  the 717 labels. Writes `track_teams_emb.json` + `validation_emb.json`.
+- `scripts/coach_deliverable_basketball.py` — default `--team-assign` now the embedding output;
+  validation-file name derived from the team-assign name; team_acc parsed from either Day-22 or
+  Day-23 format; **fixed** the metrics-write ordering so possession/team_counts persist.
+- `outputs/deliverables/coach_package_basketball/` — refreshed on the embedding teams: PDF (95% acc)
+  + team-split heatmaps + team-coloured video + `track_teams_emb.json` + `validation_emb.json`
+  (Day-22 `*_bb.json` kept as the colour baseline for the before/after).
+- (gitignored, regenerable) `outputs/team_assign_bb/{crops.npz, hand_labels.json}` (Day-22).
