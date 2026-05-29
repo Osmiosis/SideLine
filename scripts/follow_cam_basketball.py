@@ -225,6 +225,32 @@ def build_variants(recs, by_frame, by_frame_id, by_id, args, W, H):
 
 
 # ======================= metrics =======================
+def _center_box_dist(px, py, c):
+    """Distance from point to a player box given as center+size (cx,cy,w,h); 0 if inside."""
+    cx, cy, w, h = c[0], c[1], c[2], c[3]
+    dx = max(abs(px - cx) - w / 2, 0.0)
+    dy = max(abs(py - cy) - h / 2, 0.0)
+    return math.hypot(dx, dy)
+
+
+def a_feed_fp_latch(meta, prox_px=150.0):
+    """Day-16 PRIMARY-honesty metric: fraction of frames where the A-feed is centered on a 'ball'
+    target that is FP-suspect (ball far from EVERY player box). A smooth camera pointed at a
+    false-positive ball scores HIGH here -- this is the number that should have caught Day-15
+    (jerk could not, it only measures smoothness)."""
+    bx, by, src, players = meta["bx"], meta["by"], meta["a_src"], meta["players"]
+    n = len(src); latched = 0; ball_frames = 0
+    for i in range(n):
+        if src[i] != "ball" or not np.isfinite(bx[i]):
+            continue
+        ball_frames += 1
+        boxes = players.get(i + 1, [])
+        if boxes and min(_center_box_dist(bx[i], by[i], c) for c in boxes) > prox_px:
+            latched += 1
+    return dict(fp_latch_rate=latched / n if n else None, fp_latched_frames=latched,
+                ball_target_frames=ball_frames, prox_px=prox_px)
+
+
 def compute_metrics(centers, meta, safe_frac=0.7):
     cx, cy = centers
     cw, ch, W, H = meta["cw"], meta["ch"], meta["W"], meta["H"]
@@ -330,6 +356,8 @@ def main():
     ap.add_argument("--a-accel", type=float, default=4.0, help="accel-in cap (px/frame^2)")
     ap.add_argument("--a-decel", type=float, default=2.0, help="decel-out cap (px/frame^2)")
     ap.add_argument("--deadzone", type=float, default=6.0, help="soft dead-zone (px)")
+    ap.add_argument("--fp-prox", type=float, default=150.0,
+                    help="A-feed FP-latch metric: ball-target farther than this from every player = FP-latched")
     # rendering
     ap.add_argument("--render", dest="render", action="store_true", default=True)
     ap.add_argument("--no-render", dest="render", action="store_false")
@@ -363,17 +391,22 @@ def main():
 
         metrics = {name: compute_metrics(variants[name], meta) for name in ("RAW", "A", "B", "C")}
         metrics["A_handoff_source"] = dict(sc)
+        # Day-16 PRIMARY A-feed metric: is the camera on the REAL ball? (caught the Day-15 wobble)
+        fp_latch = a_feed_fp_latch(meta, args.fp_prox)
+        metrics["A_fp_latch"] = fp_latch
         print("  metric           RAW      A        B        C")
         def row(lbl, key, fmt="{:.3f}"):
             vals = "  ".join(
                 (fmt.format(metrics[v][key]) if metrics[v][key] is not None else "  --  ").rjust(7)
                 for v in ("RAW", "A", "B", "C"))
             print(f"  {lbl:<15} {vals}")
-        row("jerk(px)", "mean_jerk_px", "{:.4f}")
-        row("accel(px)", "mean_accel_px", "{:.3f}")
-        row("ball_safezone", "ball_in_safe_zone")
+        row("ball_safezone*", "ball_in_safe_zone")   # * PRIMARY: crop centered on the real ball
+        print(f"  >> A-feed FP-latch rate (PRIMARY truth metric): {fp_latch['fp_latch_rate']*100:.1f}%  "
+              f"({fp_latch['fp_latched_frames']} frames centered on a no-player FP ball)")
         row("action_in_frame", "action_in_frame")
         row("clamp_frac", "clamp_fraction")
+        row("jerk(px) [2nd]", "mean_jerk_px", "{:.4f}")  # SECONDARY: smoothness only
+        row("accel(px) [2nd]", "mean_accel_px", "{:.3f}")
 
         plot_paths(variants, meta, out_seq / "path_plot.png", seq)
         plot_speed(variants, out_seq / "speed_plot.png", seq)

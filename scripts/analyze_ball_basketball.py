@@ -41,6 +41,39 @@ SEQS_DEFAULT = ["v_00HRwkvvjtQ_c001", "v_00HRwkvvjtQ_c003", "v_00HRwkvvjtQ_c005"
                 "v_00HRwkvvjtQ_c007", "v_00HRwkvvjtQ_c008"]
 
 
+# ---------- Day-16: player-proximity prior (FP rejection) ----------
+def load_player_boxes(path: Path):
+    """MOT player tracks -> {frame: [(x0,y0,x1,y1), ...]} pixel boxes. A basketball ball is
+    almost always on/near a player (held, dribbled, passed, just-shot); detections far from
+    EVERY player box are crowd/banner/scoreboard FPs. (Day-16 diagnosis: these FPs, latched via
+    the ungated reset re-init, drove the A-feed wobble — 44% of c001 'detected' frames.)"""
+    from collections import defaultdict
+    by = defaultdict(list)
+    if not Path(path).exists():
+        return {}
+    for line in Path(path).read_text().splitlines():
+        if not line.strip():
+            continue
+        q = line.split(",")
+        f = int(q[0]); x = float(q[2]); y = float(q[3]); w = float(q[4]); h = float(q[5])
+        by[f].append((x, y, x + w, y + h))
+    return dict(by)
+
+
+def _pt_box_dist(px, py, box):
+    """Point-to-rectangle distance (0 if inside the box)."""
+    dx = max(box[0] - px, 0.0, px - box[2])
+    dy = max(box[1] - py, 0.0, py - box[3])
+    return (dx * dx + dy * dy) ** 0.5
+
+
+def _near_player(x, y, boxes, prox_px):
+    """True if (x,y) within prox_px of any player box. No boxes this frame -> don't block (True)."""
+    if not boxes:
+        return True
+    return any(_pt_box_dist(x, y, b) <= prox_px for b in boxes)
+
+
 # ---------- seq info ----------
 def seq_info(source: Path, seq: str):
     cp = configparser.ConfigParser()
@@ -93,38 +126,76 @@ def gap_analysis(cache_by_frame: dict, n_frames: int):
 
 # ---------- Part B: basketball-tuned Kalman (mirrors analyze_ball.run_kalman, Q tunable) ----------
 def run_kalman_bb(cache_by_frame: dict, n_frames: int, vel_gate_px: float, max_gap: int,
-                  init_conf: float, q_pos: float, q_vel: float, r_meas: float):
+                  init_conf: float, q_pos: float, q_vel: float, r_meas: float,
+                  players_by_frame: dict = None, reinit_prox_px: float = None,
+                  ingate_prox_px: float = None, reacq_frames: int = 1):
     """Constant-velocity pixel Kalman with FP velocity gate + max-predict-gap reset.
-    Same logic as the football tracker; Q/R exposed so basketball's erratic motion can be tuned."""
+    Same logic as the football tracker; Q/R exposed so basketball's erratic motion can be tuned.
+
+    Day-16 FP-rejection (active only when players_by_frame + a prox threshold are given):
+      - reinit_prox_px : (RE)INITIALIZATION must land on a detection within this distance of a
+        player box. Closes the FP doorway -- the ungated reset re-init was grabbing the highest-conf
+        detection ANYWHERE (banner/scoreboard/crowd in frame corners) after a held-ball occlusion.
+        A real ball re-emerges held/received AT a player, so proximity at re-init is correct and
+        does not touch in-flight shot tracking (which re-acquires via the continuity gate below).
+      - ingate_prox_px : in-gate acceptance also requires player-proximity (generous threshold) to
+        stop an FP that sits within vel_gate of a drifting prediction. Set wide enough that shot
+        apexes / long passes (a continuous trajectory off a player) survive.
+      - reacq_frames : re-acquisition hysteresis. After a reset/loss, require this many CONSECUTIVE
+        in-gate detections before committing to 'detected' (intermediate frames stay 'predicted'),
+        so a single one-frame FP cannot yank the camera before the track is re-confirmed."""
+    use_prox = players_by_frame is not None and reinit_prox_px is not None
+
+    def pick_init(dets, f):
+        cand = [d for d in dets if d[2] >= init_conf]
+        if use_prox:
+            boxes = players_by_frame.get(f, [])
+            cand = [d for d in cand if _near_player(d[0], d[1], boxes, reinit_prox_px)]
+        return max(cand, key=lambda d: d[2]) if cand else None
+
     kf = BallKalman(q_pos=q_pos, q_vel=q_vel, r_meas=r_meas)
     out = []
+    pending = 0  # consecutive in-gate detections seen during re-acquisition (hysteresis)
     for f in range(1, n_frames + 1):
         dets = cache_by_frame.get(f, [])
         rec = {"frame": f, "status": "lost", "x": None, "y": None, "vx": None, "vy": None,
                "n_dets": len(dets), "picked_conf": None}
         if not kf.initialized:
-            conf = [d for d in dets if d[2] >= init_conf]
-            if conf:
-                b = max(conf, key=lambda d: d[2])
+            b = pick_init(dets, f)
+            if b:
                 kf.init((b[0], b[1]))
                 rec.update(status="detected", x=b[0], y=b[1], vx=0.0, vy=0.0, picked_conf=b[2])
             out.append(rec); continue
         pred = kf.predict()
         viable = [(dx, dy, dc, float(np.hypot(dx - pred[0], dy - pred[1])))
                   for (dx, dy, dc) in dets if np.hypot(dx - pred[0], dy - pred[1]) <= vel_gate_px]
+        if use_prox and ingate_prox_px is not None:
+            boxes = players_by_frame.get(f, [])
+            viable = [v for v in viable if _near_player(v[0], v[1], boxes, ingate_prox_px)]
         if viable:
             viable.sort(key=lambda v: v[3])
             b = viable[0]
+            # re-acquisition hysteresis: after a gap, require reacq_frames consecutive hits
+            # (part of the Day-16 FP-fix package -> gated behind use_prox so the un-fixed path
+            #  is byte-for-byte Day-14)
+            if use_prox and kf.n_missed > 0 and reacq_frames > 1:
+                pending += 1
+                if pending < reacq_frames:
+                    rec.update(status="predicted", x=float(pred[0]), y=float(pred[1]),
+                               vx=float(kf.state[2]), vy=float(kf.state[3]))
+                    kf.n_missed += 1
+                    out.append(rec); continue
+            pending = 0
             kf.update((b[0], b[1]))
             rec.update(status="detected", x=float(kf.state[0]), y=float(kf.state[1]),
                        vx=float(kf.state[2]), vy=float(kf.state[3]), picked_conf=b[2])
         else:
+            pending = 0
             kf.n_missed += 1
             if kf.n_missed > max_gap:
                 kf.reset()
-                conf = [d for d in dets if d[2] >= init_conf]
-                if conf:
-                    b = max(conf, key=lambda d: d[2])
+                b = pick_init(dets, f)
+                if b:
                     kf.init((b[0], b[1]))
                     rec.update(status="detected", x=b[0], y=b[1], vx=0.0, vy=0.0, picked_conf=b[2])
             else:
@@ -317,6 +388,17 @@ def main():
     # high-CONFIDENCE static FPs (banner text / logos read as 'Basketball') that the velocity
     # gate can't reject (they don't move), so the Kalman would lock onto them.
     ap.add_argument("--court-top-frac", type=float, default=0.10, help="drop ball dets with y_center < this*H (above the court)")
+    # Day-16 player-proximity FP rejection (the wobble fix). Off unless --require-player.
+    ap.add_argument("--require-player", action="store_true",
+                    help="gate ball (re)init + in-gate acceptance on nearness to a player box (kills banner/crowd/scoreboard FPs)")
+    ap.add_argument("--track-dir", default="outputs/track_results/bb_ftdet_botsort_gmc",
+                    help="player tracks (MOT) for the proximity prior")
+    ap.add_argument("--reinit-prox", type=float, default=150.0,
+                    help="(re)init detection must be within this px of a player box (ball re-emerges AT a player)")
+    ap.add_argument("--ingate-prox", type=float, default=300.0,
+                    help="in-gate detection must be within this px of a player box (generous; shots/long passes survive)")
+    ap.add_argument("--reacq-frames", type=int, default=2,
+                    help="re-acquisition hysteresis: consecutive in-gate hits required after a gap before re-locking")
     # shot flag (pixel-only: lean on fast-vertical motion -- image-y conflates far-court w/ airborne)
     ap.add_argument("--y-high-frac", type=float, default=0.15, help="ball-y above this frac of H = upper-court/high")
     ap.add_argument("--vy-fast", type=float, default=15.0, help="|vy| above this px/frame = fast-vertical (shot/lob)")
@@ -350,8 +432,18 @@ def main():
         print(f"  detected consec-jump px: p50={ga['det_jump_p50']:.0f} p90={ga['det_jump_p90']:.0f} "
               f"p99={ga['det_jump_p99']:.0f} max={ga['det_jump_max']:.0f}  (informs --vel-gate)")
 
+        players_bf = None
+        if args.require_player:
+            players_bf = load_player_boxes(Path(args.track_dir) / f"{seq}.txt")
+            npf = sum(len(v) for v in players_bf.values())
+            print(f"  player-proximity prior ON: {len(players_bf)} frames w/ boxes ({npf} boxes) | "
+                  f"reinit<= {args.reinit_prox:.0f}px ingate<= {args.ingate_prox:.0f}px reacq={args.reacq_frames}")
         records = run_kalman_bb(cache, n_frames, args.vel_gate, args.max_gap, args.init_conf,
-                                args.q_pos, args.q_vel, args.r_meas)
+                                args.q_pos, args.q_vel, args.r_meas,
+                                players_by_frame=players_bf,
+                                reinit_prox_px=args.reinit_prox if args.require_player else None,
+                                ingate_prox_px=args.ingate_prox if args.require_player else None,
+                                reacq_frames=args.reacq_frames)
         st = {s: sum(1 for r in records if r["status"] == s) for s in ("detected", "predicted", "lost")}
         records = flag_shots(records, H, args.y_high_frac, args.vy_fast)
         n_shot = sum(1 for r in records if r["shot_flag"])
@@ -361,7 +453,11 @@ def main():
         val = {"gap_analysis": ga, "tuning": {
             "vel_gate": args.vel_gate, "max_gap": args.max_gap, "q_pos": args.q_pos,
             "q_vel": args.q_vel, "r_meas": args.r_meas, "y_high_frac": args.y_high_frac,
-            "vy_fast": args.vy_fast}, "statuses": st, "n_shot_flag": n_shot}
+            "vy_fast": args.vy_fast, "require_player": args.require_player,
+            "reinit_prox": args.reinit_prox if args.require_player else None,
+            "ingate_prox": args.ingate_prox if args.require_player else None,
+            "reacq_frames": args.reacq_frames if args.require_player else None},
+            "statuses": st, "n_shot_flag": n_shot}
         plaus = validate_plausibility(records, n_frames, W, H, args.vel_gate)
         val["plausibility"] = plaus
         print(f"  coverage: raw={plaus['raw_detection_rate']:.3f} -> Kalman={plaus['kalman_provided_rate']:.3f} "

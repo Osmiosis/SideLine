@@ -1332,3 +1332,86 @@ views feed the basketball highlights/reels work next.
 - `outputs/deliverables/day15_sample/` -- whitelisted: A/B/C frames, A-feed contact sheets,
   handoff plots (c001+c007) + `day15_metrics.md`.
 
+## Day 16 — Diagnose Follow-Cam Wobble + Fix Ball-Track False Positives
+
+**Goal:** Reconcile the Day-15 "notes say solved / eyes say wobbling" gap — DIAGNOSE the A-feed
+wobble on-screen FIRST, then fix the confirmed cause at the ball-track level (the cheap, targeted
+fix before any TrackNet escalation). Basketball, SportsMOT (c001 held-ball-heavy, c007 shot-heavy).
+
+### Per-Part status
+- **Part 0 -- diagnose on-screen + reconcile metric vs reality:** ✅ cause = FP-latching (confirmed).
+- **Part A -- fix the confirmed cause (ball-track FP rejection):** ✅ player-proximity prior.
+- **Part B -- re-render + RE-WATCH:** ✅ wobble gone; liked behavior (dribble/pass/shot) survived.
+- **Part C -- fix the eval metric so it can't lie again:** ✅ FP-latch rate + safezone now PRIMARY.
+- **Part D -- log, honest TrackNet re-decision, commit:** ✅.
+
+### The metric-vs-reality trap (the recurring project lesson)
+Day-15 scored the A-feed "solved" on **jerk** (39→2). But jerk is SMOOTHNESS, not CORRECTNESS — a
+camera can smoothly glide to the WRONG place. The user WATCHED it and saw A latch onto false-positive
+balls (scoreboard/banner text in frame corners) and swing across the frame. The under-weighted metric
+that exposed it: ball-in-safezone = 0.51 (camera on the real ball only half the time). Trust the eyes.
+
+### Part 0 — confirmed cause: FP-LATCHING (not limiter, not handoff)
+Built `scripts/diagnose_ball_fp.py` (read-only): flags 'detected' frames whose picked ball is far
+from EVERY player box (no-player FP) or teleports across a reset, decomposes A-feed safezone misses
+into {FP, edge-clamp, lag}, and renders a full-frame DEBUG OVERLAY (raw dets+conf, Kalman state,
+A-crop window + target source, FP-suspect flag).
+- **#2 limiter oscillation — ruled out:** FIXED braking-distance limiter imported verbatim; jerk 1.99.
+- **#3 handoff thrashing — ruled out:** Day-15 handoff source coherent; misses are at FP frames.
+- **#1 FP-latching — confirmed + quantified:** c001 44.3% of 'detected' frames FP-suspect (196
+  no-player), **69.2%** of A-feed safezone misses FP-driven (only 31 edge-clamp); c007 22.6% /
+  **77.8%**. FPs cluster in frame CORNERS (top-right scoreboard at y≈82-115 — just below the 72px
+  court-top filter — and bottom score banners), 176-479px from any player.
+- **Root cause** (`run_kalman_bb`): after a held-ball occlusion (>max_gap=8 misses) the Kalman RESET
+  re-initialized from the highest-conf detection ANYWHERE (no gate, no player check) → grabbed a
+  corner FP → then tracked that static FP within the 100px gate for a whole run (196 no-player ≫ 9
+  reset-teleports). Because an FP is `status='detected'` not `'lost'`, the Day-15 handoff (fires only
+  on `lost`) architecturally could NOT catch it — FP-latching is a DIFFERENT failure than held-ball loss.
+
+### Part A — fix: player-proximity prior (in `analyze_ball_basketball.py`, gated by `--require-player`)
+A basketball ball is almost always on/near a player. Added: (1) **(re)init proximity** `reinit_prox=150px`
+— (re)initialization must land near a player box (closes the FP doorway; ball re-emerges held/received
+AT a player; in-flight shots re-acquire via the continuity gate, untouched); (2) **in-gate proximity**
+`ingate_prox=300px` (generous — shot apexes/long passes survive); (3) **re-acquisition hysteresis**
+`reacq=2` (two consecutive in-gate hits before re-locking, so a one-frame FP can't yank the camera).
+A/B isolation: the whole package is gated behind `use_prox` so the un-fixed path is byte-for-byte Day-14.
+
+### Part B/C — effect (PRIMARY = A-feed FP-latch rate + ball-in-safezone; jerk demoted to SECONDARY)
+| seq  | A FP-latch before→after | A ball-in-safezone before→after | handoff frames before→after |
+|------|------------------------:|--------------------------------:|----------------------------:|
+| c001 | 16.9% → **0.4%**        | 0.506 → **0.749**               | 142 → 289                   |
+| c007 | 10.2% → **0.0%**        | 0.760 → **0.879**               | 63 → 110                    |
+
+Safezone-miss composition flipped: 69-78% FP-driven → 12-23% FP-driven (rest = legitimate
+edge-clamp/lag). Coverage lift preserved (+43.6/+46.1pp), in-frame≈1.00, jerk still ~1.2. Handoff
+frames ROSE — FP frames are now correctly `lost`, so the handoff finally fires as intended (follows
+the holder through occlusion). RE-WATCH (stills): old FP frames f275 (top-right scoreboard) and f1130
+(bottom banner) now keep the camera on the play (f1130 via the holder handoff); shot f49 still tracked
+(liked behavior survived). Added `a_feed_fp_latch()` to follow_cam metrics + made safezone the headline.
+
+### TrackNet re-decision: STILL NOT NEEDED — now actually evidenced (vs Day-15's premature claim)
+The cheap track-level FP fix makes the A-feed follow the real ball (FP-latch ~0%, safezone 0.75-0.88)
+WITHOUT TrackNet. Day-15's "not needed" was right about held-ball loss but premature about the A-feed
+(judged on jerk). Revisit TrackNet only if FP-latching survives the proximity prior, or systematic
+pass-during-occlusion loss appears.
+
+### Errors / surprises
+- A/B isolation bug caught mid-session: re-acq hysteresis was applying unconditionally → "before"
+  baseline wasn't pure Day-14. Gated it behind `use_prox`; baseline then reproduced Day-15 exactly
+  (c001 A-safezone 0.506, FP-latch 16.9%). One-variable-at-a-time discipline paid off.
+- shot_flag count dropped (c001 205→92): the top-corner scoreboard FPs at y≈82 had been FALSELY
+  flagged as "shots" (high-in-frame); removing them is a correctness gain, not a real-shot regression.
+
+### Caveats (unchanged)
+SportsMOT footage; ball track plausibility-validated (no ungated per-frame GT); crop/pan + proximity
+thresholds camera-distance dependent (school re-tune). Proximity prior depends on player-track quality.
+
+### Files
+- `scripts/diagnose_ball_fp.py` -- read-only FP diagnostic + debug-overlay renderer (Part 0).
+- `scripts/analyze_ball_basketball.py` -- + player-proximity FP rejection (`--require-player`,
+  `--reinit-prox`/`--ingate-prox`/`--reacq-frames`); canonical `outputs/ball_track_bb/` regenerated
+  with the fix (all 5 seqs).
+- `scripts/follow_cam_basketball.py` -- + `a_feed_fp_latch()` PRIMARY metric; safezone headline.
+- `outputs/follow_cam_bb/<seq>/debug_overlay_A.mp4` -- per-seq diagnostic overlay (local).
+- `outputs/deliverables/day16_sample/` -- whitelisted: before/after FP stills (f275 scoreboard,
+  f1130 banner→handoff), shot f49, + `day16_metrics.md`.
