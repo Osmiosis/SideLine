@@ -1912,3 +1912,96 @@ manual tool + auto-detect + line-snap + pose-register + validation); ~50 min
   court diagram + homography.json + validation.json + metrics + tactical contact sheet + ~4 s sample
   clip + README.
 - (gitignored, regenerable) `outputs/deliverables/v_00HRwkvvjtQ_c007/{court,coach}/` — working outputs.
+
+## Day 22 — Basketball Team Assignment (torso-colour, court-position aided, hand-label validated)
+
+**Goal:** Close the last basketball→football parity gap: TEAM ASSIGNMENT. Adapt the proven Day-11
+football method (torso a/b-chroma KMeans + per-tracklet majority vote + distance-outlier for
+non-team), basketball-tuned with a NEW court-position filter (Day-21 homography), validated against a
+HAND-LABELED set (no GT in SportsMOT). Then regenerate the Day-21 basketball PDF WITH the
+previously-deferred panels: team-split heatmaps + possession. Basketball, SportsMOT (one NCAA game:
+Wichita State white vs Kentucky blue), proxy for DPS deployment.
+
+### Deployment reasoning — why torso-COLOUR, not a luminance shortcut (re-anchored)
+Real target = DPS MIS Doha, whose house/school teams won't follow the NCAA home-light/away-dark
+broadcast convention (similar PE kits, bibs, house colours). Torso-colour clustering transfers to
+whatever DPS wears; a luminance shortcut would overfit this broadcast proxy and break at deployment
+(same deployment-first logic as Day-21 court-marking robustness, Day-19 court-colour-leak concern).
+
+### Per-Part status
+- **Part A — labeling app:** ✅ `scripts/label_crops.py` (mirrors the Day-19 sorter UX that worked):
+  `--build` sampled **780 player crops across 195 tracks / 5 clips**; the labeler shows the crop + the
+  WIDER FRAME with the player's box highlighted (so you can tell which team) + keys a/b/r/o, autosave,
+  resumable. Crops generated; **user labels (human-in-the-loop, like Day-21 marking).**
+- **Part B — court-position filter:** ✅ Day-21 homography projects each c007 detection's feet to
+  court-m; tracks <50% on-court → Excluded (bench/ref). 5/63 c007 tracks excluded off-court.
+- **Part C — torso-colour clustering:** ✅ a/b-chroma KMeans k=2 on **21,949 torso features** (all 5
+  clips pooled — one game, consistent teams). 2 clean clusters: **cluster 0 = Kentucky blue (b≈99),
+  cluster 1 = Wichita white (b≈129)** — `sample_torsos.png` confirms clean blue-vs-white. Per-(seq,
+  tid) majority vote; colour-distance outlier (>92nd pct) → Referee; off-court → Excluded.
+- **Part D — hand-label validation:** ⏳ PENDING user labeling. `bball_team_assign.py` validation is
+  built (permutation-aligned team accuracy + ref/bench exclusion recall) and runs once
+  `hand_labels.json` exists (`--validate-only`). The PDF says "validation PENDING" until then — NOT
+  claiming an accuracy number we don't have yet.
+- **Part E — team-aware PDF + video:** ✅ regenerated the c007 deliverable WITH the deferred panels:
+  team-split heatmaps (Team A n=176 / Team B n=694 over the window) + possession (nearest on-court
+  player to ball, Day-12 method: **A 19% / B 81%**, counted 36/99 frames — Wichita on offense this
+  clip). Tactical video now TEAM-COLOURED (A blue / B red, was single green).
+
+### What the contamination looks like (honest)
+White/neutral cluster (Wichita) also absorbs refs (grey/striped) + skin-dominant crops + light
+background — they're neutral-chroma like white, so colour alone can't split them. Levers: the
+court-position filter (c007 only, where we have a homography) removes off-court bench/refs; the
+distance-outlier catches genuinely odd colours. Refs on-court in non-c007 clips can still mis-assign
+to the white team — the hand-label validation will quantify this once labels exist. Blue team
+(Kentucky) is clean (distinct chroma).
+
+### Honest level
+- Team assignment is **hand-label-validated** (the user's labels ARE the reference → possible label
+  noise), NOT GT-validated like football's 88-92% GSR number. Number pending.
+- Team-split heatmaps + possession inherit tracking ID-switch noise → still plausibility-level
+  downstream, like football's possession.
+- ~4 s single-homography window (c007), as Day-21; deployment fixed camera removes that limit.
+- Possession 81% B is a real one-sided offensive set in this clip, not a bug.
+
+### Deployment note
+Torso-colour chosen to transfer to DPS kits; per-MATCH colour calibration likely needed (football
+Day-11 found the a/b constants aren't universal). Similar-kit DPS teams are the deployment risk —
+embeddings / the Day-9 ReID arm would help there.
+
+### What's next
+- User labels crops → run validation → regenerate PDF with the real team-accuracy number.
+- Highlights (A-feed events, C-feed player reels) — both sports now fully analytics-equipped.
+
+### Errors / surprises
+- All-clips pooled clustering is right here because it's ONE game (consistent kits); per-clip would
+  waste data. Track IDs are per-clip so per-tracklet vote keys on (seq, tid).
+- Nearly caught an honesty slip: the first team-aware PDF asserted "teams hand-label-validated"
+  before any labels existed. Fixed → wording is conditional on `validation_bb.json` ("validation
+  PENDING hand-labels" until it runs). Don't claim validation that hasn't happened.
+- `crops.npz` is 52 MB (780 crops) → gitignored (regenerable via `label_crops.py --build`); only the
+  small JSON/PNG team artifacts + the package are committed. `hand_labels.json` is the user's data,
+  also gitignored.
+
+### Time
+Wall ~3 h: ~30 min study Day-11 method + basketball data + confirm 2-team a/b separation; ~40 min
+`label_crops.py` (crop gen + GUI) + build crops; ~50 min `bball_team_assign.py` (features + court
+filter + cluster + per-tracklet vote + validation); ~50 min team-awareness in
+`coach_deliverable_basketball.py` (team-split heatmaps + possession + team-coloured video + honest
+pending-validation wording); ~20 min package + notes.
+
+### Files added / changed
+- `PRD'S/PRD_Day22.md` — session plan.
+- `scripts/label_crops.py` — basketball player-crop generator (`--build`) + dead-simple hand-labeling
+  GUI (crop + wider-frame context + a/b/r/o keys, autosave, resumable). The validation-set tool.
+- `scripts/bball_team_assign.py` — Parts B-D: torso a/b features across clips, court-position filter
+  (Day-21 H), KMeans k=2 BLIND, per-(seq,tid) majority vote, ref/excluded handling, hand-label
+  validation (permutation-aligned). Writes `track_teams_bb.json` + `cluster_summary_bb.json` +
+  `sample_torsos.png` (+ `validation_bb.json` once labels exist).
+- `scripts/coach_deliverable_basketball.py` — team-aware: team-split heatmaps + possession (Day-12
+  nearest-player) + team-coloured tactical video; PDF gains a TEAM ANALYTICS band; honesty wording
+  conditional on whether validation has run.
+- `outputs/deliverables/coach_package_basketball/` — refreshed: team-aware PDF + team-split heatmap
+  fig + team-coloured sample clip/contact sheet + `track_teams_bb.json` + `cluster_summary_bb.json`
+  + `sample_torsos.png`.
+- (gitignored, regenerable) `outputs/team_assign_bb/{crops.npz, hand_labels.json}`.

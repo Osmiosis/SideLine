@@ -1,0 +1,4639 @@
+{
+  "v_00HRwkvvjtQ_c001": {
+    "1": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 179,
+      "vote_purity": 0.922,
+      "mean_dist_to_team": 8.2,
+      "on_court_frac": null,
+      "votes": {
+        "1": 165,
+        "0": 14
+      }
+    },
+    "2": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 37,
+      "vote_purity": 0.784,
+      "mean_dist_to_team": 6.43,
+      "on_court_frac": null,
+      "votes": {
+        "1": 8,
+        "0": 29
+      }
+    },
+    "3": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 138,
+      "vote_purity": 0.514,
+      "mean_dist_to_team": 9.12,
+      "on_court_frac": null,
+      "votes": {
+        "1": 71,
+        "0": 67
+      }
+    },
+    "4": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 39,
+      "vote_purity": 0.564,
+      "mean_dist_to_team": 9.97,
+      "on_court_frac": null,
+      "votes": {
+        "0": 22,
+        "1": 17
+      }
+    },
+    "5": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 57,
+      "vote_purity": 0.667,
+      "mean_dist_to_team": 10.04,
+      "on_court_frac": null,
+      "votes": {
+        "0": 38,
+        "1": 19
+      }
+    },
+    "6": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 28,
+      "vote_purity": 0.857,
+      "mean_dist_to_team": 8.56,
+      "on_court_frac": null,
+      "votes": {
+        "0": 4,
+        "1": 24
+      }
+    },
+    "7": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.58,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3
+      }
+    },
+    "8": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 29,
+      "vote_purity": 0.897,
+      "mean_dist_to_team": 8.45,
+      "on_court_frac": null,
+      "votes": {
+        "0": 3,
+        "1": 26
+      }
+    },
+    "14": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 27,
+      "vote_purity": 0.852,
+      "mean_dist_to_team": 9.22,
+      "on_court_frac": null,
+      "votes": {
+        "0": 23,
+        "1": 4
+      }
+    },
+    "17": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 318,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 5.81,
+      "on_court_frac": null,
+      "votes": {
+        "1": 318
+      }
+    },
+    "21": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 3,
+      "vote_purity": 0.667,
+      "mean_dist_to_team": 12.91,
+      "on_court_frac": null,
+      "votes": {
+        "0": 2,
+        "1": 1
+      }
+    },
+    "23": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 11.45,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "29": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 31,
+      "vote_purity": 0.935,
+      "mean_dist_to_team": 6.45,
+      "on_court_frac": null,
+      "votes": {
+        "1": 29,
+        "0": 2
+      }
+    },
+    "57": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 410,
+      "vote_purity": 0.839,
+      "mean_dist_to_team": 7.77,
+      "on_court_frac": null,
+      "votes": {
+        "0": 344,
+        "1": 66
+      }
+    },
+    "72": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 353,
+      "vote_purity": 0.564,
+      "mean_dist_to_team": 10.64,
+      "on_court_frac": null,
+      "votes": {
+        "1": 199,
+        "0": 154
+      }
+    },
+    "74": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 9,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 3.08,
+      "on_court_frac": null,
+      "votes": {
+        "0": 9
+      }
+    },
+    "77": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.65,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "87": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.86,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "92": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 142,
+      "vote_purity": 0.979,
+      "mean_dist_to_team": 5.53,
+      "on_court_frac": null,
+      "votes": {
+        "0": 3,
+        "1": 139
+      }
+    },
+    "115": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 12.83,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "118": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 405,
+      "vote_purity": 0.615,
+      "mean_dist_to_team": 7.83,
+      "on_court_frac": null,
+      "votes": {
+        "1": 249,
+        "0": 156
+      }
+    },
+    "121": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 170,
+      "vote_purity": 0.965,
+      "mean_dist_to_team": 6.49,
+      "on_court_frac": null,
+      "votes": {
+        "1": 164,
+        "0": 6
+      }
+    },
+    "128": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 101,
+      "vote_purity": 0.574,
+      "mean_dist_to_team": 8.67,
+      "on_court_frac": null,
+      "votes": {
+        "1": 43,
+        "0": 58
+      }
+    },
+    "131": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 334,
+      "vote_purity": 0.997,
+      "mean_dist_to_team": 5.22,
+      "on_court_frac": null,
+      "votes": {
+        "1": 333,
+        "0": 1
+      }
+    },
+    "134": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 12.02,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "139": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 5,
+      "vote_purity": 0.8,
+      "mean_dist_to_team": 11.97,
+      "on_court_frac": null,
+      "votes": {
+        "0": 4,
+        "1": 1
+      }
+    },
+    "143": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 15,
+      "vote_purity": 0.8,
+      "mean_dist_to_team": 5.73,
+      "on_court_frac": null,
+      "votes": {
+        "0": 3,
+        "1": 12
+      }
+    },
+    "150": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 13.34,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "160": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 12.51,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "165": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.01,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "186": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 0.5,
+      "mean_dist_to_team": 21.17,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1,
+        "0": 1
+      }
+    },
+    "200": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.02,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "190": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.5,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "214": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.64,
+      "on_court_frac": null,
+      "votes": {
+        "0": 3
+      }
+    },
+    "220": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.39,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "228": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 117,
+      "vote_purity": 0.564,
+      "mean_dist_to_team": 8.24,
+      "on_court_frac": null,
+      "votes": {
+        "1": 51,
+        "0": 66
+      }
+    },
+    "232": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 11.21,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "235": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 7,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.42,
+      "on_court_frac": null,
+      "votes": {
+        "1": 7
+      }
+    },
+    "240": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 6,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.17,
+      "on_court_frac": null,
+      "votes": {
+        "1": 6
+      }
+    },
+    "243": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 393,
+      "vote_purity": 0.697,
+      "mean_dist_to_team": 9.52,
+      "on_court_frac": null,
+      "votes": {
+        "1": 274,
+        "0": 119
+      }
+    },
+    "250": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.6,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "257": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 11.31,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "265": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 155,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.82,
+      "on_court_frac": null,
+      "votes": {
+        "1": 155
+      }
+    },
+    "269": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 7,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.94,
+      "on_court_frac": null,
+      "votes": {
+        "1": 7
+      }
+    },
+    "266": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 373,
+      "vote_purity": 0.735,
+      "mean_dist_to_team": 7.35,
+      "on_court_frac": null,
+      "votes": {
+        "1": 274,
+        "0": 99
+      }
+    },
+    "274": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.62,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "275": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.71,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3
+      }
+    },
+    "282": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.19,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "288": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.08,
+      "on_court_frac": null,
+      "votes": {
+        "0": 3
+      }
+    },
+    "292": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 163,
+      "vote_purity": 0.638,
+      "mean_dist_to_team": 8.25,
+      "on_court_frac": null,
+      "votes": {
+        "0": 59,
+        "1": 104
+      }
+    },
+    "309": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 14.2,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "312": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 0.95,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "307": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 7,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 5.76,
+      "on_court_frac": null,
+      "votes": {
+        "0": 7
+      }
+    },
+    "322": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 3.5,
+      "on_court_frac": null,
+      "votes": {
+        "0": 2
+      }
+    },
+    "323": {
+      "role": "Referee",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 14.58,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "324": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 2.0,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "333": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 155,
+      "vote_purity": 0.884,
+      "mean_dist_to_team": 8.84,
+      "on_court_frac": null,
+      "votes": {
+        "0": 137,
+        "1": 18
+      }
+    },
+    "342": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 11,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 3.98,
+      "on_court_frac": null,
+      "votes": {
+        "0": 11
+      }
+    },
+    "361": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 11,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.36,
+      "on_court_frac": null,
+      "votes": {
+        "0": 11
+      }
+    },
+    "366": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 2.23,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "371": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 20.52,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "379": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.33,
+      "on_court_frac": null,
+      "votes": {
+        "0": 3
+      }
+    },
+    "382": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.74,
+      "on_court_frac": null,
+      "votes": {
+        "0": 2
+      }
+    },
+    "396": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 89,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.6,
+      "on_court_frac": null,
+      "votes": {
+        "1": 89
+      }
+    },
+    "404": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 23,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.49,
+      "on_court_frac": null,
+      "votes": {
+        "0": 23
+      }
+    },
+    "405": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 147,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.72,
+      "on_court_frac": null,
+      "votes": {
+        "1": 147
+      }
+    },
+    "424": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 24.03,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "425": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 13.1,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "428": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 29,
+      "vote_purity": 0.69,
+      "mean_dist_to_team": 11.18,
+      "on_court_frac": null,
+      "votes": {
+        "0": 20,
+        "1": 9
+      }
+    },
+    "439": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.84,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "445": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 10,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 5.66,
+      "on_court_frac": null,
+      "votes": {
+        "1": 10
+      }
+    },
+    "453": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 12,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 3.6,
+      "on_court_frac": null,
+      "votes": {
+        "1": 12
+      }
+    },
+    "465": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 137,
+      "vote_purity": 0.92,
+      "mean_dist_to_team": 7.18,
+      "on_court_frac": null,
+      "votes": {
+        "1": 11,
+        "0": 126
+      }
+    },
+    "467": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 0.667,
+      "mean_dist_to_team": 9.8,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2,
+        "0": 1
+      }
+    },
+    "468": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 35,
+      "vote_purity": 0.514,
+      "mean_dist_to_team": 9.72,
+      "on_court_frac": null,
+      "votes": {
+        "1": 17,
+        "0": 18
+      }
+    },
+    "475": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.39,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "479": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 152,
+      "vote_purity": 0.987,
+      "mean_dist_to_team": 6.94,
+      "on_court_frac": null,
+      "votes": {
+        "1": 150,
+        "0": 2
+      }
+    },
+    "480": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 19,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.72,
+      "on_court_frac": null,
+      "votes": {
+        "1": 19
+      }
+    },
+    "487": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 22.81,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "492": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 73,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.53,
+      "on_court_frac": null,
+      "votes": {
+        "1": 73
+      }
+    },
+    "495": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 140,
+      "vote_purity": 0.993,
+      "mean_dist_to_team": 6.71,
+      "on_court_frac": null,
+      "votes": {
+        "1": 139,
+        "0": 1
+      }
+    },
+    "497": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 139,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.19,
+      "on_court_frac": null,
+      "votes": {
+        "1": 139
+      }
+    },
+    "510": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 118,
+      "vote_purity": 0.627,
+      "mean_dist_to_team": 8.44,
+      "on_court_frac": null,
+      "votes": {
+        "0": 74,
+        "1": 44
+      }
+    },
+    "511": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 9,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.65,
+      "on_court_frac": null,
+      "votes": {
+        "1": 9
+      }
+    },
+    "514": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.19,
+      "on_court_frac": null,
+      "votes": {
+        "0": 2
+      }
+    },
+    "528": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.63,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3
+      }
+    },
+    "538": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 87,
+      "vote_purity": 0.977,
+      "mean_dist_to_team": 3.22,
+      "on_court_frac": null,
+      "votes": {
+        "0": 2,
+        "1": 85
+      }
+    },
+    "539": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 0.34,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "544": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 81,
+      "vote_purity": 0.556,
+      "mean_dist_to_team": 7.39,
+      "on_court_frac": null,
+      "votes": {
+        "1": 36,
+        "0": 45
+      }
+    },
+    "547": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 74,
+      "vote_purity": 0.851,
+      "mean_dist_to_team": 9.34,
+      "on_court_frac": null,
+      "votes": {
+        "1": 11,
+        "0": 63
+      }
+    },
+    "553": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 25,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.17,
+      "on_court_frac": null,
+      "votes": {
+        "1": 25
+      }
+    },
+    "556": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 4,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.63,
+      "on_court_frac": null,
+      "votes": {
+        "1": 4
+      }
+    },
+    "569": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 11.5,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "572": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 12.01,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3
+      }
+    },
+    "587": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 11,
+      "vote_purity": 0.636,
+      "mean_dist_to_team": 10.52,
+      "on_court_frac": null,
+      "votes": {
+        "1": 4,
+        "0": 7
+      }
+    }
+  },
+  "v_00HRwkvvjtQ_c003": {
+    "1": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 361,
+      "vote_purity": 0.97,
+      "mean_dist_to_team": 7.22,
+      "on_court_frac": null,
+      "votes": {
+        "1": 350,
+        "0": 11
+      }
+    },
+    "2": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 197,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.35,
+      "on_court_frac": null,
+      "votes": {
+        "1": 197
+      }
+    },
+    "3": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 548,
+      "vote_purity": 0.98,
+      "mean_dist_to_team": 5.32,
+      "on_court_frac": null,
+      "votes": {
+        "1": 537,
+        "0": 11
+      }
+    },
+    "4": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 113,
+      "vote_purity": 0.566,
+      "mean_dist_to_team": 8.73,
+      "on_court_frac": null,
+      "votes": {
+        "1": 49,
+        "0": 64
+      }
+    },
+    "5": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 332,
+      "vote_purity": 0.599,
+      "mean_dist_to_team": 10.46,
+      "on_court_frac": null,
+      "votes": {
+        "1": 133,
+        "0": 199
+      }
+    },
+    "6": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 109,
+      "vote_purity": 0.67,
+      "mean_dist_to_team": 9.12,
+      "on_court_frac": null,
+      "votes": {
+        "0": 73,
+        "1": 36
+      }
+    },
+    "7": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 61,
+      "vote_purity": 0.754,
+      "mean_dist_to_team": 7.02,
+      "on_court_frac": null,
+      "votes": {
+        "1": 15,
+        "0": 46
+      }
+    },
+    "8": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 283,
+      "vote_purity": 0.986,
+      "mean_dist_to_team": 5.53,
+      "on_court_frac": null,
+      "votes": {
+        "1": 279,
+        "0": 4
+      }
+    },
+    "9": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 274,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.01,
+      "on_court_frac": null,
+      "votes": {
+        "1": 274
+      }
+    },
+    "10": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 335,
+      "vote_purity": 0.946,
+      "mean_dist_to_team": 9.24,
+      "on_court_frac": null,
+      "votes": {
+        "0": 317,
+        "1": 18
+      }
+    },
+    "13": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 5.17,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "21": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 10,
+      "vote_purity": 0.9,
+      "mean_dist_to_team": 5.75,
+      "on_court_frac": null,
+      "votes": {
+        "0": 9,
+        "1": 1
+      }
+    },
+    "31": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 87,
+      "vote_purity": 0.736,
+      "mean_dist_to_team": 11.27,
+      "on_court_frac": null,
+      "votes": {
+        "1": 23,
+        "0": 64
+      }
+    },
+    "44": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 5,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.11,
+      "on_court_frac": null,
+      "votes": {
+        "1": 5
+      }
+    },
+    "49": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 50,
+      "vote_purity": 0.66,
+      "mean_dist_to_team": 8.78,
+      "on_court_frac": null,
+      "votes": {
+        "1": 17,
+        "0": 33
+      }
+    },
+    "50": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 306,
+      "vote_purity": 0.719,
+      "mean_dist_to_team": 7.85,
+      "on_court_frac": null,
+      "votes": {
+        "1": 86,
+        "0": 220
+      }
+    },
+    "64": {
+      "role": "Referee",
+      "cluster": 0,
+      "n_dets": 3,
+      "vote_purity": 0.667,
+      "mean_dist_to_team": 13.91,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1,
+        "0": 2
+      }
+    },
+    "66": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.17,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "74": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.78,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3
+      }
+    },
+    "76": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.04,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "70": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 143,
+      "vote_purity": 0.818,
+      "mean_dist_to_team": 13.55,
+      "on_court_frac": null,
+      "votes": {
+        "0": 117,
+        "1": 26
+      }
+    },
+    "78": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 183,
+      "vote_purity": 0.705,
+      "mean_dist_to_team": 8.09,
+      "on_court_frac": null,
+      "votes": {
+        "1": 54,
+        "0": 129
+      }
+    },
+    "88": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 12.93,
+      "on_court_frac": null,
+      "votes": {
+        "0": 3
+      }
+    },
+    "98": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.44,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "109": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 4,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.45,
+      "on_court_frac": null,
+      "votes": {
+        "1": 4
+      }
+    },
+    "111": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 340,
+      "vote_purity": 0.712,
+      "mean_dist_to_team": 8.74,
+      "on_court_frac": null,
+      "votes": {
+        "1": 242,
+        "0": 98
+      }
+    },
+    "128": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.1,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "132": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 2.84,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "135": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 11.49,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "143": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 14.17,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "148": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 13,
+      "vote_purity": 0.538,
+      "mean_dist_to_team": 8.43,
+      "on_court_frac": null,
+      "votes": {
+        "1": 6,
+        "0": 7
+      }
+    },
+    "152": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.62,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3
+      }
+    },
+    "156": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 10,
+      "vote_purity": 0.9,
+      "mean_dist_to_team": 8.0,
+      "on_court_frac": null,
+      "votes": {
+        "1": 9,
+        "0": 1
+      }
+    },
+    "167": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 127,
+      "vote_purity": 0.992,
+      "mean_dist_to_team": 4.92,
+      "on_court_frac": null,
+      "votes": {
+        "1": 126,
+        "0": 1
+      }
+    },
+    "169": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 2.78,
+      "on_court_frac": null,
+      "votes": {
+        "0": 2
+      }
+    },
+    "172": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 119,
+      "vote_purity": 0.697,
+      "mean_dist_to_team": 9.87,
+      "on_court_frac": null,
+      "votes": {
+        "1": 36,
+        "0": 83
+      }
+    },
+    "170": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.71,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3
+      }
+    },
+    "173": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 50,
+      "vote_purity": 0.9,
+      "mean_dist_to_team": 6.36,
+      "on_court_frac": null,
+      "votes": {
+        "1": 45,
+        "0": 5
+      }
+    },
+    "174": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 17,
+      "vote_purity": 0.647,
+      "mean_dist_to_team": 6.51,
+      "on_court_frac": null,
+      "votes": {
+        "1": 6,
+        "0": 11
+      }
+    },
+    "176": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.62,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "183": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 91,
+      "vote_purity": 0.747,
+      "mean_dist_to_team": 11.58,
+      "on_court_frac": null,
+      "votes": {
+        "1": 23,
+        "0": 68
+      }
+    },
+    "186": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 11.55,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "189": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 11,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 13.71,
+      "on_court_frac": null,
+      "votes": {
+        "1": 11
+      }
+    },
+    "196": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 11.46,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "195": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 64,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.9,
+      "on_court_frac": null,
+      "votes": {
+        "1": 64
+      }
+    },
+    "200": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 151,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.34,
+      "on_court_frac": null,
+      "votes": {
+        "1": 151
+      }
+    },
+    "209": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 79,
+      "vote_purity": 0.595,
+      "mean_dist_to_team": 11.58,
+      "on_court_frac": null,
+      "votes": {
+        "1": 32,
+        "0": 47
+      }
+    },
+    "211": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 49,
+      "vote_purity": 0.571,
+      "mean_dist_to_team": 10.65,
+      "on_court_frac": null,
+      "votes": {
+        "1": 28,
+        "0": 21
+      }
+    },
+    "227": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 15.57,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "231": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 5,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.02,
+      "on_court_frac": null,
+      "votes": {
+        "1": 5
+      }
+    },
+    "234": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 13.54,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "253": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 28,
+      "vote_purity": 0.536,
+      "mean_dist_to_team": 8.61,
+      "on_court_frac": null,
+      "votes": {
+        "0": 13,
+        "1": 15
+      }
+    },
+    "265": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 10,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.76,
+      "on_court_frac": null,
+      "votes": {
+        "1": 10
+      }
+    },
+    "277": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 54,
+      "vote_purity": 0.944,
+      "mean_dist_to_team": 12.97,
+      "on_court_frac": null,
+      "votes": {
+        "1": 51,
+        "0": 3
+      }
+    },
+    "282": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 10,
+      "vote_purity": 0.5,
+      "mean_dist_to_team": 7.06,
+      "on_court_frac": null,
+      "votes": {
+        "0": 5,
+        "1": 5
+      }
+    },
+    "295": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 113,
+      "vote_purity": 0.991,
+      "mean_dist_to_team": 9.97,
+      "on_court_frac": null,
+      "votes": {
+        "1": 112,
+        "0": 1
+      }
+    },
+    "304": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 110,
+      "vote_purity": 0.591,
+      "mean_dist_to_team": 9.18,
+      "on_court_frac": null,
+      "votes": {
+        "1": 65,
+        "0": 45
+      }
+    },
+    "303": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 3,
+      "vote_purity": 0.667,
+      "mean_dist_to_team": 9.05,
+      "on_court_frac": null,
+      "votes": {
+        "0": 2,
+        "1": 1
+      }
+    },
+    "315": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 65,
+      "vote_purity": 0.8,
+      "mean_dist_to_team": 9.33,
+      "on_court_frac": null,
+      "votes": {
+        "1": 13,
+        "0": 52
+      }
+    },
+    "318": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.64,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3
+      }
+    },
+    "317": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 5.29,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "321": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 96,
+      "vote_purity": 0.573,
+      "mean_dist_to_team": 8.07,
+      "on_court_frac": null,
+      "votes": {
+        "1": 41,
+        "0": 55
+      }
+    },
+    "323": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.51,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "334": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 27,
+      "vote_purity": 0.63,
+      "mean_dist_to_team": 6.91,
+      "on_court_frac": null,
+      "votes": {
+        "0": 17,
+        "1": 10
+      }
+    },
+    "336": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 46,
+      "vote_purity": 0.978,
+      "mean_dist_to_team": 5.39,
+      "on_court_frac": null,
+      "votes": {
+        "1": 45,
+        "0": 1
+      }
+    },
+    "351": {
+      "role": "Referee",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 25.9,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "352": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.68,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "362": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 0.667,
+      "mean_dist_to_team": 7.29,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2,
+        "0": 1
+      }
+    },
+    "364": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.93,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "366": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 44,
+      "vote_purity": 0.545,
+      "mean_dist_to_team": 8.09,
+      "on_court_frac": null,
+      "votes": {
+        "1": 20,
+        "0": 24
+      }
+    },
+    "374": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 72,
+      "vote_purity": 0.944,
+      "mean_dist_to_team": 6.73,
+      "on_court_frac": null,
+      "votes": {
+        "1": 68,
+        "0": 4
+      }
+    },
+    "376": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 2.53,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "377": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 53,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.93,
+      "on_court_frac": null,
+      "votes": {
+        "1": 53
+      }
+    },
+    "382": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 73,
+      "vote_purity": 0.904,
+      "mean_dist_to_team": 7.92,
+      "on_court_frac": null,
+      "votes": {
+        "1": 66,
+        "0": 7
+      }
+    },
+    "383": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 3.13,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "385": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 9,
+      "vote_purity": 0.778,
+      "mean_dist_to_team": 5.66,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2,
+        "0": 7
+      }
+    },
+    "394": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 3,
+      "vote_purity": 0.667,
+      "mean_dist_to_team": 6.4,
+      "on_court_frac": null,
+      "votes": {
+        "0": 2,
+        "1": 1
+      }
+    },
+    "405": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 30,
+      "vote_purity": 0.767,
+      "mean_dist_to_team": 10.32,
+      "on_court_frac": null,
+      "votes": {
+        "1": 23,
+        "0": 7
+      }
+    },
+    "406": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 32,
+      "vote_purity": 0.812,
+      "mean_dist_to_team": 5.75,
+      "on_court_frac": null,
+      "votes": {
+        "0": 26,
+        "1": 6
+      }
+    },
+    "408": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 2.87,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "420": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 5.31,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "425": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 4,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.64,
+      "on_court_frac": null,
+      "votes": {
+        "1": 4
+      }
+    },
+    "427": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.66,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "428": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 1.05,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "440": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 28,
+      "vote_purity": 0.929,
+      "mean_dist_to_team": 10.84,
+      "on_court_frac": null,
+      "votes": {
+        "1": 26,
+        "0": 2
+      }
+    },
+    "448": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 23,
+      "vote_purity": 0.957,
+      "mean_dist_to_team": 10.52,
+      "on_court_frac": null,
+      "votes": {
+        "1": 22,
+        "0": 1
+      }
+    },
+    "454": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 22.99,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "457": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.28,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3
+      }
+    },
+    "458": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 24,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.9,
+      "on_court_frac": null,
+      "votes": {
+        "1": 24
+      }
+    },
+    "459": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 21,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 5.28,
+      "on_court_frac": null,
+      "votes": {
+        "1": 21
+      }
+    },
+    "463": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 25,
+      "vote_purity": 0.72,
+      "mean_dist_to_team": 6.73,
+      "on_court_frac": null,
+      "votes": {
+        "0": 18,
+        "1": 7
+      }
+    },
+    "464": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 25,
+      "vote_purity": 0.6,
+      "mean_dist_to_team": 10.26,
+      "on_court_frac": null,
+      "votes": {
+        "1": 15,
+        "0": 10
+      }
+    },
+    "465": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 17,
+      "vote_purity": 0.882,
+      "mean_dist_to_team": 10.84,
+      "on_court_frac": null,
+      "votes": {
+        "0": 15,
+        "1": 2
+      }
+    },
+    "466": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.2,
+      "on_court_frac": null,
+      "votes": {
+        "0": 2
+      }
+    },
+    "468": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 18.86,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "470": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 5,
+      "vote_purity": 0.6,
+      "mean_dist_to_team": 10.45,
+      "on_court_frac": null,
+      "votes": {
+        "0": 2,
+        "1": 3
+      }
+    },
+    "447": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 7,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.29,
+      "on_court_frac": null,
+      "votes": {
+        "1": 7
+      }
+    },
+    "483": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 7,
+      "vote_purity": 0.714,
+      "mean_dist_to_team": 10.44,
+      "on_court_frac": null,
+      "votes": {
+        "1": 5,
+        "0": 2
+      }
+    },
+    "485": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 14.8,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "489": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.32,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    }
+  },
+  "v_00HRwkvvjtQ_c005": {
+    "1": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 28,
+      "vote_purity": 0.893,
+      "mean_dist_to_team": 8.21,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3,
+        "0": 25
+      }
+    },
+    "2": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 114,
+      "vote_purity": 0.974,
+      "mean_dist_to_team": 4.34,
+      "on_court_frac": null,
+      "votes": {
+        "1": 111,
+        "0": 3
+      }
+    },
+    "3": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 149,
+      "vote_purity": 0.517,
+      "mean_dist_to_team": 7.46,
+      "on_court_frac": null,
+      "votes": {
+        "0": 77,
+        "1": 72
+      }
+    },
+    "4": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 278,
+      "vote_purity": 0.896,
+      "mean_dist_to_team": 7.9,
+      "on_court_frac": null,
+      "votes": {
+        "1": 249,
+        "0": 29
+      }
+    },
+    "5": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 141,
+      "vote_purity": 0.972,
+      "mean_dist_to_team": 10.0,
+      "on_court_frac": null,
+      "votes": {
+        "1": 137,
+        "0": 4
+      }
+    },
+    "6": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 92,
+      "vote_purity": 0.978,
+      "mean_dist_to_team": 7.8,
+      "on_court_frac": null,
+      "votes": {
+        "0": 90,
+        "1": 2
+      }
+    },
+    "7": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 135,
+      "vote_purity": 0.859,
+      "mean_dist_to_team": 6.43,
+      "on_court_frac": null,
+      "votes": {
+        "1": 116,
+        "0": 19
+      }
+    },
+    "8": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 151,
+      "vote_purity": 0.589,
+      "mean_dist_to_team": 10.33,
+      "on_court_frac": null,
+      "votes": {
+        "1": 89,
+        "0": 62
+      }
+    },
+    "9": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.34,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "12": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 39,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.5,
+      "on_court_frac": null,
+      "votes": {
+        "1": 39
+      }
+    },
+    "13": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 85,
+      "vote_purity": 0.894,
+      "mean_dist_to_team": 10.13,
+      "on_court_frac": null,
+      "votes": {
+        "1": 9,
+        "0": 76
+      }
+    },
+    "27": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 230,
+      "vote_purity": 0.613,
+      "mean_dist_to_team": 8.61,
+      "on_court_frac": null,
+      "votes": {
+        "1": 89,
+        "0": 141
+      }
+    },
+    "28": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.15,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "36": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 26,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 15.93,
+      "on_court_frac": null,
+      "votes": {
+        "1": 26
+      }
+    },
+    "38": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 13.51,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "43": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 5,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.08,
+      "on_court_frac": null,
+      "votes": {
+        "0": 5
+      }
+    },
+    "47": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 80,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 5.73,
+      "on_court_frac": null,
+      "votes": {
+        "1": 80
+      }
+    },
+    "48": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.8,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "60": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 12.53,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "77": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.68,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "80": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 62,
+      "vote_purity": 0.968,
+      "mean_dist_to_team": 13.16,
+      "on_court_frac": null,
+      "votes": {
+        "0": 60,
+        "1": 2
+      }
+    },
+    "84": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 55,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.23,
+      "on_court_frac": null,
+      "votes": {
+        "0": 55
+      }
+    },
+    "85": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 13.26,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "88": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 13,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 12.78,
+      "on_court_frac": null,
+      "votes": {
+        "1": 13
+      }
+    },
+    "91": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.45,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "100": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 42,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.66,
+      "on_court_frac": null,
+      "votes": {
+        "1": 42
+      }
+    },
+    "109": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 24,
+      "vote_purity": 0.958,
+      "mean_dist_to_team": 3.96,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1,
+        "1": 23
+      }
+    },
+    "110": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 4,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 23.46,
+      "on_court_frac": null,
+      "votes": {
+        "1": 4
+      }
+    },
+    "113": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 32,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.35,
+      "on_court_frac": null,
+      "votes": {
+        "1": 32
+      }
+    },
+    "114": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 4,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.34,
+      "on_court_frac": null,
+      "votes": {
+        "1": 4
+      }
+    },
+    "126": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 11.93,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "134": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 138,
+      "vote_purity": 0.986,
+      "mean_dist_to_team": 8.66,
+      "on_court_frac": null,
+      "votes": {
+        "1": 136,
+        "0": 2
+      }
+    },
+    "137": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.33,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "138": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 126,
+      "vote_purity": 0.762,
+      "mean_dist_to_team": 6.63,
+      "on_court_frac": null,
+      "votes": {
+        "1": 96,
+        "0": 30
+      }
+    },
+    "143": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 7,
+      "vote_purity": 0.714,
+      "mean_dist_to_team": 5.33,
+      "on_court_frac": null,
+      "votes": {
+        "0": 5,
+        "1": 2
+      }
+    },
+    "145": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 7,
+      "vote_purity": 0.714,
+      "mean_dist_to_team": 5.51,
+      "on_court_frac": null,
+      "votes": {
+        "1": 5,
+        "0": 2
+      }
+    },
+    "154": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 12.72,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3
+      }
+    },
+    "156": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 116,
+      "vote_purity": 0.871,
+      "mean_dist_to_team": 8.65,
+      "on_court_frac": null,
+      "votes": {
+        "1": 101,
+        "0": 15
+      }
+    },
+    "161": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.91,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "177": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.88,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "180": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 83,
+      "vote_purity": 0.952,
+      "mean_dist_to_team": 11.25,
+      "on_court_frac": null,
+      "votes": {
+        "1": 79,
+        "0": 4
+      }
+    },
+    "188": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 3.79,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "190": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 3,
+      "vote_purity": 0.667,
+      "mean_dist_to_team": 9.97,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1,
+        "0": 2
+      }
+    },
+    "199": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 63,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.56,
+      "on_court_frac": null,
+      "votes": {
+        "1": 63
+      }
+    },
+    "203": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 38,
+      "vote_purity": 0.553,
+      "mean_dist_to_team": 8.77,
+      "on_court_frac": null,
+      "votes": {
+        "1": 17,
+        "0": 21
+      }
+    },
+    "210": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.62,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "212": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 95,
+      "vote_purity": 0.589,
+      "mean_dist_to_team": 6.81,
+      "on_court_frac": null,
+      "votes": {
+        "1": 56,
+        "0": 39
+      }
+    },
+    "215": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 77,
+      "vote_purity": 0.584,
+      "mean_dist_to_team": 8.09,
+      "on_court_frac": null,
+      "votes": {
+        "1": 32,
+        "0": 45
+      }
+    },
+    "217": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 27.25,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "229": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.69,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "246": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 16,
+      "vote_purity": 0.75,
+      "mean_dist_to_team": 7.71,
+      "on_court_frac": null,
+      "votes": {
+        "0": 12,
+        "1": 4
+      }
+    },
+    "248": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.69,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "254": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 3.32,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3
+      }
+    },
+    "256": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.68,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "263": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.08,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "264": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 11,
+      "vote_purity": 0.545,
+      "mean_dist_to_team": 7.58,
+      "on_court_frac": null,
+      "votes": {
+        "1": 6,
+        "0": 5
+      }
+    },
+    "283": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 11.23,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "287": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 34,
+      "vote_purity": 0.941,
+      "mean_dist_to_team": 11.14,
+      "on_court_frac": null,
+      "votes": {
+        "0": 32,
+        "1": 2
+      }
+    },
+    "295": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 6,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.13,
+      "on_court_frac": null,
+      "votes": {
+        "1": 6
+      }
+    },
+    "326": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 13.15,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "332": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 8,
+      "vote_purity": 0.625,
+      "mean_dist_to_team": 6.73,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3,
+        "0": 5
+      }
+    }
+  },
+  "v_00HRwkvvjtQ_c007": {
+    "1": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 15,
+      "vote_purity": 0.733,
+      "mean_dist_to_team": 9.4,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 11,
+        "0": 4
+      }
+    },
+    "2": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 15,
+      "vote_purity": 0.8,
+      "mean_dist_to_team": 14.47,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 12,
+        "0": 3
+      }
+    },
+    "3": {
+      "role": "Excluded",
+      "cluster": 1,
+      "n_dets": 57,
+      "vote_purity": 0.737,
+      "mean_dist_to_team": 11.24,
+      "on_court_frac": 0.25,
+      "votes": {
+        "0": 15,
+        "1": 42
+      }
+    },
+    "4": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 46,
+      "vote_purity": 0.87,
+      "mean_dist_to_team": 11.56,
+      "on_court_frac": 0.65,
+      "votes": {
+        "1": 6,
+        "0": 40
+      }
+    },
+    "5": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 51,
+      "vote_purity": 0.902,
+      "mean_dist_to_team": 9.62,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 46,
+        "0": 5
+      }
+    },
+    "6": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 21,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.57,
+      "on_court_frac": 0.95,
+      "votes": {
+        "1": 21
+      }
+    },
+    "7": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 124,
+      "vote_purity": 0.968,
+      "mean_dist_to_team": 6.42,
+      "on_court_frac": 0.54,
+      "votes": {
+        "1": 120,
+        "0": 4
+      }
+    },
+    "8": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 63,
+      "vote_purity": 0.889,
+      "mean_dist_to_team": 14.42,
+      "on_court_frac": 0.97,
+      "votes": {
+        "0": 7,
+        "1": 56
+      }
+    },
+    "9": {
+      "role": "Excluded",
+      "cluster": 1,
+      "n_dets": 15,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.62,
+      "on_court_frac": 0.0,
+      "votes": {
+        "1": 15
+      }
+    },
+    "17": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 80,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.31,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 80
+      }
+    },
+    "19": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 8,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 33.19,
+      "on_court_frac": 0.88,
+      "votes": {
+        "1": 8
+      }
+    },
+    "20": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 30,
+      "vote_purity": 0.6,
+      "mean_dist_to_team": 7.22,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 18,
+        "0": 12
+      }
+    },
+    "21": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 301,
+      "vote_purity": 0.9,
+      "mean_dist_to_team": 7.67,
+      "on_court_frac": 0.93,
+      "votes": {
+        "1": 271,
+        "0": 30
+      }
+    },
+    "38": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 77,
+      "vote_purity": 0.701,
+      "mean_dist_to_team": 7.69,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 23,
+        "0": 54
+      }
+    },
+    "40": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 42,
+      "vote_purity": 0.976,
+      "mean_dist_to_team": 6.73,
+      "on_court_frac": 0.83,
+      "votes": {
+        "1": 41,
+        "0": 1
+      }
+    },
+    "51": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 1.76,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 2
+      }
+    },
+    "52": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 11.98,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 1
+      }
+    },
+    "68": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 65,
+      "vote_purity": 0.615,
+      "mean_dist_to_team": 6.37,
+      "on_court_frac": 0.55,
+      "votes": {
+        "1": 40,
+        "0": 25
+      }
+    },
+    "70": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 285,
+      "vote_purity": 0.537,
+      "mean_dist_to_team": 8.41,
+      "on_court_frac": 0.91,
+      "votes": {
+        "1": 153,
+        "0": 132
+      }
+    },
+    "82": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 5.47,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 2
+      }
+    },
+    "104": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 130,
+      "vote_purity": 0.692,
+      "mean_dist_to_team": 7.91,
+      "on_court_frac": 0.76,
+      "votes": {
+        "0": 90,
+        "1": 40
+      }
+    },
+    "128": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 7,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 5.93,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 7
+      }
+    },
+    "142": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.82,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 2
+      }
+    },
+    "149": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 11,
+      "vote_purity": 0.727,
+      "mean_dist_to_team": 7.71,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 8,
+        "0": 3
+      }
+    },
+    "154": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 5.95,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 1
+      }
+    },
+    "162": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 205,
+      "vote_purity": 0.644,
+      "mean_dist_to_team": 8.24,
+      "on_court_frac": 0.89,
+      "votes": {
+        "1": 132,
+        "0": 73
+      }
+    },
+    "167": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 132,
+      "vote_purity": 0.992,
+      "mean_dist_to_team": 8.61,
+      "on_court_frac": 0.98,
+      "votes": {
+        "0": 1,
+        "1": 131
+      }
+    },
+    "179": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 101,
+      "vote_purity": 0.594,
+      "mean_dist_to_team": 8.14,
+      "on_court_frac": 0.93,
+      "votes": {
+        "0": 41,
+        "1": 60
+      }
+    },
+    "192": {
+      "role": "Excluded",
+      "cluster": 1,
+      "n_dets": 6,
+      "vote_purity": 0.667,
+      "mean_dist_to_team": 7.2,
+      "on_court_frac": 0.17,
+      "votes": {
+        "0": 2,
+        "1": 4
+      }
+    },
+    "202": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 224,
+      "vote_purity": 0.982,
+      "mean_dist_to_team": 9.82,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 220,
+        "0": 4
+      }
+    },
+    "211": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 217,
+      "vote_purity": 0.945,
+      "mean_dist_to_team": 10.06,
+      "on_court_frac": 0.98,
+      "votes": {
+        "1": 205,
+        "0": 12
+      }
+    },
+    "222": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 190,
+      "vote_purity": 0.647,
+      "mean_dist_to_team": 7.94,
+      "on_court_frac": 1.0,
+      "votes": {
+        "0": 123,
+        "1": 67
+      }
+    },
+    "227": {
+      "role": "Excluded",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 16.18,
+      "on_court_frac": 0.0,
+      "votes": {
+        "1": 1
+      }
+    },
+    "232": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 0.5,
+      "mean_dist_to_team": 7.34,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 1,
+        "0": 1
+      }
+    },
+    "233": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 57,
+      "vote_purity": 0.965,
+      "mean_dist_to_team": 7.86,
+      "on_court_frac": 0.79,
+      "votes": {
+        "1": 55,
+        "0": 2
+      }
+    },
+    "236": {
+      "role": "Excluded",
+      "cluster": 1,
+      "n_dets": 4,
+      "vote_purity": 0.75,
+      "mean_dist_to_team": 20.62,
+      "on_court_frac": 0.25,
+      "votes": {
+        "1": 3,
+        "0": 1
+      }
+    },
+    "238": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.89,
+      "on_court_frac": 1.0,
+      "votes": {
+        "0": 2
+      }
+    },
+    "250": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.89,
+      "on_court_frac": 0.5,
+      "votes": {
+        "1": 2
+      }
+    },
+    "261": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 8,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.31,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 8
+      }
+    },
+    "268": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.47,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 2
+      }
+    },
+    "277": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 4,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.17,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 4
+      }
+    },
+    "282": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 32,
+      "vote_purity": 0.906,
+      "mean_dist_to_team": 5.84,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 29,
+        "0": 3
+      }
+    },
+    "290": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 2,
+      "vote_purity": 0.5,
+      "mean_dist_to_team": 12.58,
+      "on_court_frac": 1.0,
+      "votes": {
+        "0": 1,
+        "1": 1
+      }
+    },
+    "291": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 94,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.9,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 94
+      }
+    },
+    "299": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 34,
+      "vote_purity": 0.676,
+      "mean_dist_to_team": 8.51,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 23,
+        "0": 11
+      }
+    },
+    "310": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 130,
+      "vote_purity": 0.746,
+      "mean_dist_to_team": 10.43,
+      "on_court_frac": 0.99,
+      "votes": {
+        "1": 33,
+        "0": 97
+      }
+    },
+    "312": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 24.18,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 1
+      }
+    },
+    "330": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.94,
+      "on_court_frac": 1.0,
+      "votes": {
+        "0": 1
+      }
+    },
+    "329": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 4,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 13.06,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 4
+      }
+    },
+    "332": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.78,
+      "on_court_frac": 1.0,
+      "votes": {
+        "0": 2
+      }
+    },
+    "341": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 89,
+      "vote_purity": 0.551,
+      "mean_dist_to_team": 8.17,
+      "on_court_frac": 1.0,
+      "votes": {
+        "0": 49,
+        "1": 40
+      }
+    },
+    "355": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.75,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 2
+      }
+    },
+    "356": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 13,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 2.49,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 13
+      }
+    },
+    "372": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 0.667,
+      "mean_dist_to_team": 5.1,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 2,
+        "0": 1
+      }
+    },
+    "384": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 64,
+      "vote_purity": 0.5,
+      "mean_dist_to_team": 7.08,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 32,
+        "0": 32
+      }
+    },
+    "389": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.13,
+      "on_court_frac": 1.0,
+      "votes": {
+        "0": 1
+      }
+    },
+    "391": {
+      "role": "Referee",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 21.94,
+      "on_court_frac": 1.0,
+      "votes": {
+        "0": 1
+      }
+    },
+    "395": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 1.1,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 1
+      }
+    },
+    "412": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 11,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.83,
+      "on_court_frac": 1.0,
+      "votes": {
+        "0": 11
+      }
+    },
+    "422": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.28,
+      "on_court_frac": 1.0,
+      "votes": {
+        "0": 1
+      }
+    },
+    "423": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 5,
+      "vote_purity": 0.8,
+      "mean_dist_to_team": 6.81,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 1,
+        "0": 4
+      }
+    },
+    "425": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 21,
+      "vote_purity": 0.905,
+      "mean_dist_to_team": 7.99,
+      "on_court_frac": 1.0,
+      "votes": {
+        "1": 19,
+        "0": 2
+      }
+    },
+    "448": {
+      "role": "Referee",
+      "cluster": 0,
+      "n_dets": 4,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 13.87,
+      "on_court_frac": 1.0,
+      "votes": {
+        "0": 4
+      }
+    }
+  },
+  "v_00HRwkvvjtQ_c008": {
+    "1": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 164,
+      "vote_purity": 0.738,
+      "mean_dist_to_team": 8.91,
+      "on_court_frac": null,
+      "votes": {
+        "1": 43,
+        "0": 121
+      }
+    },
+    "2": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 273,
+      "vote_purity": 0.722,
+      "mean_dist_to_team": 7.99,
+      "on_court_frac": null,
+      "votes": {
+        "1": 76,
+        "0": 197
+      }
+    },
+    "3": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 211,
+      "vote_purity": 0.787,
+      "mean_dist_to_team": 8.21,
+      "on_court_frac": null,
+      "votes": {
+        "1": 45,
+        "0": 166
+      }
+    },
+    "4": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 98,
+      "vote_purity": 0.806,
+      "mean_dist_to_team": 9.0,
+      "on_court_frac": null,
+      "votes": {
+        "0": 79,
+        "1": 19
+      }
+    },
+    "6": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 105,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 12.3,
+      "on_court_frac": null,
+      "votes": {
+        "1": 105
+      }
+    },
+    "7": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 187,
+      "vote_purity": 0.957,
+      "mean_dist_to_team": 5.48,
+      "on_court_frac": null,
+      "votes": {
+        "1": 179,
+        "0": 8
+      }
+    },
+    "8": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 50,
+      "vote_purity": 0.9,
+      "mean_dist_to_team": 11.15,
+      "on_court_frac": null,
+      "votes": {
+        "1": 45,
+        "0": 5
+      }
+    },
+    "9": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.14,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "12": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 180,
+      "vote_purity": 0.906,
+      "mean_dist_to_team": 6.16,
+      "on_court_frac": null,
+      "votes": {
+        "1": 163,
+        "0": 17
+      }
+    },
+    "13": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 365,
+      "vote_purity": 0.773,
+      "mean_dist_to_team": 9.18,
+      "on_court_frac": null,
+      "votes": {
+        "1": 83,
+        "0": 282
+      }
+    },
+    "14": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 314,
+      "vote_purity": 0.994,
+      "mean_dist_to_team": 8.15,
+      "on_court_frac": null,
+      "votes": {
+        "1": 312,
+        "0": 2
+      }
+    },
+    "15": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 12.27,
+      "on_court_frac": null,
+      "votes": {
+        "0": 2
+      }
+    },
+    "42": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 19.51,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "45": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.09,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "50": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 118,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.54,
+      "on_court_frac": null,
+      "votes": {
+        "1": 118
+      }
+    },
+    "53": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 11.08,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "62": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.03,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "64": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 11.71,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "80": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 0.5,
+      "mean_dist_to_team": 11.05,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1,
+        "0": 1
+      }
+    },
+    "82": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 61,
+      "vote_purity": 0.918,
+      "mean_dist_to_team": 7.04,
+      "on_court_frac": null,
+      "votes": {
+        "0": 56,
+        "1": 5
+      }
+    },
+    "88": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 4,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 5.02,
+      "on_court_frac": null,
+      "votes": {
+        "1": 4
+      }
+    },
+    "92": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 197,
+      "vote_purity": 0.985,
+      "mean_dist_to_team": 8.3,
+      "on_court_frac": null,
+      "votes": {
+        "1": 194,
+        "0": 3
+      }
+    },
+    "96": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.95,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "107": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.17,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "123": {
+      "role": "Referee",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 13.89,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "124": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 156,
+      "vote_purity": 0.609,
+      "mean_dist_to_team": 8.7,
+      "on_court_frac": null,
+      "votes": {
+        "1": 61,
+        "0": 95
+      }
+    },
+    "125": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.37,
+      "on_court_frac": null,
+      "votes": {
+        "0": 2
+      }
+    },
+    "128": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.47,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "138": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 12.93,
+      "on_court_frac": null,
+      "votes": {
+        "0": 2
+      }
+    },
+    "140": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 5.63,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "146": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 2,
+      "vote_purity": 0.5,
+      "mean_dist_to_team": 12.44,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1,
+        "1": 1
+      }
+    },
+    "147": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 114,
+      "vote_purity": 0.851,
+      "mean_dist_to_team": 7.28,
+      "on_court_frac": null,
+      "votes": {
+        "0": 17,
+        "1": 97
+      }
+    },
+    "145": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 0.5,
+      "mean_dist_to_team": 13.92,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1,
+        "0": 1
+      }
+    },
+    "157": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 54,
+      "vote_purity": 0.648,
+      "mean_dist_to_team": 7.93,
+      "on_court_frac": null,
+      "votes": {
+        "0": 19,
+        "1": 35
+      }
+    },
+    "162": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 4,
+      "vote_purity": 0.75,
+      "mean_dist_to_team": 9.7,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1,
+        "0": 3
+      }
+    },
+    "164": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 108,
+      "vote_purity": 0.861,
+      "mean_dist_to_team": 6.8,
+      "on_court_frac": null,
+      "votes": {
+        "0": 15,
+        "1": 93
+      }
+    },
+    "165": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 12,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 2.75,
+      "on_court_frac": null,
+      "votes": {
+        "1": 12
+      }
+    },
+    "172": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.36,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "175": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 1.64,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "177": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 71,
+      "vote_purity": 0.69,
+      "mean_dist_to_team": 8.42,
+      "on_court_frac": null,
+      "votes": {
+        "0": 22,
+        "1": 49
+      }
+    },
+    "179": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 273,
+      "vote_purity": 0.835,
+      "mean_dist_to_team": 7.57,
+      "on_court_frac": null,
+      "votes": {
+        "0": 228,
+        "1": 45
+      }
+    },
+    "182": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 10.54,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3
+      }
+    },
+    "189": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.31,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "204": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 2,
+      "vote_purity": 0.5,
+      "mean_dist_to_team": 8.65,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1,
+        "1": 1
+      }
+    },
+    "216": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 5,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 14.94,
+      "on_court_frac": null,
+      "votes": {
+        "1": 5
+      }
+    },
+    "220": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 9.83,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3
+      }
+    },
+    "223": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 12.46,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "231": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.52,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "238": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 4,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 7.75,
+      "on_court_frac": null,
+      "votes": {
+        "1": 4
+      }
+    },
+    "245": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 231,
+      "vote_purity": 0.784,
+      "mean_dist_to_team": 6.2,
+      "on_court_frac": null,
+      "votes": {
+        "0": 50,
+        "1": 181
+      }
+    },
+    "257": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 33.95,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "263": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 14.89,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "275": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 206,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.56,
+      "on_court_frac": null,
+      "votes": {
+        "1": 206
+      }
+    },
+    "277": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 4,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 13.15,
+      "on_court_frac": null,
+      "votes": {
+        "1": 4
+      }
+    },
+    "282": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 192,
+      "vote_purity": 0.646,
+      "mean_dist_to_team": 7.53,
+      "on_court_frac": null,
+      "votes": {
+        "1": 124,
+        "0": 68
+      }
+    },
+    "285": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 15.09,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "288": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 14.88,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "289": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 194,
+      "vote_purity": 0.979,
+      "mean_dist_to_team": 3.97,
+      "on_court_frac": null,
+      "votes": {
+        "0": 4,
+        "1": 190
+      }
+    },
+    "293": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 11.26,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3
+      }
+    },
+    "294": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 2.53,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "300": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 9,
+      "vote_purity": 0.778,
+      "mean_dist_to_team": 8.13,
+      "on_court_frac": null,
+      "votes": {
+        "0": 7,
+        "1": 2
+      }
+    },
+    "317": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 80,
+      "vote_purity": 0.938,
+      "mean_dist_to_team": 11.08,
+      "on_court_frac": null,
+      "votes": {
+        "1": 5,
+        "0": 75
+      }
+    },
+    "318": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 1.75,
+      "on_court_frac": null,
+      "votes": {
+        "0": 1
+      }
+    },
+    "319": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 60,
+      "vote_purity": 0.533,
+      "mean_dist_to_team": 8.93,
+      "on_court_frac": null,
+      "votes": {
+        "0": 28,
+        "1": 32
+      }
+    },
+    "327": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 34,
+      "vote_purity": 0.971,
+      "mean_dist_to_team": 11.82,
+      "on_court_frac": null,
+      "votes": {
+        "1": 33,
+        "0": 1
+      }
+    },
+    "331": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 4,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 13.42,
+      "on_court_frac": null,
+      "votes": {
+        "1": 4
+      }
+    },
+    "338": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 5,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 8.0,
+      "on_court_frac": null,
+      "votes": {
+        "1": 5
+      }
+    },
+    "350": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 104,
+      "vote_purity": 0.673,
+      "mean_dist_to_team": 8.45,
+      "on_court_frac": null,
+      "votes": {
+        "1": 34,
+        "0": 70
+      }
+    },
+    "352": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 0.5,
+      "mean_dist_to_team": 11.09,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1,
+        "0": 1
+      }
+    },
+    "359": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 58,
+      "vote_purity": 0.948,
+      "mean_dist_to_team": 7.58,
+      "on_court_frac": null,
+      "votes": {
+        "1": 55,
+        "0": 3
+      }
+    },
+    "367": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 5,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.34,
+      "on_court_frac": null,
+      "votes": {
+        "1": 5
+      }
+    },
+    "381": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 103,
+      "vote_purity": 0.757,
+      "mean_dist_to_team": 9.85,
+      "on_court_frac": null,
+      "votes": {
+        "0": 25,
+        "1": 78
+      }
+    },
+    "386": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 45,
+      "vote_purity": 0.756,
+      "mean_dist_to_team": 6.13,
+      "on_court_frac": null,
+      "votes": {
+        "0": 34,
+        "1": 11
+      }
+    },
+    "398": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 85,
+      "vote_purity": 0.588,
+      "mean_dist_to_team": 10.38,
+      "on_court_frac": null,
+      "votes": {
+        "1": 50,
+        "0": 35
+      }
+    },
+    "409": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 5,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 6.3,
+      "on_court_frac": null,
+      "votes": {
+        "1": 5
+      }
+    },
+    "412": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 11.55,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "419": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 11.87,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "430": {
+      "role": "TeamA",
+      "cluster": 0,
+      "n_dets": 70,
+      "vote_purity": 0.957,
+      "mean_dist_to_team": 8.15,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3,
+        "0": 67
+      }
+    },
+    "432": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 1.9,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "442": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 55,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 5.35,
+      "on_court_frac": null,
+      "votes": {
+        "1": 55
+      }
+    },
+    "446": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 49,
+      "vote_purity": 0.959,
+      "mean_dist_to_team": 5.32,
+      "on_court_frac": null,
+      "votes": {
+        "1": 47,
+        "0": 2
+      }
+    },
+    "452": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 2,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 4.74,
+      "on_court_frac": null,
+      "votes": {
+        "1": 2
+      }
+    },
+    "454": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 3,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 2.96,
+      "on_court_frac": null,
+      "votes": {
+        "1": 3
+      }
+    },
+    "469": {
+      "role": "TeamB",
+      "cluster": 1,
+      "n_dets": 1,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 3.51,
+      "on_court_frac": null,
+      "votes": {
+        "1": 1
+      }
+    },
+    "475": {
+      "role": "Referee",
+      "cluster": 1,
+      "n_dets": 4,
+      "vote_purity": 1.0,
+      "mean_dist_to_team": 20.43,
+      "on_court_frac": null,
+      "votes": {
+        "1": 4
+      }
+    }
+  }
+}

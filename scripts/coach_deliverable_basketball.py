@@ -45,8 +45,24 @@ SPEED_BANDS = [("Stand/walk", 0.0, 1.4), ("Jog", 1.4, 3.0), ("Run", 3.0, 4.5),
                ("High-intensity", 4.5, 6.0), ("Sprint", 6.0, 99.0)]
 SPEED_ARTEFACT = 9.0    # m/s; above basketball peak (~8.5) -> ID-switch teleport
 HIGH_THRESH = 4.5
-PLAYER_BGR = (40, 200, 40)   # team-agnostic: single neutral marker colour
+PLAYER_BGR = (40, 200, 40)   # team-agnostic fallback (when no team labels)
 BALL_BGR = (0, 215, 255)
+# Day-22 team colours (TeamA = cluster0 = Kentucky blue; TeamB = cluster1 = Wichita white).
+# Drawn in high-contrast blue/red for readability; PDF legend notes the real jersey mapping.
+TEAM_BGR = {"TeamA": (235, 140, 30), "TeamB": (40, 60, 235), "Referee": (0, 215, 255),
+            "Excluded": (150, 150, 150)}
+TEAM_RGB = {"TeamA": (0.12, 0.45, 0.85), "TeamB": (0.85, 0.20, 0.15)}
+TEAM_LABEL = {"TeamA": "Team A (blue)", "TeamB": "Team B (white)"}
+POSSESSION_MAX_M = 3.0       # nearest on-court player within this -> in possession (Day-12 method)
+
+
+def load_team_map(path, seq):
+    """{tid(int): role}. Returns None if no team assignment yet (team-agnostic fallback)."""
+    p = Path(path)
+    if not p.exists():
+        return None
+    tt = json.loads(p.read_text()).get(seq, {})
+    return {int(t): v["role"] for t, v in tt.items()} if tt else None
 
 
 def smooth_xy(xy, win=SMOOTH_WIN):
@@ -240,6 +256,52 @@ def fig_intensity(bands, out, title):
     fig.tight_layout(); fig.savefig(out, bbox_inches="tight"); plt.close(fig)
 
 
+def fig_team_heatmaps(proj, team_map, m, out, seq, win):
+    """Two side-by-side court density panels, one per team (the Day-22 deferred panel)."""
+    fig, axs = plt.subplots(1, 2, figsize=(9.4, 2.9), dpi=130)
+    for ax, team in zip(axs, ("TeamA", "TeamB")):
+        _court_ax(ax, m)
+        pts = np.array([p for tid, xy in proj.items()
+                        if team_map.get(tid) == team for p in xy]) if proj else np.empty((0, 2))
+        if len(pts):
+            ax.hist2d(pts[:, 0], pts[:, 1], bins=[30, 17],
+                      range=[[-m["hx"], m["hx"]], [-m["hy"], m["hy"]]], cmap="hot", alpha=0.62)
+        ax.set_title(f"{TEAM_LABEL[team]}  (n={len(pts)})", fontsize=9)
+    fig.suptitle(f"Team-split positional density  -  {seq} f{win[0]}-{win[1]}", fontsize=10)
+    fig.tight_layout(); fig.savefig(out, facecolor="#caa472", bbox_inches="tight"); plt.close(fig)
+
+
+def compute_possession(by_frame, traj, win, H_ci, m, team_map):
+    """Day-12 nearest-player-to-ball possession, by team, in court-metres. Each frame with a ball
+    and an on-court player within POSSESSION_MAX_M is credited to that player's team."""
+    poss = {r["frame"]: r for r in traj}
+    counts = {"TeamA": 0, "TeamB": 0}; per_frame = []; n_no_ball = 0; n_far = 0
+    for f in range(win[0], win[1] + 1):
+        r = poss.get(f)
+        if not r or r.get("x") is None:
+            n_no_ball += 1; continue
+        bc_xy = bc.apply_H(H_ci, [(r["x"], r["y"])])[0]
+        best_team, best_d = None, 1e9
+        for (tid, x, y, w, h) in by_frame.get(f, []):
+            team = team_map.get(tid)
+            if team not in ("TeamA", "TeamB"):
+                continue
+            pc = bc.apply_H(H_ci, [(x + w / 2, y + h)])[0]
+            if abs(pc[0]) > m["hx"] + 1.5 or abs(pc[1]) > m["hy"] + 1.5:
+                continue
+            d = float(np.hypot(pc[0] - bc_xy[0], pc[1] - bc_xy[1]))
+            if d < best_d:
+                best_d, best_team = d, team
+        if best_team is None or best_d > POSSESSION_MAX_M:
+            n_far += 1; continue
+        counts[best_team] += 1; per_frame.append([f, best_team])
+    total = counts["TeamA"] + counts["TeamB"]
+    pa = 100 * counts["TeamA"] / total if total else 0.0
+    return {"teamA_pct": round(pa, 1), "teamB_pct": round(100 - pa, 1) if total else 0.0,
+            "n_counted": total, "n_total": win[1] - win[0] + 1,
+            "excluded": {"no_ball": n_no_ball, "no_close_player": n_far}, "per_frame": per_frame}
+
+
 # ---------------- PDF ----------------
 def build_pdf(seq, win, metrics, val, outdir, pdf_path):
     fig = plt.figure(figsize=(8.27, 11.69), dpi=150); fig.patch.set_facecolor("white")
@@ -248,50 +310,69 @@ def build_pdf(seq, win, metrics, val, outdir, pdf_path):
     def img(sl, png):
         ax = fig.add_subplot(sl); ax.axis("off"); ax.imshow(plt.imread(str(png)))
 
-    hax = fig.add_subplot(gs[0:7, :]); hax.axis("off"); hax.set_xlim(0, 1); hax.set_ylim(0, 1)
+    teamed = bool(val.get("team_map"))
+    poss = val.get("possession")
+    tacc = val.get("team_acc")
+    team_val_txt = (f"hand-label-validated ({tacc*100:.0f}% team accuracy)" if tacc is not None
+                    else "torso-colour clustering — accuracy validation PENDING hand-labels")
+    hax = fig.add_subplot(gs[0:6, :]); hax.axis("off"); hax.set_xlim(0, 1); hax.set_ylim(0, 1)
     hax.text(0.0, 0.82, "AI Match Analysis - Basketball", fontsize=20, fontweight="bold", color="#b35900")
     hax.text(1.0, 0.86, f"~{(win[1]-win[0]+1)/FPS:.0f} s method demo", fontsize=10, color="#888", ha="right")
-    hax.text(0.0, 0.45, f"Clip {seq}  f{win[0]}-{win[1]}  ·  basketball  ·  2026-05-29", fontsize=10, color="#444")
-    hax.text(0.0, 0.16, "Automated court-metre analytics via a basketball court homography (team-agnostic).",
+    hax.text(0.0, 0.42, f"Clip {seq}  f{win[0]}-{win[1]}  ·  basketball  ·  2026-05-29", fontsize=10, color="#444")
+    hax.text(0.0, 0.10, ("Automated court-metre analytics via a basketball court homography + team assignment."
+                         if teamed else "Automated court-metre analytics via a basketball court homography (team-agnostic)."),
              fontsize=8.5, color="#888", style="italic")
-    hax.axhline(0.02, color="#b35900", lw=2)
+    hax.axhline(0.0, color="#b35900", lw=2)
 
-    lab = fig.add_subplot(gs[8:11, :]); lab.axis("off")
+    lab = fig.add_subplot(gs[7:10, :]); lab.axis("off")
     lab.add_patch(Rectangle((0, 0), 1, 1, color="#8d6e63"))
-    lab.text(0.01, 0.5, "  PLAUSIBILITY-VALIDATED  -  court homography has NO ground-truth (cf. football's 0.2 m); geometry/physics-checked only",
-             color="white", fontsize=8.0, fontweight="bold", va="center")
+    lab.text(0.01, 0.5, "  PLAUSIBILITY-VALIDATED  -  homography hand-marked (no court GT, cf. football 0.2 m); "
+             + ("teams hand-label-validated" if tacc is not None else "team validation pending"),
+             color="white", fontsize=7.6, fontweight="bold", va="center")
 
-    img(gs[12:40, 0:62], outdir / "fig_heatmap.png")
-    sax = fig.add_subplot(gs[12:40, 63:100]); sax.axis("off"); sax.set_xlim(0, 1); sax.set_ylim(0, 1)
+    img(gs[11:33, 0:60], outdir / "fig_heatmap.png")
+    sax = fig.add_subplot(gs[11:33, 62:100]); sax.axis("off"); sax.set_xlim(0, 1); sax.set_ylim(0, 1)
     cal = val.get("calib", {"method": "manual", "label": "calib", "value": "n/a"})
-    sax.text(0.0, 0.92, "Court calibration", fontsize=11, fontweight="bold")
-    sax.text(0.0, 0.80, f"in-bounds: {100*val['in_bounds_frac']:.0f}%", fontsize=10, color="#33691e")
-    sax.text(0.0, 0.70, f"{cal['method']}", fontsize=8.5, color="#555")
-    sax.text(0.0, 0.62, f"{cal['label']}: {cal['value']}", fontsize=9, color="#555")
-    sax.text(0.0, 0.50, "Total distance (all players)", fontsize=11, fontweight="bold")
-    sax.text(0.0, 0.38, f"{metrics['total_distance_m']:.0f} m", fontsize=16, color="#b35900", fontweight="bold")
-    sax.text(0.0, 0.28, f"in {(win[1]-win[0]+1)/FPS:.0f} s, {metrics['n_tracks']} tracks", fontsize=8, color="#888")
-    sax.text(0.0, 0.12, f"max player speed {metrics['max_speed_ms']:.1f} m/s", fontsize=9, color="#555")
+    sax.text(0.0, 0.94, "Court calibration", fontsize=10.5, fontweight="bold")
+    sax.text(0.0, 0.84, f"in-bounds: {100*val['in_bounds_frac']:.0f}%   ({cal['label']} {cal['value']})", fontsize=8.5, color="#33691e")
+    sax.text(0.0, 0.66, "Total distance (all)", fontsize=10.5, fontweight="bold")
+    sax.text(0.0, 0.54, f"{metrics['total_distance_m']:.0f} m", fontsize=15, color="#b35900", fontweight="bold")
+    sax.text(0.0, 0.45, f"{metrics['n_tracks']} tracks · max {metrics['max_speed_ms']:.1f} m/s", fontsize=7.5, color="#888")
+    if teamed and poss:
+        sax.text(0.0, 0.30, "Possession", fontsize=10.5, fontweight="bold")
+        sax.text(0.0, 0.18, f"A {poss['teamA_pct']:.0f}%   B {poss['teamB_pct']:.0f}%", fontsize=14,
+                 color="#b35900", fontweight="bold")
+        sax.text(0.0, 0.08, f"(nearest-player; {poss['n_counted']}/{poss['n_total']} frames)", fontsize=7.0, color="#888")
 
-    lab2 = fig.add_subplot(gs[42:45, :]); lab2.axis("off")
+    # team analytics band (Day-22: the previously-deferred panels)
+    if teamed:
+        lab1 = fig.add_subplot(gs[35:38, :]); lab1.axis("off")
+        lab1.add_patch(Rectangle((0, 0), 1, 1, color="#2e7d32"))
+        lab1.text(0.01, 0.5, f"  TEAM ANALYTICS  -  team assignment {team_val_txt}  ·  A = blue jerseys, B = white",
+                  color="white", fontsize=7.4, fontweight="bold", va="center")
+        img(gs[39:60, 0:100], outdir / "fig_team_heatmaps.png")
+        derived_top = 62
+    else:
+        derived_top = 35
+
+    lab2 = fig.add_subplot(gs[derived_top:derived_top + 3, :]); lab2.axis("off")
     lab2.add_patch(Rectangle((0, 0), 1, 1, color="#1565c0"))
-    lab2.text(0.01, 0.5, "  DERIVED ANALYTICS  -  geometric summaries of the (plausibility-calibrated) court positions",
-              color="white", fontsize=9, fontweight="bold", va="center")
+    lab2.text(0.01, 0.5, "  DERIVED ANALYTICS  -  geometric summaries of the calibrated court positions",
+              color="white", fontsize=8.5, fontweight="bold", va="center")
+    dt = derived_top + 4
+    img(gs[dt:dt + 18, 0:50], outdir / "fig_positions.png")
+    img(gs[dt:dt + 11, 50:100], outdir / "fig_territory.png")
+    img(gs[dt + 11:dt + 23, 50:100], outdir / "fig_intensity.png")
 
-    img(gs[46:74, 0:50], outdir / "fig_positions.png")
-    img(gs[46:61, 50:100], outdir / "fig_territory.png")
-    img(gs[61:78, 50:100], outdir / "fig_intensity.png")
-
-    fax = fig.add_subplot(gs[80:100, :]); fax.axis("off"); fax.set_xlim(0, 1); fax.set_ylim(0, 1)
+    fax = fig.add_subplot(gs[88:100, :]); fax.axis("off"); fax.set_xlim(0, 1); fax.set_ylim(0, 1)
     fax.axhline(0.98, color="#bbb", lw=1)
-    fax.text(0.0, 0.86, "Coming soon (team assignment needed)", fontsize=9, fontweight="bold", color="#555")
-    fax.text(0.0, 0.66, "Team-split heatmaps and possession % need basketball TEAM ASSIGNMENT (a future session); "
-             "football has these from Day-11, basketball does not yet. Passes and per-player stat lines are also deferred.",
+    fax.text(0.0, 0.84, "Coming soon", fontsize=9, fontweight="bold", color="#555")
+    fax.text(0.0, 0.60, "Pass networks and per-player stat lines (per-player needs ReID for ID-switch noise).",
              fontsize=7.6, color="#777")
     fax.text(0.0, 0.30, "Honest status", fontsize=9, fontweight="bold", color="#555")
-    fax.text(0.0, 0.10, "Plausibility-validated (no court-metre GT). SportsMOT broadcast pans, so this is a ~"
-             f"{(win[1]-win[0]+1)/FPS:.0f}s single-homography demo; a fixed deployment camera (mark once) removes that limit.",
-             fontsize=7.6, color="#777")
+    fax.text(0.0, 0.06, f"Homography hand-marked (0.2 m landmark recon); team assignment {team_val_txt}. "
+             f"~{(win[1]-win[0]+1)/FPS:.0f}s single-homography demo on panning broadcast; fixed deployment camera removes that limit.",
+             fontsize=7.0, color="#777")
     fax.text(1.0, 0.0, "Generated by AI Sports Analytics  -  method demo on SportsMOT footage",
              fontsize=6.5, color="#aaa", ha="right")
     fig.savefig(pdf_path, format="pdf", facecolor="white")
@@ -300,16 +381,23 @@ def build_pdf(seq, win, metrics, val, outdir, pdf_path):
 
 
 # ---------------- tactical video ----------------
-def render_video(seq, win, by_frame, traj, frames_dir, out_mp4, scale=0.75, contact=True, outdir=None):
+def render_video(seq, win, by_frame, traj, frames_dir, out_mp4, scale=0.75, contact=True,
+                 outdir=None, team_map=None):
     img0 = cv2.imread(str(frames_dir / f"{win[0]:06d}.jpg")); H, W = img0.shape[:2]
     poss_x = {r["frame"]: r for r in traj}
+    teamed = bool(team_map)
+
+    def pcolor(tid):
+        if not teamed:
+            return PLAYER_BGR
+        return TEAM_BGR.get(team_map.get(tid), (150, 150, 150))
 
     def draw(img, f):
         for (tid, x, y, w, h) in by_frame.get(f, []):
-            x, y, w, h = int(x), int(y), int(w), int(h)
-            cv2.rectangle(img, (x, y), (x + w, y + h), PLAYER_BGR, 2)
-            cv2.ellipse(img, (x + w // 2, y + h), (16, 6), 0, 0, 360, PLAYER_BGR, 2)
-            cv2.putText(img, str(tid), (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, PLAYER_BGR, 2, cv2.LINE_AA)
+            x, y, w, h = int(x), int(y), int(w), int(h); col = pcolor(tid)
+            cv2.rectangle(img, (x, y), (x + w, y + h), col, 2)
+            cv2.ellipse(img, (x + w // 2, y + h), (16, 6), 0, 0, 360, col, 2)
+            cv2.putText(img, str(tid), (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, col, 2, cv2.LINE_AA)
         r = poss_x.get(f)
         if r and r.get("x") is not None:
             bx, by = int(r["x"]), int(r["y"]); det = r.get("status") == "detected"
@@ -319,10 +407,15 @@ def render_video(seq, win, by_frame, traj, frames_dir, out_mp4, scale=0.75, cont
                 cv2.putText(img, "pred", (bx + 14, by), cv2.FONT_HERSHEY_SIMPLEX, 0.45, BALL_BGR, 1, cv2.LINE_AA)
         ov = img.copy(); cv2.rectangle(ov, (0, H - 44), (W, H), (0, 0, 0), -1)
         cv2.addWeighted(ov, 0.45, img, 0.55, 0, img)
-        cv2.putText(img, f"{seq}  tactical view (team-agnostic)  f{f}", (14, H - 16),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2, cv2.LINE_AA)
-        cv2.putText(img, "players", (14, 28), cv2.FONT_HERSHEY_SIMPLEX, 0.6, PLAYER_BGR, 2, cv2.LINE_AA)
-        cv2.putText(img, "ball", (14, 52), cv2.FONT_HERSHEY_SIMPLEX, 0.6, BALL_BGR, 2, cv2.LINE_AA)
+        title = f"{seq}  tactical view  f{f}" if teamed else f"{seq}  tactical view (team-agnostic)  f{f}"
+        cv2.putText(img, title, (14, H - 16), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2, cv2.LINE_AA)
+        if teamed:
+            cv2.putText(img, "Team A", (14, 28), cv2.FONT_HERSHEY_SIMPLEX, 0.6, TEAM_BGR["TeamA"], 2, cv2.LINE_AA)
+            cv2.putText(img, "Team B", (14, 52), cv2.FONT_HERSHEY_SIMPLEX, 0.6, TEAM_BGR["TeamB"], 2, cv2.LINE_AA)
+            cv2.putText(img, "ball", (14, 76), cv2.FONT_HERSHEY_SIMPLEX, 0.6, BALL_BGR, 2, cv2.LINE_AA)
+        else:
+            cv2.putText(img, "players", (14, 28), cv2.FONT_HERSHEY_SIMPLEX, 0.6, PLAYER_BGR, 2, cv2.LINE_AA)
+            cv2.putText(img, "ball", (14, 52), cv2.FONT_HERSHEY_SIMPLEX, 0.6, BALL_BGR, 2, cv2.LINE_AA)
         return img
 
     if contact and outdir:
@@ -356,6 +449,7 @@ def main():
     ap.add_argument("--track", default="outputs/track_results/bball_ftdet_bytetrack")
     ap.add_argument("--ball", default="outputs/ball_track_bb")
     ap.add_argument("--frames-root", default="datasets/sportsmot_basketball")
+    ap.add_argument("--team-assign", default="outputs/team_assign_bb/track_teams_bb.json")
     ap.add_argument("--no-video", action="store_true")
     args = ap.parse_args()
     seq, win = args.seq, tuple(args.win)
@@ -375,6 +469,16 @@ def main():
     ball_pts = ball_court_points(traj, win, H_ci, m)
     inb = inbounds_fraction(by_tid, H_ci, m)
     calib = calib_quality(hj, val)
+    team_map = load_team_map(args.team_assign, seq)
+    possession = compute_possession(by_frame, traj, win, H_ci, m, team_map) if team_map else None
+    valbb_path = Path(args.team_assign).parent / "validation_bb.json"
+    team_acc = (json.loads(valbb_path.read_text()).get("team_accuracy_post_alignment")
+                if valbb_path.exists() else None)
+    if team_map:
+        from collections import Counter as _C
+        print(f"  TEAM-AWARE: {dict(_C(team_map.get(t) for t in proj))}  | "
+              f"possession A {possession['teamA_pct']}/B {possession['teamB_pct']} "
+              f"(counted {possession['n_counted']}/{possession['n_total']})")
 
     tot, tot_art = total_distance(proj)
     bands, high_m, band_art = intensity(proj)
@@ -409,15 +513,21 @@ def main():
     fig_positions(avg, m, outdir / "fig_positions.png", f"Average positions (team-agnostic)  -  {seq}")
     fig_territory(terr, outdir / "fig_territory.png", f"Court territory / tilt  -  {seq}")
     fig_intensity(bands, outdir / "fig_intensity.png", f"Intensity zones (basketball bands, m/s)  -  {seq}")
+    if team_map:
+        fig_team_heatmaps(proj, team_map, m, outdir / "fig_team_heatmaps.png", seq, win)
+        metrics["possession"] = possession
+        metrics["team_counts"] = {t: sum(1 for x in proj if team_map.get(x) == t) for t in ("TeamA", "TeamB")}
 
     pdf = outdir / "coach_analysis_basketball.pdf"
-    build_pdf(seq, win, metrics, {"in_bounds_frac": inb, "calib": calib}, outdir, pdf)
+    build_pdf(seq, win, metrics, {"in_bounds_frac": inb, "calib": calib, "team_map": team_map,
+                                  "possession": possession, "team_acc": team_acc}, outdir, pdf)
     print(f"\n-- PART D: PDF -> {pdf} (+ _preview.png)")
 
     if not args.no_video:
         frames_dir = Path(args.frames_root) / seq / "img1"
         out_mp4 = outdir / "tactical_sample_basketball.mp4"
-        n, (W, H) = render_video(seq, win, by_frame, traj, frames_dir, out_mp4, outdir=outdir)
+        n, (W, H) = render_video(seq, win, by_frame, traj, frames_dir, out_mp4, outdir=outdir,
+                                 team_map=team_map)
         print(f"-- tactical video {W}x{H}, {n} frames -> {out_mp4}")
         print(f"   contact sheet -> {outdir / 'tactical_contact_sheet.png'}")
     print(f"\nDONE -> {outdir}")
