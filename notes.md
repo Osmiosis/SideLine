@@ -974,3 +974,148 @@ Wall ~3.5h: 30 min ball-GT inspection + cache build (background), 60 min Kalman 
 - `outputs/ball_track/<seq>/{trajectory,validation,possession}.json + sample_frame.png + possession_timeline.png` -- per-seq outputs; gitignored.
 - `outputs/deliverables/day12_sample/` -- whitelisted: SNGS-118 + SNGS-120 ball-track sample frames, SNGS-117 + SNGS-118 possession timelines.
 
+## Day 13 — Follow-Cam (virtual camera, VEO/Pixellot techniques), Football
+
+**Goal:** Generate a smooth, broadcast-style follow-cam by digitally cropping a fixed 16:9
+window out of the wide 1920×1080 frame and steering its center to follow the action --
+exactly the dual-wide → digital-crop architecture VEO/Pixellot use. Evaluated BY EYE
+(perceptual deliverable, no ground-truth crop). Football, SoccerNet. Builds directly on
+Day-12 pixel ball trajectory + Day-9 player tracks.
+
+### The documented techniques (these are the pro methods, not guesses)
+1. **Crop target = ball + player-density BLEND.** `target = w·ball + (1−w)·player_centroid`.
+   `w` is high when the ball is confidently detected, decays through predict-only streaks,
+   is suppressed when aerial-suspect, and is 0 when lost -- so confident ball follows the
+   ball, uncertain/missing ball follows the player mass. Player centroid = trimmed mean of
+   Day-9 track box-centers (drops the farthest 15% so a lone keeper/ref can't drag it).
+2. **Bidirectional lookahead smoothing.** We post-process, so the whole future is known.
+   Forward-backward Butterworth (`scipy.filtfilt`, zero phase lag, 0.8 Hz cutoff). This is
+   the single biggest "looks professional" factor and the data backs it up (below).
+3. **Asymmetric pan limits.** Velocity capped by braking distance `v ≤ √(2·a_decel·err)` so
+   the camera can ALWAYS decelerate to rest at the target → cannot overshoot → cannot
+   oscillate; accel-in (`a_accel`) may exceed decel-out (`a_decel`) for a responsive start /
+   gentle landing.
+4. **Constant-velocity / dead-zone.** Soft 6px dead-zone holds the crop for tiny target
+   moves → locked-off segments, no micro-jitter.
+
+### Per-Part status
+- **Part A -- smoothed crop around ball:** ✅ raw Day-12 pixel ball → gap-interpolate →
+  bidirectional smooth → clamp to frame. Watchable but fails as predicted (below).
+- **Part B -- blend target:** ✅ ball + trimmed player-centroid with confidence-aware `w`,
+  re-smoothed. Fixes A's failures.
+- **Part C -- asymmetric limits + dead-zone:** ✅ after a real bug (oscillation, below).
+- **Part D -- proxy metrics + eval:** ✅ jerk, ball-in-safe-zone, action-in-frame,
+  frame-edge-clamp, true-ball-in-crop (GT) per RAW/A/B/C; crop-center + speed plots,
+  contact sheet, A/B/C frame grids -- the artifacts I actually "watched."
+- **Part E -- render finals + commit:** ✅ SNGS-118 + SNGS-120 full follow-cam mp4s +
+  A|B|C montage mp4s (local; `*.mp4` gitignored), curated PNGs + table committed.
+
+### Proxy metrics (RAW / A / B / C) -- supporting evidence only, eye is the arbiter
+| seq (action) | jerk px RAW→C | ball-safezone C | action-in-frame A→C | edge-clamp A→B/C | true-ball-in-crop C |
+|---|---|---:|---|---|---:|
+| SNGS-118 (shots) | 3.19 → 0.36 | 0.998 | 0.261 → 0.411 | 13.7% → 0% | 0.859 |
+| SNGS-120 (foul)  | 5.06 → 0.47 | 0.869 | 0.275 → 0.360 | 36.4% → 9.1% | 0.784 |
+| SNGS-116 (corner)| 1.94 → 0.68 | 0.790 | 0.397 → 0.540 | 27.1% → 0.5% | 0.464 |
+
+(RAW = naive ball-center; A = smoothed ball; B = smoothed blend; C = B + limits/dead-zone.)
+
+### Headline findings (verified by watching the plots + frame grids, not just metrics)
+1. **A swings to nowhere -- exactly the documented failure.** On SNGS-118's lost-ball
+   stretch (f410–470, 155 lost frames in the seq) the ball-only camera follows the linearly
+   interpolated "ball" off into empty space: the A/B/C frame grid row 3 shows **A filming
+   the crowd + advertising boards** while B/C stay on the players; the path plot shows A's
+   crop-center-y collapsing to ~220 (camera tilts to the stands). A also jams against the
+   frame edge 13–36% of frames (ball-near-edge).
+2. **The blend (B) fixes the swing-to-nowhere -- but at a real cost.** Edge-clamp → 0–9%,
+   action-in-frame +50–58% (more of the play in shot), calm through every ball-loss. BUT
+   because B/C down-weight the aerial-suspect ball (anti-whip, per the PRD), they stay
+   ground-focused on **shots and high passes** -- the camera does NOT follow the ball up into
+   the air. **Watching confirmed this (user review of the A|B|C montage): A is the only
+   variant that tracks shooting and high balls; B/C "look at the ground" while the ball is
+   airborne.** So it's a genuine tradeoff, not a clean win -- see verdict.
+3. **Bidirectional smoothing is the dominant smoothness factor** (matches the pro claim):
+   crop-center jerk 3–5 px → 0.1–0.3 px (~15–25×), and every whip-pan spike removed -- the
+   speed plot shows RAW spikes of 90–125 px/frame vanishing in A/B/C.
+4. **C (asymmetric limits + dead-zone) is a safety/feel polish, not the main event.** On
+   paths already bidirectionally smoothed, B is mathematically the smoothest; a discrete
+   rate-limiter scores marginally higher on the 3rd-derivative jerk metric (C 0.36–0.68 vs
+   B 0.11–0.20) -- but the pans themselves are smooth (no sawtooth in the speed plot) and C
+   adds genuine locked holds + whip-safety that matter on whip-prone footage. Honest call:
+   bidirectional smoothing did ~90% of the work; the limiter earns its keep mainly on
+   corners/long-balls.
+
+### PERCEPTUAL VERDICT (from actually watching -- the eye is the arbiter)
+**There is no single winner -- it's a genuine tradeoff, and we keep all three variants:**
+- **A (ball-only) is the best at following the actual BALL -- shots and high passes included.**
+  It tracks the ball up into the air (confirmed on watching the montage). For a follow-cam
+  whose first job is "follow the ball," this faithfulness is the most important property. Its
+  costs are real but situational: on a *sustained* ball-loss it swings to nowhere (films the
+  crowd, SNGS-118 f410–470) and it jams the crop against the frame edge 13–36% of frames.
+- **B / C are smoother and more stable** -- zero/low edge-jam, more players in frame, calm
+  through ball-loss, locked holds (C) -- but by design they down-weight the aerial ball, so
+  they stay ground-focused and DON'T follow shots / high balls into the air. Better for
+  steady framing of ground play, worse for capturing the aerial action.
+- **Bidirectional smoothing** is what makes ALL of them watchable (whip-pans gone, jerk 15–25×
+  lower); that part of the thesis fully holds.
+
+**Net:** for the eventual highlights/event-reels feed, A's ball-faithfulness (shots + high
+passes) is the priority; B/C's stabilization is the better base for steady tactical framing.
+A production version would likely want **A's ball-following + B's lost-ball fallback + a wider
+crop on set-pieces** -- explored but, per user direction, left for later (variants kept as-is).
+
+SNGS-116 (corner, 18% ball detection, 513/750 frames lost) is the honest ceiling for all
+variants: the high, undetected corner ball sits outside the tight 2.5× crop ~54% of the time
+(true-ball-in-crop 0.46) -- you can't follow a ball the detector never sees.
+
+### Errors hit
+- **Part C limiter self-oscillated (the real bug).** First implementation was a naive
+  setpoint chaser with `a_accel(3) > a_decel(1.5)` and a hard velocity cap -- a marginally
+  stable double-integrator. It sped up faster than it could brake → overshoot → a sustained
+  sawtooth: C's pan-speed pinned to a 0↔30 px/frame sawtooth (mean 14.5 vs ~6 for A/B), x
+  swinging ±400px. Caught immediately by looking at the speed + path plots (would have been
+  seasick on video). **Fix:** cap velocity by braking distance `√(2·a_decel·err)` so the
+  camera can always stop at the target → provably no overshoot, no oscillation, while
+  keeping the asymmetric accel-in/decel-out feel. Lesson reaffirmed: the PRD's
+  "build-then-watch each layer" caught a bug a metrics-only check (per-frame jerk was only
+  3× B) badly under-stated.
+- Reducing the dead-zone did **not** reduce C's jerk (dz 6→2 left it ~0.68–0.78 on 116) --
+  confirming the residual jerk is the discrete limiter, not the dead-zone (dz=6 kept, it
+  was lowest-jerk anyway).
+- `bbox`/lost-frame NaNs: blended target built NaN-free by construction (player centroid
+  used directly wherever `w=0`), so `filtfilt` never sees a NaN.
+
+### What this unlocks
+- All three crop-center paths (A/B/C) are persisted to `outputs/follow_cam/<seq>/follow_cam.json`
+  -- this tracked-view IS the input to **player highlights + event reels** next. Given the
+  verdict, downstream can pick **A** for ball-faithful (shots/high-pass) framing or **B/C** for
+  stabilized tactical framing.
+
+### Honest deployment limitations
+- SoccerNet broadcast-cam only. Crop ratio (2.5×) and pan limits are **camera-distance
+  dependent** -- a higher-mounted school camera (more px/m, faster pixel motion) needs the
+  zoom + `vmax`/`a_accel` re-tuned. No GT crop anywhere, so school tuning is eye-only.
+- When play hugs the far touchline the crop frames ad-boards above the players (no vertical
+  bias yet); a small upward target offset (frame players in the lower third) is the standard
+  broadcast fix -- deferred (PRD: don't over-engineer).
+- Inherits Day-12 ball gaps + Day-9 ID-switch noise upstream; the blend + smoothing are
+  tolerant of both (that's the point), but a clip with near-zero ball detection (116) caps
+  how ball-centric the framing can be.
+
+### Time
+Wall ~2h: 25 min reading Day-9/10/12 outputs + confirming `trajectory.json`/track formats +
+env (scipy `filtfilt`), 45 min writing `follow_cam.py` (blend + bidir smooth + limiter +
+metrics + plots/contact-sheet/montage), 20 min the Part-C oscillation diagnosis + braking-
+distance fix, 20 min 3-seq validation by eye, 10 min render finals + montages, 20 min
+deliverable + this writeup + commit.
+
+### Files added / changed
+- `scripts/follow_cam.py` -- end-to-end: load Day-12 ball + Day-9 tracks → RAW/A/B/C
+  crop-center paths → proxy metrics → path/speed plots + contact sheet + A/B/C frame grid →
+  render follow-cam + montage mp4s → persist final crop path.
+- `.gitignore` -- whitelist `outputs/deliverables/day13_sample/*.{png,md}`.
+- `outputs/follow_cam/<seq>/{follow_cam.json, metrics.json, path_plot.png, speed_plot.png,
+  contact_sheet_C.png, abc_frames.png, follow_C.mp4, abc_montage.mp4}` -- per-seq; gitignored
+  (mp4s local-only).
+- `outputs/deliverables/day13_sample/` -- whitelisted: SNGS-118 path+speed plots, SNGS-118 +
+  SNGS-120 contact sheets, SNGS-118 + SNGS-116 A/B/C frame grids, `day13_metrics.md`.
+
