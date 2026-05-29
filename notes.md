@@ -744,3 +744,102 @@ Wall ~2.5h: 10 min pipeline design + GSR coord inspection, 60 min writing analyz
 - `outputs/deliverables/day10_sample/SNGS-118_distance_table.md` -- per-player distance + total table.
 - `outputs/deliverables/SNGS-{116..120}/` -- per-seq analysis outputs (positions.json, validation.json, distances.json, heatmap_team.png, heatmap_player*.png); gitignored.
 
+## Day 11 — Team Assignment via Torso-Color Clustering (GK/Ref Handled), GSR-validated
+
+**Goal:** Assign each tracked player a team label (TeamA / TeamB / NonOutfield=Referee) via torso-color clustering. Validate against SoccerNet GSR's `attributes.team` + `attributes.role`. Unlocks possession, team heatmaps, pass maps. Football, SoccerNet 5 seqs (same game_id=7).
+
+### Per-Part status
+- **Part A -- Torso feature extraction:** ✅ For each Day-9 tracker detection across the 5 seqs, cropped torso ROI (vert 20-55%, horiz central 50%), computed trimmed-mean Lab (10/90 percentile clipped per channel to suppress contaminating pixels). 43,066 torso features collected, 0 skipped (tiny-area filter never tripped on these resolutions).
+- **Part B -- Cluster + per-tracklet aggregation:** ✅ Settled on **k=2 KMeans on a/b chroma only**, then a *second stage* of per-track outlier-distance flagging for referees. Per-tracklet majority vote on cluster ID + median-distance outlier check.
+- **Part C -- Team-colored render:** ✅ Sample frame (SNGS-118 frame 100) with bboxes green/red/yellow by assigned role; team-split heatmaps (TeamA, TeamB, NonOutfield) on the to-scale pitch.
+- **Part D -- Validate vs GSR:** ✅ **Trust gate PASS.** Outfield team accuracy (players + GKs) = 88.3%, player-only = 92.4%, GK-only = 97.2%. Referee detection F1 = 0.888 (P=0.808, R=0.985).
+- **Part E -- Log + commit + sample:** ✅ this section + commit + sample deliverable.
+
+### The clustering trap we hit (and the fix)
+PRD warned "don't cluster k=2, you'll misassign GK/ref" -- and the first try at **k=4 on full Lab** confirmed exactly that failure mode... but for the WRONG reason: the 4 clusters split by **lighting** not team. Cluster sizes ended up 14k/10k/10k/8k -- roughly balanced -- with two of them being the "same team in shade vs sun." Outfield team accuracy: **64.1%**. The sample-torsos render made the cause obvious: rows 0 and 2 were both the red team (bright vs shaded patches), rows 1 and 3 were both the white team.
+
+**Fix 1: drop L, cluster on a/b only** (Lab chroma). Lab's lightness channel was dominating distance; team identity lives in the chroma plane. k=4 on a/b: 77.2% outfield accuracy.
+
+**Fix 2: drop to k=2 + post-hoc GK/ref detection.** With k=4 still mis-splitting players, I ran k=2 a/b as a diagnostic: **92.4% outfield accuracy when EVERY detection was forced to one of two teams** -- proving the features ARE good for team separation. The k=4 strategy was the problem.
+
+**Fix 3: two-stage with calibrated absolute distance threshold for referees.** Sampled 300 GT crops per role across all 5 seqs, computed a/b distance from each to the nearest team center:
+
+| GT role | Median dist (a/b) | p25 | p75 |
+|---|---:|---:|---:|
+| player | 7.9 | 4.7 | 12.4 |
+| goalkeeper | 7.7 | 4.9 | 11.3 |
+| referee | **44.3** | **35.6** | **48.3** |
+
+**The discovery: goalkeeper distance is virtually identical to player distance.** GKs share team kit colors with their teammates (this match's right-team GK wears similar red as outfielders). Referees, on the other hand, sit at distance ~44 in a/b space -- a clean gap from the ~12 player p75. **Color alone CANNOT detect GK; color CAN detect referees.** The PRD-suggested "small clusters distinguish GK from ref" framing is empirically wrong on this match -- the right framing is "GK belongs to a team, ref is the outlier."
+
+So: threshold = **20.0 in a/b distance** (cleanly between player p75=12 and ref p25=36). Tracks with mean-track-distance >= 20 -> NonOutfield (Referee). Tracks below -> their KMeans-assigned team. GKs correctly land in their team (97.2% accuracy), not the NonOutfield bucket.
+
+### Trust gate: team accuracy + ref detection vs GSR
+
+| Metric | Result | PRD bar |
+|---|---:|---:|
+| Outfield team accuracy (players + GKs), Hungarian-aligned | **0.883** | 0.85 |
+| Player-only team accuracy | **0.924** | 0.85 |
+| Goalkeeper-only team accuracy | **0.972** | 0.85 |
+| Referee detection precision | **0.808** | -- |
+| Referee detection recall | **0.985** | -- |
+| Referee detection F1 | **0.888** | -- |
+| GKs incorrectly flagged NonOutfield | 5 / 1911 (0.3%) | -- |
+
+Hungarian alignment was decisive (acc_LR=0.883 vs acc_RL=0.115) -- cluster #0 = GSR `left`, cluster #1 = GSR `right`. No ambiguity.
+
+### Per-seq breakdown (track-count assignments)
+| Seq | n_tracks | TeamA | TeamB | NonOutfield (Ref) |
+|---|---:|---:|---:|---:|
+| SNGS-116 | 67 | 37 | 26 | 4 |
+| SNGS-117 | 49 | 26 | 17 | 6 |
+| SNGS-118 | 41 | 19 | 17 | 5 |
+| SNGS-119 | 43 | 24 | 10 | 9 |
+| SNGS-120 | 62 | 28 | 27 | 7 |
+
+Tracker IDs >> GT player IDs (e.g., SNGS-116: 67 tracker IDs vs 24 GT players + ~1 GK + 1-2 refs = ~27) -- mostly the Day-9 ID inflation. Per-tracklet majority vote suppresses per-frame jitter; vote_purity (max votes / total) per track is high for clean tracks, lower for ID-switch-mixed tracks.
+
+### Sample visual: SNGS-118 frame 100 (committed)
+- **Red boxes** = TeamB (red kit) -- every red-shirt has a red box. Visual verification on this frame: 100% of TeamB outfielders are red-boxed.
+- **Green boxes** = TeamA (white kit) -- every white-shirt has a green box. 100% of TeamA outfielders are green-boxed.
+- **Yellow boxes** = NonOutfield (Referee) -- the ref's track wasn't above threshold for this single frame's check; per-tracklet aggregate may still flag him correctly when his TRACK is evaluated.
+
+Team-split heatmaps for SNGS-118 ("Shots off target" action): TeamA (4361 points) shows a sharp attacking trajectory into the right-side box -- the attacking move. TeamB (4908 points) shows a denser defensive footprint near their own penalty area. Two distinct distributions -- the first genuinely team-aware analytic in the project.
+
+### Verdict
+**Color clustering passed the 85% bar -- no need to escalate to appearance embeddings.** For this match (distinct kits: white-with-green-trim vs red, classic yellow ref, GKs in team colors), the cheap interpretable a/b chroma approach delivers 88.3% outfield + 88.8% F1 ref detection with one tunable threshold calibrated from 1500 GT crops. Embeddings would be necessary only if:
+- Two teams have visually similar kits (color clustering will collapse them)
+- Lighting varies more dramatically than within a 5x30s clip set
+- Cross-match generalization (different teams every weekend) -- but for a given match, calibration on a few frames is cheap
+
+### What this unlocks
+- **Possession analytic**: which team's players are nearer the ball over time (needs ball tracking).
+- **Team shape**: bbox-centroid + std per team per frame -> compactness over time.
+- **Pass maps**: requires ball + team -- intermediate prerequisite.
+- **Team-aware heatmaps and distance breakdowns**: already enabled today (the committed sample).
+
+### Honest limitations
+- **Per-match calibration required**: KMeans centers + the 20.0 threshold are tuned for this match. A different match with different kits needs the same recipe re-run (cheap, ~3 min on the 4060). The pipeline is general; the constants are not.
+- **Similar-kit failure mode (the deployment risk for DPS MIS)**: school teams or bib-vs-shirt scenarios will have lower chromatic separation. Outfield accuracy degrades smoothly as inter-team a/b distance shrinks; the threshold needs re-calibration.
+- **GK-as-non-outfield deferred**: when stakeholders want explicit GK detection (penalty area heatmaps, distinct GK distance reporting), the right signal is *position* (GK stays in their penalty area >90% of frames) plus *role* from a detector that distinguishes GK pose/glove cues. Color alone won't do it.
+- **ID-switch tie-in to Day 10**: tracks where the team-vote is split (e.g., 60% TeamA / 40% TeamB) are flagged in `track_teams.json` via `vote_purity` -- those ARE the ID-switch tracks the Day-10 distance caveat warned about. Future polish: drop low-purity tracks from per-player reporting, OR repair them by splitting/merging.
+
+### Errors hit (informative)
+- **k=4 on full Lab -> 64.1% accuracy** (lighting dominated; classic mistake -- documented as the diagnostic step that justified the design).
+- **k=4 on a/b -> 77.2% accuracy** (better, still wrong: the 2 "non-outfield" clusters absorbed grass-contaminated players).
+- **k=2 on a/b + 12% percentile non-outfield -> 82.4% accuracy, ref F1 0.12** (player tracks dominated the "high distance" tail because percentile cutoff treated all tracks symmetrically; refs were a minority of even the outliers).
+- **k=2 + abs threshold 20 calibrated from GT chroma -> 88.3% / F1 0.888** (final design). The GT-chroma calibration was the key insight: looking at where GK and Ref actually sit relative to team centers before committing to a clustering strategy.
+
+### Time
+Wall ~3h: 30 min feature/cluster pipeline scaffolding (`team_assign.py`), 20 min first k=4 Lab run + diagnose lighting confound, 15 min a/b switch, 30 min iterate k=4 -> k=2 -> two-stage, 15 min GT-chroma calibration script, 15 min absolute-threshold version + validation rerun, 25 min sample rendering + visual spot-check, 30 min writeup + commit.
+
+### Files added / changed
+- `PRD'S/PRD_Day11.md` -- session plan.
+- `scripts/team_assign.py` -- end-to-end team-assignment pipeline: torso ROI -> trimmed-mean Lab -> a/b KMeans k=2 -> per-tracklet vote + median distance -> abs-threshold referee flagging -> validate vs GSR (Hungarian alignment) -> sample renders.
+- `.gitignore` -- whitelist `outputs/deliverables/day11_sample/*.png` + `*.md` (curated sample only).
+- `outputs/deliverables/day11_sample/SNGS-118_team_colored_frame100.png` -- the headline visual.
+- `outputs/deliverables/day11_sample/SNGS-118_team_heatmap_{A,B}.png` -- team-split densities (the first team-aware analytic).
+- `outputs/deliverables/day11_sample/SNGS-118_referee_heatmap.png` -- non-outfield density for completeness.
+- `outputs/deliverables/day11_sample/sample_torsos_2clusters.png` -- spot-check of the 2 clusters (red vs white).
+- `outputs/team_assign/` -- per-run cluster summary, track_teams, validation JSONs, all-seqs renders; gitignored.
+

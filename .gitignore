@@ -40,6 +40,10 @@ outputs/deliverables/*
 outputs/deliverables/day10_sample/*
 !outputs/deliverables/day10_sample/*.png
 !outputs/deliverables/day10_sample/*.md
+!outputs/deliverables/day11_sample/
+outputs/deliverables/day11_sample/*
+!outputs/deliverables/day11_sample/*.png
+!outputs/deliverables/day11_sample/*.md
 
 # IDE
 .vscode/
