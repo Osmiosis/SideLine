@@ -1,5 +1,20 @@
 # Coach Package — Basketball (team-agnostic, plausibility-level)
 
+> ⚠ **PROVISIONAL — calibration not yet trusted.** The court homography in this package came from
+> the **automatic** camera-pose registration, whose projected-court overlay turned out **visually
+> VERY WRONG** (it passed the players-in-bounds metric while being misaligned — see `overlay.png`,
+> kept here as evidence of *why* auto is unreliable). So **every court-metre number below is NOT
+> trustworthy yet.** Calibration is now a **manual, human-marked** step:
+>
+> 1. `python scripts/mark_court.py v_00HRwkvvjtQ_c007 --frame 540` — click the court points, watch the
+>    yellow overlay snap onto the real lines, save.
+> 2. `python scripts/coach_deliverable_basketball.py v_00HRwkvvjtQ_c007 --win 493 591` — regenerate
+>    the PDF/video/metrics from the trusted manual homography.
+>
+> The method, pipeline, and honesty structure are correct; only the calibration source needs the
+> human-in-the-loop step (which is also the real deployment workflow: fixed camera, mark once).
+
+
 Sample: **v_00HRwkvvjtQ_c007** (SportsMOT, NCAA tournament broadcast), stable-camera window
 **f493–591 (~4 s)**. This is the first basketball coach deliverable — built on a new court
 homography (Day-21), at **parity of METHOD with football but ONE COMPONENT BEHIND** (no basketball

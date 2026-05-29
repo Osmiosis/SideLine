@@ -13,15 +13,15 @@ FALLBACK. The deployment camera is FIXED (no zoom/cuts) -> mark once, holds the 
 makes the real deployment EASIER than this SportsMOT broadcast (which pans constantly, so a single
 homography only holds for a short stable window -- here ~4 s on c007 f493-591).
 
-AUTO path (this file, --auto): blackhat + HoughLinesP finds court-line candidates and a blue
-center-logo blob, but on broadcast footage (court logos, painted text, crowd, players occluding
-the lane) it CANNOT reliably LABEL which line is which -> it reports candidates and defers to
-manual. This is the honest, expected outcome and the reason the manual fallback exists.
-
-MANUAL path (--mark, the robust deployment path): show one frame, click >=4 known court points
-(corners are the most robust -- present on nearly any court), label each, save to a points JSON.
-Degrades gracefully to just the 4 court corners + known dimensions if that's all that's visible.
-Headless/reproducible: points can be supplied as a JSON file (--points) instead of clicking.
+MANUAL is the REQUIRED path. Calibrate with scripts/mark_court.py (a GUI app: click court points,
+live overlay, save). The automatic attempts here are kept FOR THE RECORD ONLY:
+  - --auto: blackhat + HoughLinesP finds court-line candidates + a blue center-logo blob but CANNOT
+    reliably LABEL which line is which on broadcast (logos/text/crowd/occlusion) -> defers to manual.
+  - --register: camera-pose chamfer registration. UNRELIABLE -- its projected-court overlay can be
+    VISUALLY VERY WRONG while still passing the players-in-bounds metric (an in-bounds score is
+    satisfiable by a misaligned pose). Do NOT trust it; it is retained only to document the attempt.
+This file still also supports --mark / --points (the inline marking + reproducible-points path used
+before the standalone GUI app); mark_court.py is the friendlier, recommended tool.
 
 Court model: NCAA men's (this clip is the 2014 NCAA tournament) 94 x 50 ft = 28.65 x 15.24 m.
 FIBA (28 x 15 m) constants are also provided (--model fiba) for the school deployment if needed.
@@ -423,6 +423,9 @@ def main():
     img_pts = court_pts = names = []
 
     if args.register:
+        print("  WARNING: --register (auto camera-pose chamfer) proved UNRELIABLE -- its overlay can "
+              "be VISUALLY VERY WRONG while still passing the in-bounds metric. Use the MANUAL app "
+              "(scripts/mark_court.py) for any real calibration. --register kept for the record only.")
         H_ic, H_ci, reg_info = register_pose(frame, m, player_boxes=boxes, player_feet=feet)
         print(f"  AUTO-REGISTER (camera-pose chamfer): {reg_info}")
         if args.refine:

@@ -1752,6 +1752,27 @@ point-marking fallback for the fixed-camera deployment), then assemble the first
 analytics PDF/video on top. PLAUSIBILITY-validated (no court-metre GT exists). Basketball,
 SportsMOT, sample = v_00HRwkvvjtQ_c007 (NCAA broadcast), stable window f493-591 (~4 s).
 
+### REVISION (same day, post-review) — MANUAL marking is now the REQUIRED calibration path
+On review, the automatic camera-pose chamfer registration's projected-court overlay was **VISUALLY
+VERY WRONG** — despite passing the players-in-bounds metric (100%) and a low ~12 px chamfer residual.
+Lesson (same family as the Day-10 "metric vs reality" trap): an in-bounds score and a chamfer
+residual are both **satisfiable by a misaligned pose**, so they are NOT a substitute for looking at
+the overlay. There is no reliable automatic calibration signal on this broadcast footage. Pivot:
+- **`scripts/mark_court.py`** — a standalone manual-marking GUI app is now the REQUIRED calibration
+  path. Shows the frame + a labelled reference court, walks the user through clicking each visible
+  landmark (corners first — most robust), draws the projected court back on the frame LIVE so the
+  user SEES the alignment and re-marks until the yellow lines sit on the painted lines, then saves a
+  `homography.json` (schema-compatible with `coach_deliverable_basketball.py`). This is also the real
+  deployment workflow: fixed camera, mark once, holds the match.
+- `--register` (auto pose-chamfer) is **demoted/retired** — kept only to document the attempt, with
+  a runtime warning. `--auto` (Hough) already only ever deferred to manual.
+- `coach_deliverable_basketball.py` made **calibration-source-agnostic**: computes in-bounds itself
+  and reads whichever quality metric exists (manual landmark-recon metres, else the retired auto px).
+- The committed `coach_package_basketball/` is flagged **PROVISIONAL** (its numbers came from the bad
+  auto-H); `overlay.png` is reframed as evidence of *why* auto is unreliable. Numbers regenerate once
+  a human marks via `mark_court.py`. **The auto-register result below is therefore NOT trusted** — the
+  method/pipeline/honesty structure stand; only the calibration source changed to human-in-the-loop.
+
 ### The two things that make basketball homography DIFFERENT from football's Day-10
 1. **No GT.** Football's GSR shipped `bbox_pitch` -> GT-validated to 0.2 m. Basketball has NO
    court-metre GT (SportsMOT = pixel boxes only; Day-18 confirmed the GT hunt is dead). So this is
@@ -1864,7 +1885,10 @@ manual tool + auto-detect + line-snap + pose-register + validation); ~50 min
 - `scripts/coach_deliverable_basketball.py` — applies the homography to Day-9 player + Day-19 ball
   tracks -> team-agnostic court-metre analytics (heatmap, distance, territory, intensity, avg
   positions) + matplotlib coach PDF + team-agnostic tactical video. Reuses Day-20 patterns + the
-  >9 m/s teleport guard.
+  >9 m/s teleport guard. (Revised: calibration-source-agnostic — computes in-bounds itself.)
+- `scripts/mark_court.py` (REVISION) — standalone manual court-marking GUI app: frame + labelled
+  reference court, guided click-per-landmark, LIVE projected-court overlay, undo/skip/reset/save ->
+  `homography.json`. The REQUIRED calibration path after auto-register proved visually wrong.
 - `.gitignore` — whitelist `outputs/deliverables/coach_package_basketball/` (png/md/pdf/json + the
   single `tactical_sample_basketball.mp4`).
 - `outputs/deliverables/coach_package_basketball/` — PDF + preview + 4 figure PNGs + court overlay +

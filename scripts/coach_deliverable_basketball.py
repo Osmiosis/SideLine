@@ -88,6 +88,28 @@ def project_tracks(by_tid, H_ci, m):
     return out
 
 
+def inbounds_fraction(by_tid, H_ci, m):
+    """Fraction of ALL raw projected player feet (over the window) that land inside the court
+    (+1.5 m margin). Computed here so it works regardless of how the court was calibrated."""
+    feet = [(r[1], r[2]) for rows in by_tid.values() for r in rows]
+    if not feet:
+        return None
+    c = bc.apply_H(H_ci, feet)
+    return float(np.mean((np.abs(c[:, 0]) <= m["hx"] + 1.5) & (np.abs(c[:, 1]) <= m["hy"] + 1.5)))
+
+
+def calib_quality(hj, val):
+    """Source-agnostic calibration readout: prefer the manual-marking landmark reconstruction error
+    (metres); fall back to the (retired) auto-register pixel residual; else 'n/a'."""
+    if hj.get("landmark_recon_mean_m") is not None:
+        return {"method": hj.get("method", val.get("method", "manual")),
+                "label": "landmark recon", "value": f"{hj['landmark_recon_mean_m']:.1f} m"}
+    reg = (val or {}).get("register") or (hj or {}).get("register")
+    if reg and reg.get("cost") is not None:
+        return {"method": "auto-register (retired)", "label": "align resid", "value": f"{reg['cost']:.0f} px"}
+    return {"method": val.get("method", "unknown"), "label": "calib", "value": "n/a"}
+
+
 def ball_court_points(traj, win, H_ci, m):
     pts = []
     for r in traj:
@@ -241,9 +263,11 @@ def build_pdf(seq, win, metrics, val, outdir, pdf_path):
 
     img(gs[12:40, 0:62], outdir / "fig_heatmap.png")
     sax = fig.add_subplot(gs[12:40, 63:100]); sax.axis("off"); sax.set_xlim(0, 1); sax.set_ylim(0, 1)
+    cal = val.get("calib", {"method": "manual", "label": "calib", "value": "n/a"})
     sax.text(0.0, 0.92, "Court calibration", fontsize=11, fontweight="bold")
     sax.text(0.0, 0.80, f"in-bounds: {100*val['in_bounds_frac']:.0f}%", fontsize=10, color="#33691e")
-    sax.text(0.0, 0.70, f"align resid: {val['register']['cost']:.0f}px", fontsize=10, color="#555")
+    sax.text(0.0, 0.70, f"{cal['method']}", fontsize=8.5, color="#555")
+    sax.text(0.0, 0.62, f"{cal['label']}: {cal['value']}", fontsize=9, color="#555")
     sax.text(0.0, 0.50, "Total distance (all players)", fontsize=11, fontweight="bold")
     sax.text(0.0, 0.38, f"{metrics['total_distance_m']:.0f} m", fontsize=16, color="#b35900", fontweight="bold")
     sax.text(0.0, 0.28, f"in {(win[1]-win[0]+1)/FPS:.0f} s, {metrics['n_tracks']} tracks", fontsize=8, color="#888")
@@ -349,6 +373,8 @@ def main():
     traj = json.loads((Path(args.ball) / seq / "trajectory.json").read_text())
     proj = project_tracks(by_tid, H_ci, m)
     ball_pts = ball_court_points(traj, win, H_ci, m)
+    inb = inbounds_fraction(by_tid, H_ci, m)
+    calib = calib_quality(hj, val)
 
     tot, tot_art = total_distance(proj)
     bands, high_m, band_art = intensity(proj)
@@ -371,10 +397,12 @@ def main():
     print(f"     bands+artefact={band_sum} vs total+artefact={round(tot+tot_art,1)}  (should match)")
     print(f"  territory: {terr}  sum={round(sum(terr.values()),1)}")
     print(f"  avg-position tracks (>=40 frames): {len(avg)}")
-    print(f"  in-bounds (calib frame): {100*val['in_bounds_frac']:.0f}%  align resid {val['register']['cost']}px")
+    print(f"  in-bounds (window): {100*inb:.0f}%  | calibration: {calib['method']} "
+          f"({calib['label']} {calib['value']})")
+    metrics["calibration"] = calib
     metrics["plausibility"] = {"territory_sum": round(sum(terr.values()), 1),
                                "bands_plus_artefact_m": band_sum, "total_plus_artefact_m": round(tot + tot_art, 1),
-                               "max_speed_ms": mxs, "in_bounds_frac": val["in_bounds_frac"]}
+                               "max_speed_ms": mxs, "in_bounds_frac": inb}
     (outdir / "metrics_basketball.json").write_text(json.dumps(metrics, indent=2))
 
     fig_heatmap(proj, m, outdir / "fig_heatmap.png", f"All-players court density  -  {seq} f{win[0]}-{win[1]}")
@@ -383,7 +411,7 @@ def main():
     fig_intensity(bands, outdir / "fig_intensity.png", f"Intensity zones (basketball bands, m/s)  -  {seq}")
 
     pdf = outdir / "coach_analysis_basketball.pdf"
-    build_pdf(seq, win, metrics, val, outdir, pdf)
+    build_pdf(seq, win, metrics, {"in_bounds_frac": inb, "calib": calib}, outdir, pdf)
     print(f"\n-- PART D: PDF -> {pdf} (+ _preview.png)")
 
     if not args.no_video:
