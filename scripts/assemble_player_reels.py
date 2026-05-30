@@ -136,16 +136,14 @@ def assemble_reels(seq, args, frames_present):
     out_w, out_h = 854, 480
     reel_dir = Path(args.clips_dir, seq, "reels"); reel_dir.mkdir(parents=True, exist_ok=True)
 
-    n_reels = 0
-    for name, recs in groups.items():
-        recs.sort(key=lambda r: -r["strength"])     # best involvement first
-        vw = cv2.VideoWriter(str(reel_dir / f"{name}.mp4"),
-                             cv2.VideoWriter_fourcc(*"mp4v"), FPS, (out_w, out_h))
-        title = np.zeros((out_h, out_w, 3), np.uint8)
-        cv2.putText(title, name, (40, out_h // 2), cv2.FONT_HERSHEY_SIMPLEX, 1.6,
+    def render_reel(name, recs, out_path, ow, oh):
+        recs = sorted(recs, key=lambda r: -r["strength"])     # best involvement first
+        vw = cv2.VideoWriter(str(out_path), cv2.VideoWriter_fourcc(*"mp4v"), FPS, (ow, oh))
+        title = np.zeros((oh, ow, 3), np.uint8)
+        cv2.putText(title, name, (40, oh // 2), cv2.FONT_HERSHEY_SIMPLEX, 1.4,
                     (255, 255, 255), 3, cv2.LINE_AA)
         cv2.putText(title, f"{len(recs)} clips - player highlights ({seq})",
-                    (40, out_h // 2 + 50), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (180, 180, 180), 1, cv2.LINE_AA)
+                    (40, oh // 2 + 45), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (180, 180, 180), 1, cv2.LINE_AA)
         for _ in range(int(FPS * 1.2)):
             vw.write(title)
         for rec in recs:
@@ -154,15 +152,23 @@ def assemble_reels(seq, args, frames_present):
                 if img is None:
                     continue
                 cx, cy = C.get(f, (img.shape[1] / 2, img.shape[0] / 2))
-                out = cv2.resize(_crop(img, cx, cy, cw, ch), (out_w, out_h))
-                cv2.rectangle(out, (0, 0), (out_w, 30), (0, 0, 0), -1)
+                out = cv2.resize(_crop(img, cx, cy, cw, ch), (ow, oh))
+                cv2.rectangle(out, (0, 0), (ow, 30), (0, 0, 0), -1)
                 cv2.putText(out, f"{name}  ({rec['involve_start_sec']:.1f}s)", (8, 21),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.55, (40, 200, 255), 1, cv2.LINE_AA)
                 vw.write(out)
             for _ in range(6):
-                vw.write(np.zeros((out_h, out_w, 3), np.uint8))
-        vw.release(); n_reels += 1
-    return n_reels
+                vw.write(np.zeros((oh, ow, 3), np.uint8))
+        vw.release()
+
+    n_reels = 0
+    best = None   # (n_clips, seq, name, recs) -> for the deliverable sample
+    for name, recs in groups.items():
+        render_reel(name, recs, reel_dir / f"{name}.mp4", out_w, out_h)
+        n_reels += 1
+        if best is None or len(recs) > best[0]:
+            best = (len(recs), seq, name, recs, render_reel)
+    return n_reels, best
 
 
 def write_rollup_md(reports, path):
@@ -205,33 +211,61 @@ def main():
     ap.add_argument("--tracker-dir", default="outputs/track_results/sn_soccana_botsort_gmc")
     ap.add_argument("--team-file", default="outputs/team_assign/track_teams.json")
     ap.add_argument("--follow-dir", default="outputs/follow_cam")
-    ap.add_argument("--source", default="datasets/soccernet_tracking/test")
+    ap.add_argument("--source", default="datasets/soccernet_tracking")
     ap.add_argument("--out", default="outputs/deliverables/player_highlights_football")
     ap.add_argument("--no-render", dest="render", action="store_false", default=True)
+    ap.add_argument("--render-seqs", default=None,
+                    help="comma-list of seqs to actually render reels for (default: first seq only, "
+                         "to keep the demo bounded). Inclusivity report always covers all seqs.")
     args = ap.parse_args()
 
     seqs = [args.seq] if args.seq else \
         ["SNGS-116", "SNGS-117", "SNGS-118", "SNGS-119", "SNGS-120"]
+    render_seqs = set(args.render_seqs.split(",")) if args.render_seqs else {seqs[0]}
+
+    import shutil
+    out_root = Path(args.out); out_root.mkdir(parents=True, exist_ok=True)
     reports = []
+    global_best = None
     for seq in seqs:
         rep = verify_inclusivity(seq, args)
         reports.append(rep)
         fd = Path(args.source, seq, "img1")
         frames_present = fd.is_dir() and any(fd.glob("*.jpg"))
-        n_reels = assemble_reels(seq, args, frames_present) if args.render else 0
+        do_render = args.render and frames_present and seq in render_seqs
+        n_reels = 0
+        if do_render:
+            n_reels, best = assemble_reels(seq, args, frames_present)
+            if best and (global_best is None or best[0] > global_best[0]):
+                global_best = best
         cp = rep["clips_per_player"]
-        rendered = f"{n_reels} reels rendered" if frames_present and args.render else \
-            "reels NOT rendered (frames absent)"
+        rendered = f"{n_reels} per-track draft reels rendered" if do_render else \
+            ("reels skipped (not in --render-seqs)" if frames_present else "reels NOT rendered (frames absent)")
         print(f"  {seq}: {rep['covered_with_footage']}/{rep['n_substantial_players']} players covered "
               f"({rep['covered_pct']}%)  [involve {rep['via_involvement']} + presence {rep['via_presence_fallback']}]  "
               f"clips/player {cp['min']}/{cp['median']}/{cp['max']}  | {rendered}")
+        # copy the per-seq involvement distribution into the (committable) deliverable
+        dist = Path(args.involvement_dir, seq, "distribution.png")
+        if dist.exists():
+            shutil.copy(dist, out_root / f"distribution_{seq}.png")
 
-    write_rollup_md(reports, Path(args.out, "inclusivity.md"))
+    write_rollup_md(reports, out_root / "inclusivity.md")
+    # committable summary json (small)
+    (out_root / "inclusivity_summary.json").write_text(json.dumps(
+        {r["seq"]: {k: r[k] for k in ("n_substantial_players", "covered_with_footage",
+         "covered_pct", "via_involvement", "via_presence_fallback", "clips_per_player")}
+         for r in reports}, indent=2))
+    # ONE downscaled sample reel for the deliverable (the most-involved player's reel)
+    if global_best:
+        _, bseq, bname, brecs, render_reel = global_best
+        render_reel(bname, brecs, out_root / "sample_reel.mp4", 640, 360)
+        print(f"  sample_reel.mp4 -> {bseq} {bname} ({len(brecs)} clips, 640x360, committed)")
+
     tot_p = sum(r["n_substantial_players"] for r in reports)
     tot_c = sum(r["covered_with_footage"] for r in reports)
     print(f"\n  INCLUSIVITY (all {len(seqs)} seqs): {tot_c}/{tot_p} substantial players get footage "
           f"({100*tot_c/max(1,tot_p):.1f}%)")
-    print(f"  rollup -> {Path(args.out,'inclusivity.md')}")
+    print(f"  package -> {out_root}")
 
 
 if __name__ == "__main__":

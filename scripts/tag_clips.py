@@ -54,7 +54,7 @@ def main():
     ap.add_argument("seq")
     ap.add_argument("--roster", default=None, help="text file, one player name per line")
     ap.add_argument("--clips-dir", default="outputs/player_highlights")
-    ap.add_argument("--source", default="datasets/soccernet_tracking/test")
+    ap.add_argument("--source", default="datasets/soccernet_tracking")
     ap.add_argument("--follow-dir", default="outputs/follow_cam")
     args = ap.parse_args()
 

@@ -112,7 +112,7 @@ def main():
     ap.add_argument("seq", nargs="?", default=None)
     ap.add_argument("--involvement-dir", default="outputs/involvement")
     ap.add_argument("--follow-dir", default="outputs/follow_cam")
-    ap.add_argument("--source", default="datasets/soccernet_tracking/test")
+    ap.add_argument("--source", default="datasets/soccernet_tracking")
     ap.add_argument("--out", default="outputs/player_highlights")
     ap.add_argument("--clip-w", type=int, default=854)
     ap.add_argument("--clip-h", type=int, default=480)

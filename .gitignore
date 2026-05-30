@@ -1,28 +1,136 @@
 # Python
-venv/
-.venv/
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
 
-# Large binaries
-*.zip
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Model weights (large binary files)
 *.pt
+*.pth
+*.onnx
+*.engine
 
-# Data & model artifacts (large). Ignore outputs/ wholesale, then re-include only the
-# small curated artifacts (JSON / MD / PNG). Heavy video (*.mp4) stays ignored everywhere.
-outputs/
-
-# deliverables: curated package (no raw video)
-!outputs/deliverables/
-!outputs/deliverables/**
-
-# Day 27: involvement stats + player-highlight manifests/reports (small JSON/PNG/MD)
-!outputs/involvement/
-!outputs/involvement/**
-!outputs/player_highlights/
-!outputs/player_highlights/**
-
-# ...but never the heavy stuff: all video, and the bulky per-clip / reel dirs
+# Video files (too large for git)
 *.mp4
-outputs/player_highlights/**/clips/**
-outputs/player_highlights/**/reels/**
+*.mov
+*.avi
+*.mkv
+*.webm
+
+# Data folders (track only .gitkeep markers)
+clips/*
+datasets/*
+outputs/*
+runs/*
+!clips/.gitkeep
+!datasets/.gitkeep
+!outputs/.gitkeep
+!runs/.gitkeep
+
+# Sample deliverables (derived visuals + tables; no raw NDA frames). Commit per-day curated samples.
+!outputs/deliverables/
+outputs/deliverables/*
+!outputs/deliverables/day10_sample/
+outputs/deliverables/day10_sample/*
+!outputs/deliverables/day10_sample/*.png
+!outputs/deliverables/day10_sample/*.md
+!outputs/deliverables/day11_sample/
+outputs/deliverables/day11_sample/*
+!outputs/deliverables/day11_sample/*.png
+!outputs/deliverables/day11_sample/*.md
+!outputs/deliverables/day12_sample/
+outputs/deliverables/day12_sample/*
+!outputs/deliverables/day12_sample/*.png
+!outputs/deliverables/day12_sample/*.md
+!outputs/deliverables/day13_sample/
+outputs/deliverables/day13_sample/*
+!outputs/deliverables/day13_sample/*.png
+!outputs/deliverables/day13_sample/*.md
+!outputs/deliverables/day14_sample/
+outputs/deliverables/day14_sample/*
+!outputs/deliverables/day14_sample/*.png
+!outputs/deliverables/day14_sample/*.md
+!outputs/deliverables/day15_sample/
+outputs/deliverables/day15_sample/*
+!outputs/deliverables/day15_sample/*.png
+!outputs/deliverables/day15_sample/*.md
+!outputs/deliverables/day16_sample/
+outputs/deliverables/day16_sample/*
+!outputs/deliverables/day16_sample/*.png
+!outputs/deliverables/day16_sample/*.md
+!outputs/deliverables/day17_sample/
+outputs/deliverables/day17_sample/*
+!outputs/deliverables/day17_sample/*.png
+!outputs/deliverables/day17_sample/*.md
+!outputs/deliverables/day19_sample/
+outputs/deliverables/day19_sample/*
+!outputs/deliverables/day19_sample/*.png
+!outputs/deliverables/day19_sample/*.md
+# Day-20 first coach deliverable package (PDF + figures + metrics + ONE short sample clip)
+!outputs/deliverables/coach_package_football/
+outputs/deliverables/coach_package_football/*
+!outputs/deliverables/coach_package_football/*.png
+!outputs/deliverables/coach_package_football/*.md
+!outputs/deliverables/coach_package_football/*.pdf
+!outputs/deliverables/coach_package_football/*.json
+!outputs/deliverables/coach_package_football/tactical_sample.mp4
+# Day-21 basketball coach deliverable package (court homography + team-agnostic analytics)
+!outputs/deliverables/coach_package_basketball/
+outputs/deliverables/coach_package_basketball/*
+!outputs/deliverables/coach_package_basketball/*.png
+!outputs/deliverables/coach_package_basketball/*.md
+!outputs/deliverables/coach_package_basketball/*.pdf
+!outputs/deliverables/coach_package_basketball/*.json
+!outputs/deliverables/coach_package_basketball/tactical_sample_basketball.mp4
+# Day-24 event highlight candidates (output #3): index + contact sheets + ONE small sample clip.
+# Per-moment clips + full auto_draft_reel.mp4 stay LOCAL (oversized; covered by *.mp4 / outputs/*).
+!outputs/deliverables/event_highlights_football/
+outputs/deliverables/event_highlights_football/*
+!outputs/deliverables/event_highlights_football/*.jpg
+!outputs/deliverables/event_highlights_football/*.png
+!outputs/deliverables/event_highlights_football/*.md
+!outputs/deliverables/event_highlights_football/*.json
+!outputs/deliverables/event_highlights_football/sample_highlight.mp4
+# Day-25 basketball event highlights (output #3 parity): ranked index + contact sheets + sample clip.
+!outputs/deliverables/event_highlights_basketball/
+outputs/deliverables/event_highlights_basketball/*
+!outputs/deliverables/event_highlights_basketball/*.jpg
+!outputs/deliverables/event_highlights_basketball/*.png
+!outputs/deliverables/event_highlights_basketball/*.md
+!outputs/deliverables/event_highlights_basketball/*.json
+!outputs/deliverables/event_highlights_basketball/sample_highlight.mp4
+# Day-19 trained ball-vs-head classifier (model weights, not crop data) -- reusable artifact
+!outputs/ball_head/
+outputs/ball_head/*
+!outputs/ball_head/filter.npz
+# Day-27 inclusive player highlights (output #2): inclusivity report + README + distribution figs + ONE sample reel.
+# Per-clip + per-player reel videos stay LOCAL (oversized; covered by *.mp4 / outputs/*).
+!outputs/deliverables/player_highlights_football/
+outputs/deliverables/player_highlights_football/*
+!outputs/deliverables/player_highlights_football/*.png
+!outputs/deliverables/player_highlights_football/*.md
+!outputs/deliverables/player_highlights_football/*.json
+!outputs/deliverables/player_highlights_football/sample_reel.mp4
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Stray sample downloads (root-level only)
+/bus.jpg
+/*.jpg
+/*.jpeg
+/*.png
+
+# Notes (uncomment if you want notes private)
+# notes.md

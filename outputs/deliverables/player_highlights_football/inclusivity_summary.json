@@ -1,0 +1,62 @@
+{
+  "SNGS-116": {
+    "n_substantial_players": 50,
+    "covered_with_footage": 50,
+    "covered_pct": 100.0,
+    "via_involvement": 7,
+    "via_presence_fallback": 43,
+    "clips_per_player": {
+      "min": 0,
+      "median": 0,
+      "max": 2
+    }
+  },
+  "SNGS-117": {
+    "n_substantial_players": 36,
+    "covered_with_footage": 36,
+    "covered_pct": 100.0,
+    "via_involvement": 11,
+    "via_presence_fallback": 25,
+    "clips_per_player": {
+      "min": 0,
+      "median": 0,
+      "max": 2
+    }
+  },
+  "SNGS-118": {
+    "n_substantial_players": 31,
+    "covered_with_footage": 31,
+    "covered_pct": 100.0,
+    "via_involvement": 11,
+    "via_presence_fallback": 20,
+    "clips_per_player": {
+      "min": 0,
+      "median": 0,
+      "max": 3
+    }
+  },
+  "SNGS-119": {
+    "n_substantial_players": 24,
+    "covered_with_footage": 24,
+    "covered_pct": 100.0,
+    "via_involvement": 9,
+    "via_presence_fallback": 15,
+    "clips_per_player": {
+      "min": 0,
+      "median": 0,
+      "max": 3
+    }
+  },
+  "SNGS-120": {
+    "n_substantial_players": 48,
+    "covered_with_footage": 48,
+    "covered_pct": 100.0,
+    "via_involvement": 17,
+    "via_presence_fallback": 31,
+    "clips_per_player": {
+      "min": 0,
+      "median": 0,
+      "max": 3
+    }
+  }
+}
