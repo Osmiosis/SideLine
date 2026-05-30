@@ -125,6 +125,13 @@ outputs/deliverables/player_highlights_basketball/*
 !outputs/deliverables/player_highlights_basketball/*.md
 !outputs/deliverables/player_highlights_basketball/*.json
 !outputs/deliverables/player_highlights_basketball/sample_reel.mp4
+# Day-29 full-match scale-test (Alfheim fixed single-cam, football): findings + figures + GT-validation numbers.
+# Alfheim raw clips/video stay OFF the repo (license + size): covered by datasets/* and *.mp4.
+!outputs/deliverables/fullmatch_scale_football/
+outputs/deliverables/fullmatch_scale_football/*
+!outputs/deliverables/fullmatch_scale_football/*.png
+!outputs/deliverables/fullmatch_scale_football/*.md
+!outputs/deliverables/fullmatch_scale_football/*.json
 
 # IDE
 .vscode/

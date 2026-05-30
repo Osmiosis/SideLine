@@ -1,0 +1,86 @@
+{
+  "half_minutes": 47.1,
+  "processed_frames": 42390,
+  "stride": 2,
+  "ID_ACCUMULATION": {
+    "total_unique_track_ids": 5106,
+    "real_players_on_pitch": "~22 (2 teams) + refs",
+    "fragmentation_ratio": 232.1,
+    "new_ids_per_minute": [
+      137,
+      91,
+      104,
+      108,
+      115,
+      123,
+      68,
+      142,
+      106,
+      117,
+      41,
+      57,
+      80,
+      85,
+      107,
+      127,
+      118,
+      66,
+      131,
+      63,
+      57,
+      97,
+      102,
+      88,
+      158,
+      80,
+      106,
+      139,
+      101,
+      110,
+      149,
+      96,
+      106,
+      107,
+      65,
+      138,
+      128,
+      78,
+      209,
+      154,
+      111,
+      19,
+      116,
+      118,
+      117,
+      131,
+      230,
+      10
+    ],
+    "track_lifetime_sec": {
+      "median": 1.3,
+      "p90": 29.5,
+      "max": 243.7,
+      "n_substantial_ge1s": 2774
+    }
+  },
+  "DENSITY": {
+    "mean_detections_per_frame": 15.3
+  },
+  "SPEED_BAND_TRUST_GATE": {
+    "my_inview_pct": {
+      "walk": 43.6,
+      "jog": 33.2,
+      "run": 12.3,
+      "high": 6.3,
+      "sprint": 4.6
+    },
+    "zxy_gt_pct": {
+      "walk": 56.5,
+      "jog": 32.9,
+      "run": 8.1,
+      "high": 2.0,
+      "sprint": 0.5
+    },
+    "note": "single-camera in-view + ID-fragmentation -> distribution-level comparison, not per-player"
+  }
+}

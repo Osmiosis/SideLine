@@ -1,0 +1,29 @@
+{
+  "scope": "single fixed centre-camera; ZXY=home team only; in-view geometry validation",
+  "stride": 2,
+  "n_sample_frames": 80,
+  "homography_seed": "4 centre-circle landmarks, ZXY-refined (ICP/RANSAC)",
+  "held_out_position_error_m": {
+    "n": 43,
+    "median": 1.78,
+    "mean": 1.71,
+    "p90": 2.61
+  },
+  "H": [
+    [
+      0.11688601184988003,
+      0.07707909852263889,
+      3.319266865926967
+    ],
+    [
+      0.0006726114341198305,
+      -0.2617086506602516,
+      104.4633687097442
+    ],
+    [
+      0.00020257245786509337,
+      0.0018857927206394531,
+      0.9999999999999999
+    ]
+  ]
+}

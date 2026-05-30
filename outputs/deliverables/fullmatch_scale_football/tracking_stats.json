@@ -1,0 +1,14 @@
+{
+  "video": "outputs/alfheim/first_half.mp4",
+  "model": "models/soccana.pt",
+  "tracker": "botsort.yaml",
+  "imgsz": 1280,
+  "frames": 42390,
+  "mot_rows": 649697,
+  "unique_track_ids": 5106,
+  "runtime_sec": 3832.5,
+  "proc_fps": 11.06,
+  "peak_ram_mb": 1468.0,
+  "peak_vram_mb": 139.0,
+  "ids_per_min": 79.9
+}

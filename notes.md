@@ -2508,3 +2508,68 @@ re-unites them. SportsMOT = METHOD proxy, DPS-pending. Committed per-track *draf
   inclusivity_summary.json, distribution_c00{1,3,5,7,8}.png, sample_reel.mp4).
 - `.gitignore`: added the basketball player-highlights allowlist block (parallel to football); verified
   git status carries only the curated package — no dataset frames, no stray clip/reel mp4s.
+
+## Day 29 — Full-Match SCALE-STRESS-TEST on Alfheim fixed single-camera (football)
+
+First full-match (47-min) run on FIXED-CAMERA footage — the closest proxy yet to the DPS phone rig.
+Goal was to find **what BREAKS at full-match length**. It did. (Scoped this session, per the PRD's
+"may split", to: stitch → foundation-at-scale → analytics ZXY trust gate. Events + player-highlights
+at-scale DEFERRED — those downstream scripts are SoccerNet-seq-coupled and need decoupling.)
+
+**Source = Alfheim 2013-11-03 Tromsø–Strømsgodset, single CAMERA 1 (center), NOT the panorama.** A fixed
+elevated single camera ≈ the DPS rig; the panorama is 5-cam stitched (seams, wrong scenario).
+
+**Part 0 continuity gate (verified BEFORE stitching).** The critical unknown: do the clips tile the half
+or only cluster around events? Parsed the directory: **942 clips, idx 56→997, ZERO missing numbers,
+inter-clip gaps all 2.97–3.01 s** (3-second raw-H.264 segments) → CONTIGUOUS, GO. A gappy source would
+have given a teleporting "match"; it doesn't. ZXY GT also fetched (home-team positions+speed @ ~16 Hz).
+
+**Part A stitch — a real finding.** Raw-H.264 **stream-copy concat CORRUPTS at clip seams** (widespread
+decoder macroblock errors — byte-joined elementary streams aren't a continuous bitstream). **Fix =
+re-encode** during concat (decode-each-clip-clean, GPU nvenc, 578 fps): clean 47.1-min / 30 fps /
+84,780-frame `first_half.mp4`, one single-frame seam blip. *Clips are 30 fps (90 frames/3 s), not 25 —
+caught it because 84,780 frames matched the 47.1-min timestamp span only at 30 fps; matters for ZXY
+time-sync.* Honest: seam glitches are STITCH artifacts, not pipeline failures.
+
+**Part B foundation at scale — what BROKE = identity.** Day-9 tracker (soccana.pt + BoT-SORT + GMC),
+imgsz 1280, processed at stride 2 (15 fps, 42,390 frames):
+- **5,106 unique track IDs over the half** (vs ~22 real players → **232× fragmentation**), ~108 new
+  IDs/match-minute with **NO plateau**; median track lifetime **1.3 s**. On 30-s clips this is invisible;
+  at 47-min scale it dominates — and is *exactly why per-player stats need the human tag-per-clip
+  identity layer* (Day-27/28), not raw IDs.
+- **Memory HELD: peak RAM 1.47 GB, flat** across the whole half (the Day-26 RAM-exhaustion lesson handled
+  by streaming, never buffering the match).
+- Runtime **63.9 min for one half @ 11 fps** (every-frame full-res ≈ 2.9 hr/half projected). Compute
+  signal for the operator app: an offline/overnight batch on a 4060, not live. 15.3 detections/frame.
+
+**Part C analytics TRUST GATE vs ZXY — the bonus (first real GT validation, plausibility → validated).**
+- **ONE FIXED homography holds the WHOLE 47-min half.** Seeded from 4 center-circle landmarks, then
+  ZXY-refined (ICP/RANSAC over detection-foot-points ↔ ZXY pitch positions). Held-out frames spread across
+  the FULL half → **median 1.78 m** position error (mean 1.71, p90 2.61), *same as a 3-min window* →
+  proves a single fixed H is stable for the entire half. **The fixed-camera DPS advantage, finally shown
+  on real full-length footage** (broadcast proxies needed per-segment homography). ~10/11 home players in-view.
+- **Intensity speed-bands: shape right, magnitude inflated.** Mine (walk 44/jog 33/run 12/high 6/sprint 5 %)
+  vs ZXY GT (walk 57/jog 33/run 8/high 2/sprint 0.5 %): same walk-dominated monotonic shape, but
+  **high-intensity inflated ~2×** — single-camera in-view bias + 1.78 m homography noise + ID-fragmentation.
+  **Full-match intensity/distance is NOT yet GT-trustworthy** without ID stability + denser homography
+  (a measured next-step, reported honestly — not faked agreement).
+
+**DPS-readiness read.** Memory + a fixed homography are non-issues (both held over a full half). The
+blocker is **identity stability over 45 min** — raw tracking fragments 232×; the deployable path is the
+already-built human tag-per-clip layer for per-player outputs, with aggregate/team analytics (which don't
+need per-player identity) trustworthy once the homography is denser.
+
+**Honest caveats.** Alfheim is still a proxy (Norwegian pro match) but the BEST yet (fixed cam, full match,
+sensor GT). ZXY = home team only. Single center camera → in-view geometry validation, not full-pitch
+per-player distance. Stride-2 sampling (full-rate adds ID churn, not less).
+
+### Files added (Day 29)
+- `scripts/dl_alfheim.py` (resumable clip downloader, union-listing), `scripts/track_alfheim.py` (scale
+  tracker: MOT export + runtime/memory/ID instrumentation), `scripts/alfheim_trust_gate.py` (ZXY-refined
+  fixed homography + held-out position error), `scripts/alfheim_scale_findings.py` (ID accumulation,
+  lifetimes, density, speed-bands vs ZXY).
+- Committed package `outputs/deliverables/fullmatch_scale_football/` (findings.md, id_accumulation.png,
+  speed_bands_vs_zxy.png, trust_overlay.png, trust_gate.json, scale_findings.json, tracking_stats.json).
+- Alfheim raw clips/video + ZXY CSVs stay LOCAL (license + size): `datasets/alfheim/` and `outputs/alfheim/`
+  (datasets/* + *.mp4 gitignored). Verified git status carries only the curated package — no leakage.
+- Committed (NOT pushed, per request).
