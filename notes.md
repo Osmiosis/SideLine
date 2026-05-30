@@ -2433,3 +2433,78 @@ fallback, human-named) vs VEO/Pixellot star/ball focus. "Every child gets a reel
 - Restored `.gitignore` after an accidental mid-session overwrite (commit cddd877 briefly carried
   a stripped-down version that dropped the `datasets/` protection; fixed in 3a58a72).
 - Commits cddd877 + 3a58a72 are LOCAL — push to main was blocked by the auto-mode classifier.
+
+## Day 28 — Inclusive BASKETBALL Player Highlights (output #2 parity): involvement RE-DERIVED for the half-court
+
+Brings output #2 to basketball, reusing the whole Day-27 mechanism (involvement clips + C-feed +
+tag-per-clip + presence fallback) — but the **involvement definition does NOT transfer**, so it was
+re-derived and EMPIRICALLY TESTED before clipping.
+
+**The radius-doesn't-transfer problem (measured, not assumed).** Football involvement = "single
+nearest player within ~2.5 m of the ball" — fine on a spread pitch. Basketball is a half-court game
+in a tiny space: all players cluster near the ball, so a fixed radius marks the crowd, not the
+ball-handler. *Measured it directly* (`detect_involvement_bb.py --compare`, 3 definitions × 5 seqs):
+
+| definition | involved frac of players | players marked / frame | top-3 involvement share | involvement-covered |
+|------------|--------------------------|------------------------|-------------------------|---------------------|
+| **radius** (fixed, height-norm 1.8 m) | **0.744** | **1.55** | 0.712 | 35/47 |
+| nearest (single closest, ≤radius) | 0.533 | 1.00 | 0.859 | 24/47 |
+| **gap** (nearest AND 2nd ≥1.6× farther) | **0.363** | 1.00 | **0.962** | 17/47 |
+
+The fixed radius marks **1.55 players/frame and 74% of all players** — involvement becomes
+meaningless (no ball-handler vs bystander discrimination). The chosen **`gap`** definition (nearest
+AND meaningfully closer than the 2nd-nearest — the ball is clearly *theirs*, not contested-
+equidistant) concentrates **96% of involvement on the top-3 ball-handlers per seq**. That is the
+discrimination the half-court needs; a smaller radius alone could not provide it.
+
+**Mechanism (all reuse, basketball paths).**
+1. *Involvement* (`detect_involvement_bb.py`, mode `gap`): per *detected* ball frame (lost-ball
+   discipline — `predicted`/`lost` never fabricated), nearest outfield player within a bbox-height-
+   normalized on-ball radius (player≈1.9 m, R=1.8 m), kept only if the 2nd-nearest is ≥1.6× farther.
+   Ball = Day-19 (plausibility-level), tracks = Day-9 (`bb_ftdet_botsort_gmc`), roles = Day-21
+   team-assign (exclude Referee/Excluded). Frame-free.
+2. *Clip from the C-FEED* (`clip_player_highlights_bb.py`): each range + padding (−2 s/+1 s) cropped
+   live from the Day-15/16 **cleaned C-feed** (player-stabilized variant C, 640×360 from 1280×720),
+   same `_crop` math.
+3. *Tag-per-clip* (`tag_clips_bb.py`): identical Tkinter+PIL tool, basketball roster; tags both
+   involvement and presence clips, bulk-name per track.
+4. *Presence fallback + assemble + verify* (`assemble_player_reels_bb.py`): zero-involvement
+   substantial tracks get their longest contiguous visible stretch (capped ~5 s) **actually RENDERED**
+   from the C-feed (basketball renders presence, not just defines it — it's the majority of coverage);
+   reels group by track/name, involvement-first then presence, title card.
+
+**INCLUSIVITY VERIFIED — 100% by construction across all 5 seqs**; fully **RENDERED 15/15** on the
+two seqs with a cleaned C-feed. Per-seq substantial [involve + presence]: c001 8 [4+4], c007 7 [2+5]
+(both rendered: 17 involvement clips + 9 presence clips); c003 11 [5+6], c005 11 [3+8], c008 10 [3+7]
+(coverage plan defined frame-free, render pending C-feed). Involve/presence split **36% / 64%** —
+comparable to football's 29% / 71%; basketball did *not* lean dramatically harder on presence at the
+`gap` setting (smaller squads + concentrated ball-handling roughly cancel out). The real basketball
+finding is **per-frame**: the fixed radius marks 1.55 players/frame; `gap` sharpens to exactly the
+ball-handler.
+
+**C-feed scope (honest constraint).** The Day-15/16 follow-cam head-FP cleaning produced a
+player-stabilized C-feed for **c001 and c007 only**. Those are the clippable/rendered deliverable seqs
+(100% inclusivity, real clips). c003/c005/c008 have involvement *measured* but no cleaned feed to clip
+from — reported transparently in `inclusivity.md`, not hidden.
+
+**DPS workflow** = identical to football: house roster → tag each short clip (bulk per un-switched
+track) → reels assemble per name. Identical kits handled by human naming, not auto-ID (Day-26).
+
+**Honest caveats.** Involvement leans on the plausibility-level Day-19 basketball ball track (noisier
+than football's RMSE-validated → presence carries real weight, by design). Nearest-player proxy, NOT
+exact per-touch; confident-ball frames only. Height-norm radius (1.9 m, R=1.8 m, gap 1.6×) → re-tune
+at the DPS camera mount. House-kit ID-switch → one player may span several track ids → tag-per-clip
+re-unites them. SportsMOT = METHOD proxy, DPS-pending. Committed per-track *draft* reels + one
+1.74 MB `sample_reel.mp4` (re-encoded h264); interactive Part-C tagging produces the named reels.
+
+**Status: output #2 now at PARITY across both sports** — inclusive every-player reels for football
+(Day-27) and basketball (Day-28). All three outputs now span both sports.
+
+### Files added / changed (Day 28)
+- `scripts/detect_involvement_bb.py` (A, `--compare` + `--mode gap`), `scripts/clip_player_highlights_bb.py` (B),
+  `scripts/tag_clips_bb.py` (C), `scripts/assemble_player_reels_bb.py` (C+D, renders presence + reels).
+- Working artifacts (regenerable, local): `outputs/involvement_bb/`, `outputs/player_highlights_bb/`.
+- Committed package `outputs/deliverables/player_highlights_basketball/` (inclusivity.md,
+  inclusivity_summary.json, distribution_c00{1,3,5,7,8}.png, sample_reel.mp4).
+- `.gitignore`: added the basketball player-highlights allowlist block (parallel to football); verified
+  git status carries only the curated package — no dataset frames, no stray clip/reel mp4s.

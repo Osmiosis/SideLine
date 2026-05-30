@@ -1,0 +1,72 @@
+{
+  "v_00HRwkvvjtQ_c001": {
+    "has_cleaned_cfeed": true,
+    "n_substantial_players": 8,
+    "covered_with_footage": 8,
+    "covered_pct": 100.0,
+    "via_involvement": 4,
+    "via_presence_fallback": 4,
+    "presence_clips_rendered": 4,
+    "clips_per_player": {
+      "min": 1,
+      "median": 1,
+      "max": 5
+    }
+  },
+  "v_00HRwkvvjtQ_c003": {
+    "has_cleaned_cfeed": false,
+    "n_substantial_players": 11,
+    "covered_with_footage": 11,
+    "covered_pct": 100.0,
+    "via_involvement": 5,
+    "via_presence_fallback": 6,
+    "presence_clips_rendered": 0,
+    "clips_per_player": {
+      "min": 1,
+      "median": 1,
+      "max": 8
+    }
+  },
+  "v_00HRwkvvjtQ_c005": {
+    "has_cleaned_cfeed": false,
+    "n_substantial_players": 11,
+    "covered_with_footage": 11,
+    "covered_pct": 100.0,
+    "via_involvement": 3,
+    "via_presence_fallback": 8,
+    "presence_clips_rendered": 0,
+    "clips_per_player": {
+      "min": 1,
+      "median": 1,
+      "max": 3
+    }
+  },
+  "v_00HRwkvvjtQ_c007": {
+    "has_cleaned_cfeed": true,
+    "n_substantial_players": 7,
+    "covered_with_footage": 7,
+    "covered_pct": 100.0,
+    "via_involvement": 2,
+    "via_presence_fallback": 5,
+    "presence_clips_rendered": 5,
+    "clips_per_player": {
+      "min": 1,
+      "median": 1,
+      "max": 1
+    }
+  },
+  "v_00HRwkvvjtQ_c008": {
+    "has_cleaned_cfeed": false,
+    "n_substantial_players": 10,
+    "covered_with_footage": 10,
+    "covered_pct": 100.0,
+    "via_involvement": 3,
+    "via_presence_fallback": 7,
+    "presence_clips_rendered": 0,
+    "clips_per_player": {
+      "min": 1,
+      "median": 1,
+      "max": 3
+    }
+  }
+}

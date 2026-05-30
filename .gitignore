@@ -117,6 +117,14 @@ outputs/deliverables/player_highlights_football/*
 !outputs/deliverables/player_highlights_football/*.md
 !outputs/deliverables/player_highlights_football/*.json
 !outputs/deliverables/player_highlights_football/sample_reel.mp4
+# Day-28 inclusive BASKETBALL player highlights (output #2 parity): inclusivity report + README + distribution figs + ONE sample reel.
+# Per-clip + per-player reel videos + presence clips stay LOCAL (oversized; covered by *.mp4 / outputs/*).
+!outputs/deliverables/player_highlights_basketball/
+outputs/deliverables/player_highlights_basketball/*
+!outputs/deliverables/player_highlights_basketball/*.png
+!outputs/deliverables/player_highlights_basketball/*.md
+!outputs/deliverables/player_highlights_basketball/*.json
+!outputs/deliverables/player_highlights_basketball/sample_reel.mp4
 
 # IDE
 .vscode/
