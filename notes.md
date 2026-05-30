@@ -2292,3 +2292,69 @@ Part A/B `detect_events_basketball.py` ~70 min; Part C/D clip + package + notes 
 - `outputs/deliverables/event_highlights_basketball/` — `index.md`/`index.json`, `contact_<seq>.jpg`,
   `sample_highlight.mp4`, `README.md` (committed); `auto_draft_reel.mp4` + clips local.
 - `.gitignore` — whitelist the Day-25 basketball deliverable.
+
+## Day 26 — ReID Identity-Stability Measurement (BoT-SORT appearance arm) vs Day-9 baseline — gate for output #2
+
+**Measure-first rationale.** Per-player highlight reels (output #2, the last unstarted DPS output) are only
+trustworthy if a player's identity stays put across the match. Day-8/9 association is AssA~0.50 — players
+ID-switch on occlusion, so a reel built on that could stitch DIFFERENT players under one identity (worse than
+wrong analytics — it's personal and obviously wrong to the player). The deferred-since-Day-9 BoT-SORT appearance
+ReID arm is the candidate fix. This session MEASURES the lift; reels get built ONLY if the lift makes identity
+trustworthy. DPS identity path = manual **tag-once** (DPS teams have no reliable jersey numbers → no OCR); a human
+clicks each player once, ReID propagates. So this measures pure ReID identity-STABILITY, which tag-once depends on.
+
+**Trust gate (Part 0).** Day-9 production baseline reproduced exactly via the cached pipeline:
+`sn_soccana_botsort_gmc` (BoT-SORT + gmc_method=sparseOptFlow + match_thresh=0.9, with_reid=False) →
+**HOTA 0.598 / AssA 0.501 / IDsw 210** (matches Day-9 to the digit). Pipeline trusted.
+
+**ReID arm (Part A).** `scripts/track_reid_from_cache.py`: identical to the Day-9 GMC config (same GMC, same
+match_thresh=0.9) with the ONLY change being `with_reid=True` — so the measured delta is purely ReID. Encoder =
+frozen ImageNet ResNet18 crop encoder → 512-d L2-normalised appearance embedding (same backbone the project used
+for Day-23 team-assignment torso embeddings; ultralytics' native "auto"/YOLO ReID path is non-discriminative, see
+script docstring). Ran on the 5 SoccerNet seqs (750 frames each), reusing Day-9 cached DETECTIONS for boxes and
+extracting appearance on those boxes. **Perf:** ~50–60s/seq, GPU released cleanly between seqs (empty_cache guard);
+~4.5 min total. NOTE — an earlier attempt ran 5 seqs as 5 PARALLEL background shells → exhausted the 16 GB RAM /
+8 GB GPU and crashed the machine. Fix: ONE process, seqs handled sequentially internally. No GPU/TDR issues after.
+
+**The lift (Part B) — GT-validated (SoccerNet has tracklets, so this is a REAL measurement, not plausibility):**
+
+| Metric | Day-9 (no ReID) | Day-26 (+ReID) | Δ |
+|---|---|---|---|
+| HOTA | 0.598 | 0.600 | +0.002 |
+| DetA | 0.714 | 0.715 | +0.001 |
+| AssA | 0.501 | 0.505 | +0.004 |
+| IDF1 | 0.684 | 0.687 | +0.003 |
+| ID-switches | 210 | 240 | **+30 (worse)** |
+| MOTA | 0.871 | 0.868 | −0.003 |
+
+**REEL-VIABILITY VERDICT: NOT viable.** The gate needed AssA ~0.50 → 0.75+ with ID-switches down hard. We got
+AssA +0.004 (0.505) and ID-switches went UP by 30. The appearance ReID lift is negligible — within noise on
+HOTA/AssA/IDF1 and net-negative on raw churn. Per-player reels are NOT yet trustworthy; do not build them on this
+identity.
+
+**Why so flat (honest read).** Two compounding reasons, both DPS-relevant: (1) frozen ImageNet ResNet18 appearance
+features are not discriminative enough on similar-kit broadcast players — the same limited-discriminativeness
+ceiling found on Day-23 team assignment; (2) GMC already captured most of the available association gain on Day-9
+(AssA 0.435 → 0.501), so appearance matching on top of a strong motion model adds nothing and even injects a few
+extra switches from false appearance re-associations. The native YOLO-feature ReID backbone is documented as
+weaker still, so it was not run (would not change the verdict).
+
+**DECISION.** Per-player reels (output #2) are **NOT viable now**. What's needed first, in order of expected payoff:
+- A stronger, ReID-TRAINED appearance encoder (trained on player re-id, not frozen ImageNet), OR
+- DPS-footage tuning once real DPS clips exist, OR
+- **tag-once WITH periodic human re-correction** (the human re-clicks when a tagged identity drifts) — the most
+  deployable near-term path, since pure ReID won't hold identity unaided on similar-kit teams.
+The deferred-since-Day-9 ReID arm is now MEASURED — open loop closed. Part C (tag-once prototype) skipped because
+the gate failed: prototyping tag-survival on an identity this unstable would only quantify a known-bad number.
+
+**DPS caveats.** GT-validated on SoccerNet; DPS-pending. Appearance features are expected to be even less
+discriminative on similar-kit DPS teams (same similar-kit risk as team assignment). Basketball ReID not measured
+(no tracklet GT → plausibility only); comes later if an identity solution proves out on football first.
+
+### Files added / changed
+- `PRD'S/PRD_Day26_reid_measure.md` — session plan.
+- `scripts/track_reid_from_cache.py` — BoT-SORT + appearance ReID over cached dets; `--reid-backbone resnet18|yolo`
+  (resnet18 = discriminative frozen ImageNet crop encoder, the default); seq-by-seq with CUDA empty_cache guard.
+- `scripts/eval_track.py` — used as-is for the with/without comparison (`--split soccernet-val`).
+- `outputs/track_results/sn_soccana_botsort_reid/` — 5 MOT-format tracker outputs (gitignored).
+- `outputs/logs/day26_reid_run.log` — ReID run log.

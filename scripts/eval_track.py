@@ -57,27 +57,23 @@ def stage_tracker(tracker_dir: Path, staging: Path, tracker_name: str, seqs: lis
         n += 1
     print(f"staged {n} tracker files at {out_base}")
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("tracker_dir", help="Directory with <seq>.txt MOT-format tracker outputs")
-    ap.add_argument("--tracker-name", required=True, help="Used as a label in TrackEval reports")
-    ap.add_argument("--source", default="datasets/sportsmot_basketball", help="SportsMOT extracted dir")
-    ap.add_argument("--staging", default="outputs/track_eval_staging", help="Temp TrackEval layout root")
-    ap.add_argument("--split", default=SPLIT, help="TrackEval split label, e.g. basketball-val, football-val")
-    ap.add_argument("--reset-staging", action="store_true", help="Wipe staging first")
-    args = ap.parse_args()
+def evaluate(tracker_dir, tracker_name, source="datasets/sportsmot_basketball",
+             staging="outputs/track_eval_staging", split=SPLIT, reset_staging=False):
+    """Stage GT + tracker outputs, run TrackEval, return COMBINED_SEQ headline metrics as a dict.
 
-    source = Path(args.source)
-    staging = Path(args.staging)
-    if args.reset_staging and staging.exists():
+    Returns: {HOTA, DetA, AssA, MOTA, IDF1, IDsw} (floats; IDsw int).
+    """
+    source = Path(source)
+    staging = Path(staging)
+    if reset_staging and staging.exists():
         shutil.rmtree(staging)
 
     # Auto-detect seqs from source dir
     seqs = sorted(d.name for d in source.iterdir() if d.is_dir() and (d / "seqinfo.ini").exists())
     print(f"sequences: {seqs}")
 
-    stage_gt(source, staging, seqs, args.split)
-    stage_tracker(Path(args.tracker_dir), staging, args.tracker_name, seqs, args.split)
+    stage_gt(source, staging, seqs, split)
+    stage_tracker(Path(tracker_dir), staging, tracker_name, seqs, split)
 
     # Configure TrackEval
     eval_cfg = trackeval.Evaluator.get_default_eval_config()
@@ -91,8 +87,8 @@ def main():
     ds_cfg["GT_FOLDER"] = str(staging / "gt" / "mot_challenge")
     ds_cfg["TRACKERS_FOLDER"] = str(staging / "trackers" / "mot_challenge")
     ds_cfg["BENCHMARK"] = BENCHMARK
-    ds_cfg["SPLIT_TO_EVAL"] = args.split
-    ds_cfg["TRACKERS_TO_EVAL"] = [args.tracker_name]
+    ds_cfg["SPLIT_TO_EVAL"] = split
+    ds_cfg["TRACKERS_TO_EVAL"] = [tracker_name]
     ds_cfg["CLASSES_TO_EVAL"] = ["pedestrian"]
     ds_cfg["DO_PREPROC"] = False  # SportsMOT has no distractor preproc
     ds_cfg["PRINT_CONFIG"] = False
@@ -107,17 +103,33 @@ def main():
     dataset = MotChallenge2DBox(ds_cfg)
     output_res, _ = evaluator.evaluate([dataset], metrics_list)
 
+    res = output_res["MotChallenge2DBox"][tracker_name]["COMBINED_SEQ"]["pedestrian"]
+    return {
+        "HOTA": float(res["HOTA"]["HOTA"].mean()),
+        "DetA": float(res["HOTA"]["DetA"].mean()),
+        "AssA": float(res["HOTA"]["AssA"].mean()),
+        "MOTA": float(res["CLEAR"]["MOTA"]),
+        "IDF1": float(res["Identity"]["IDF1"]),
+        "IDsw": int(res["CLEAR"]["IDSW"]),
+    }
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("tracker_dir", help="Directory with <seq>.txt MOT-format tracker outputs")
+    ap.add_argument("--tracker-name", required=True, help="Used as a label in TrackEval reports")
+    ap.add_argument("--source", default="datasets/sportsmot_basketball", help="SportsMOT extracted dir")
+    ap.add_argument("--staging", default="outputs/track_eval_staging", help="Temp TrackEval layout root")
+    ap.add_argument("--split", default=SPLIT, help="TrackEval split label, e.g. basketball-val, football-val")
+    ap.add_argument("--reset-staging", action="store_true", help="Wipe staging first")
+    args = ap.parse_args()
+
+    m = evaluate(args.tracker_dir, args.tracker_name, args.source, args.staging,
+                 args.split, args.reset_staging)
+
     # Pull the "COMBINED_SEQ" summary metrics
     print("\n=== HEADLINE METRICS ===")
-    res = output_res["MotChallenge2DBox"][args.tracker_name]["COMBINED_SEQ"]["pedestrian"]
-    hota = res["HOTA"]["HOTA"].mean()
-    deta = res["HOTA"]["DetA"].mean()
-    assa = res["HOTA"]["AssA"].mean()
-    mota = res["CLEAR"]["MOTA"]
-    idf1 = res["Identity"]["IDF1"]
-    idsw = int(res["CLEAR"]["IDSW"])
-    print(f"  HOTA: {hota:.3f}    DetA: {deta:.3f}    AssA: {assa:.3f}")
-    print(f"  MOTA: {mota:.3f}    IDF1: {idf1:.3f}    IDsw: {idsw}")
+    print(f"  HOTA: {m['HOTA']:.3f}    DetA: {m['DetA']:.3f}    AssA: {m['AssA']:.3f}")
+    print(f"  MOTA: {m['MOTA']:.3f}    IDF1: {m['IDF1']:.3f}    IDsw: {m['IDsw']}")
 
 if __name__ == "__main__":
     main()
