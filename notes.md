@@ -2358,3 +2358,78 @@ discriminative on similar-kit DPS teams (same similar-kit risk as team assignmen
 - `scripts/eval_track.py` — used as-is for the with/without comparison (`--split soccernet-val`).
 - `outputs/track_results/sn_soccana_botsort_reid/` — 5 MOT-format tracker outputs (gitignored).
 - `outputs/logs/day26_reid_run.log` — ReID run log.
+
+## Day 27 — Inclusive Player Highlights (output #2, football): involvement clips + tag-per-clip
+
+Day-26 gated output #2 pending an identity solution. **This is that solution** — it sidesteps
+the impossible version of the problem instead of trying to solve it.
+
+**The inclusivity reframe (the whole point).** Event highlights (output #3) surface only
+exciting moments → footage concentrates on stars; quiet kids get nothing. Player highlights
+must be INCLUSIVE — *every* player gets footage. School value (every child seen; a parent wants
+THEIR kid) and a genuine differentiator vs VEO/Pixellot's star/ball focus. Success metric =
+"did everyone who played get a reel," not "did we catch the best plays."
+
+**Why identity = human tag-per-clip (not auto-ReID).** DPS houses wear identical kits (Rose=red,
+Lily=yellow, no numbers/names) → within a team every player is visually identical; appearance
+ReID is *fundamentally* impossible (Day-26 measured AssA +0.004, noise). The system never names
+players — the USER does, one short clip at a time. Each involvement clip is a few seconds of ONE
+continuously-visible person → unambiguous even in identical kits. Clips pre-grouped by track id
+→ bulk-name an un-switched run in one keypress; ID-switches get re-tagged.
+
+**Mechanism (no magic, all reuse).**
+1. *Involvement = math on cached data* (`detect_involvement.py`): per *detected* ball frame
+   (lost-ball discipline — `predicted`/`lost` never fabricated), the single nearest player track
+   within an on-ball radius gets an involvement frame; merge to per-track ranges. No frames, no
+   GPU. Radius is **bbox-height-normalized** (player≈1.8m → per-player px/m, perspective-correct).
+   Pitch-meter homography IS available (GT `test.zip` on disk; ball carries `pitch_x_m`) but
+   height-norm was used — simpler, frame-free, clean result; pitch-meters is a drop-in refinement.
+2. *Clip from the C-FEED* (`clip_player_highlights.py`): each range + padding (−2s/+1s) cut from
+   the Day-13 **C-feed** (player-stabilized — right feed for player-subject footage; A-feed is
+   ball-centric, for events). Same `_crop` math as Day-13/24/25.
+3. *Tag-per-clip* (`tag_clips.py`): Day-22-style Tkinter+PIL; key-frame preview + roster,
+   number-key picks, bulk-name per track, forgiving re-tag. Saves clip→name.
+4. *Assemble + verify* (`assemble_player_reels.py`): group clips by name, rank by strength,
+   title card → one reel per player; inclusivity check + presence fallback run here.
+
+**Involvement distribution.** Per seq 7–17 tracks pick up involvement; moments/track max 2–3,
+median 1. Ball-detected frames/seq 143–498; 75–96% of those assign to a nearest player within
+radius (rest = ball mid-flight / between players, correctly unassigned). Involvement clips
+rendered per seq: 8/15/17/13/20 (73 total).
+
+**INCLUSIVITY VERIFIED — 189/189 substantial outfield players get footage (100%).**
+Involvement clips alone cover only **55/189 (29%)** — the near-ball players. The other **134**
+are on-court but were never the nearest player to a *detected* ball (deep defenders, keeper,
+brief fragments). Spot-diagnostic on SNGS-118's 20 missed tracks: most are **genuinely far**
+(closest approach 2.4–10.1 player-heights vs the 1.39-height radius); a couple came inside the
+radius on a frame but were never the nearest-on-a-detected-ball. So involvement-only is **not
+inclusive by itself** — the honest fix is a **presence-clip fallback**: any substantial on-court
+track with zero involvement still gets its longest contiguous visible stretch clipped. With the
+fallback, coverage is 100% by construction. Per-seq substantial [involve+presence]: 116=50
+[7+43], 117=36 [11+25], 118=31 [11+20], 119=24 [9+15], 120=48 [17+31].
+
+**DPS workflow.** User enters the house roster → tags each short clip (bulk per un-switched
+track) → reels assemble per name. Identical kits handled by short-clip human naming, not auto-ID.
+Effort ≈ one keypress per clip; involvement clips are few (8–20 per 30-s seq) and bulk-naming
+collapses a track to one press → a full match is minutes of tagging, not hours.
+
+**Honest caveats.** Involvement = nearest-player proxy (plausibility-level near-ball, NOT exact
+per-touch). Height-normalized radius → re-tune at the DPS mount. SoccerNet = METHOD proxy,
+DPS-pending. House-kit ID-switch means one player may span several track ids → tag-per-clip
+re-unites them under one name (design, not defect). Real per-player *tagged* reels need the
+interactive Part-C pass; this build committed per-track *draft* reels + one `sample_reel.mp4`.
+Frames live at `datasets/soccernet_tracking/<seq>/img1/` (NOT `test/`); an early path-probe
+wrongly reported them missing — they are present (750/seq, all 5), clips/reels rendered for real.
+
+**Differentiator for the proposal.** Inclusive every-player reels (involvement + presence
+fallback, human-named) vs VEO/Pixellot star/ball focus. "Every child gets a reel" is the headline.
+
+### Files added / changed (Day 27)
+- `scripts/detect_involvement.py` (A), `scripts/clip_player_highlights.py` (B),
+  `scripts/tag_clips.py` (C), `scripts/assemble_player_reels.py` (D).
+- Working artifacts (regenerable, local): `outputs/involvement/`, `outputs/player_highlights/`.
+- Committed package `outputs/deliverables/player_highlights_football/` (README, inclusivity.md,
+  inclusivity_summary.json, distribution_*.png, sample_reel.mp4).
+- Restored `.gitignore` after an accidental mid-session overwrite (commit cddd877 briefly carried
+  a stripped-down version that dropped the `datasets/` protection; fixed in 3a58a72).
+- Commits cddd877 + 3a58a72 are LOCAL — push to main was blocked by the auto-mode classifier.
