@@ -132,6 +132,13 @@ outputs/deliverables/fullmatch_scale_football/*
 !outputs/deliverables/fullmatch_scale_football/*.png
 !outputs/deliverables/fullmatch_scale_football/*.md
 !outputs/deliverables/fullmatch_scale_football/*.json
+# Day-30 appearance-free track de-fragmentation (Alfheim, ZXY-validated): findings + figures + metric summary.
+# Re-linked MOTs + per-config metric JSONs stay LOCAL (outputs/track_results, outputs/alfheim — gitignored).
+!outputs/deliverables/defrag_football/
+outputs/deliverables/defrag_football/*
+!outputs/deliverables/defrag_football/*.png
+!outputs/deliverables/defrag_football/*.md
+!outputs/deliverables/defrag_football/*.json
 
 # IDE
 .vscode/

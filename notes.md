@@ -2573,3 +2573,66 @@ per-player distance. Stride-2 sampling (full-rate adds ID churn, not less).
 - Alfheim raw clips/video + ZXY CSVs stay LOCAL (license + size): `datasets/alfheim/` and `outputs/alfheim/`
   (datasets/* + *.mp4 gitignored). Verified git status carries only the curated package — no leakage.
 - Committed (NOT pushed, per request).
+
+## Day 30 — Attack track fragmentation (appearance-free re-linking), ZXY-validated (football)
+
+Day-29 exposed the real DPS blocker: identity (5,106 IDs for ~22 players, median track life 1.3 s).
+This session attacked it APPEARANCE-FREE (motion/position only — right for identical house kits;
+Day-26 proved appearance ReID useless on them). Measure-first: build a real GT identity metric,
+diagnose WHY tracks break, fix the dominant cause, measure the lift. Reused the Day-29 stitched
+half + ZXY-refined homography + 30 fps sync (did not re-break it).
+
+**The honest headline:** appearance-free re-linking cuts the raw ID count **18–27 % SAFELY**, but does
+**NOT** meaningfully improve ground-truth identity stability or analytics magnitude. The fragmentation
+is structural (occlusion + unstable detection), beyond motion-only repair. This **refines** the PRD's
+optimistic "5,106 → a few hundred": not achievable appearance-free on this footage — which **sharpens
+the DPS case for the human tag-per-clip layer** (a measured confirmation, not an assumption).
+
+**Part A — real identity metric vs ZXY (not raw ID count).** Hungarian-match tracked foot-points
+(→pitch via the fixed H) to in-view ZXY home players per frame; accumulate per-GT the timeline of
+covering IDs. Baseline: **IDs-per-GT-home-player median 191** (mean 171, max 275) — the *real*
+per-player fragmentation; identity **purity 0.116** (dominant ID holds only 12 % of a player's matched
+frames); ID-switches 2,600; IDF1 0.008. *Coverage caveat:* single CENTRE cam + 1.78 m homography →
+~14 % GT-match coverage → IDF1 is a RELATIVE before/after number, not absolute; the 191 IDs/player is
+corroborated GT-free by Day-29's 1.3 s median track-life.
+
+**Part B — WHY tracks break (diagnose before fixing).** Classified every track end: **OCCLUSION 35 %**
+(dominant — players cross), EDGE 26 % (left view), GENUINE_END 20 %, BLIP 16 %, FAST_MOTION 2 %,
+**FLICKER 0.7 %**. ~45 % of non-blip ends are motion-rejoinable. Flicker negligible → detection-flicker
+smoothing correctly SKIPPED. Fix = offline gap re-linking targeting occlusion.
+
+**Part C — appearance-free offline gap re-linking (measured each).** Offline gap re-linking with gap G =
+the post-hoc equivalent of `track_buffer=G` but global+bidirectional → strictly more powerful, and FREE
+(no ~1 hr re-track; the PRD prefers re-linking the existing MOT). Velocity-predicted in pitch metres,
+tight gate, ONE-TO-ONE, velocity-direction guarded (the over-link guards). Sweep:
+- moderate (gap 30 / 3 m): 5,106 → **4,186 (−18 %)**, 920 links.
+- aggressive (gap 60 / 4 m): 5,106 → 3,729 (−27 %), 1,377 links. Generous gates plateau ~2,700–3,100
+  and start risking over-link — nowhere near "a few hundred".
+- **GT identity stability FLAT:** IDs/GT 191→183, purity 0.116→0.116, IDF1 unchanged; substantial-track
+  count barely drops (2,270→2,118) — re-linking merges mostly short/spurious tracks, not the substantial
+  tracks a human tags. **Over-link checked vs GT:** 2-GT-spanning tracks 194→202 (≈ the 19 % single-cam
+  homography noise floor) → re-linking is SAFE (not merging different players), just not helping identity.
+- **Why the ceiling:** occlusion-driven *mid-stream identity hopping* (coverage hops between already-running
+  tracks in crowds) + unstable detector (~15 of 22 players/frame, night footage). End→start motion
+  re-linking can't repair mid-stream hops; appearance can't help on identical kits.
+
+**Part D — did less fragmentation help the analytics?** **No.** Re-running the Day-29 intensity speed-bands
+on re-linked tracks: UNCHANGED (walk 43.6→43.8 %, sprint 4.6→4.5 % vs ZXY walk 56.5 / sprint 0.5 %). The
+~2× high-intensity inflation is homography noise + single-camera in-view bias, not ID-fragmentation
+(the band calc already used substantial tracks + a teleport guard). Denser homography — not de-frag — is
+the analytics lever.
+
+**DPS read.** Auto de-fragmentation is NOT a substitute for human tag-per-clip — a *measured* confirmation
+of the Day-26/27/28 decision. The tagging burden is bounded by the CLIPPING design (Day-27/28 tag
+involvement+presence *clips*, not all 2,270 tracks), so it stays viable. Team/aggregate analytics
+(heatmaps, possession, team distance — no per-player identity) remain usable; per-player season stats are
+not deliverable from auto-tracking at this footage quality. The safe re-link (−18 %) is a cheap spurious-ID
+pre-pass, not the identity solution. Honest caveats: ZXY = home-team-only metric; single-cam coverage-limited
+IDF1; still a proxy; over-link monitored (19 % baseline noise floor limits how finely it certifies).
+
+### Files added (Day 30)
+- `scripts/alfheim_identity_metric.py` (ZXY-grounded IDF1/purity/IDs-per-GT), `scripts/alfheim_break_diagnosis.py`
+  (break-cause classifier), `scripts/alfheim_relink.py` (offline gap re-linker, guarded).
+- Committed package `outputs/deliverables/defrag_football/` (findings.md, defrag_summary.json, break_causes.png,
+  defrag_vs_identity.png). Re-linked MOTs + metric JSONs stay LOCAL (outputs/ gitignored). Alfheim data stays
+  off-repo. Committed (NOT pushed — auto-mode classifier blocks direct-to-main AI pushes; user pushes).

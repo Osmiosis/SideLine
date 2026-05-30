@@ -1,0 +1,49 @@
+{
+  "baseline": {
+    "raw_ids": 5106,
+    "IDs_per_GT_median": 191,
+    "purity": 0.116,
+    "IDF1": 0.008,
+    "substantial_ge2s": 2270,
+    "substantial_ge6s": 1505
+  },
+  "relink_moderate_g30_3m": {
+    "raw_ids": 4186,
+    "IDs_per_GT_median": 183,
+    "purity": 0.116,
+    "IDF1": 0.008,
+    "substantial_ge2s": 2118,
+    "substantial_ge6s": 1447,
+    "links": 920,
+    "reduction_pct": 18.0
+  },
+  "relink_aggressive_g60_4m": {
+    "raw_ids": 3729,
+    "IDs_per_GT_median": 181,
+    "purity": 0.116,
+    "IDF1": 0.008,
+    "substantial_ge2s": 2058,
+    "substantial_ge6s": 1430,
+    "links": 1377,
+    "reduction_pct": 27.0
+  },
+  "break_causes_pct": {
+    "OCCLUSION": 35.2,
+    "EDGE": 25.9,
+    "GENUINE_END": 20.1,
+    "BLIP_1frame": 16.4,
+    "FAST_MOTION": 1.9,
+    "FLICKER": 0.7
+  },
+  "relinkable_pct_nonblip": 45.1,
+  "over_link_2GT_tracks": {
+    "baseline": 194,
+    "moderate": 202,
+    "aggressive": 205,
+    "note": "19% baseline noise floor from single-cam homography; relink adds negligible -> safe"
+  },
+  "analytics_speed_bands": {
+    "note": "UNCHANGED after relink -> inflation is homography/in-view-bias, not fragmentation"
+  },
+  "verdict": "appearance-free re-linking cuts raw IDs 18-27% SAFELY but does NOT improve GT identity stability (purity flat 0.116, IDF1 flat) or analytics magnitude. Fragmentation is occlusion-dominated mid-stream hopping + unstable detection -> motion-only cannot reach clean tracks; appearance useless on identical kits. Human tag-per-clip remains REQUIRED."
+}
