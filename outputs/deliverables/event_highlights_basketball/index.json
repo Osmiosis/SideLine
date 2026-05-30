@@ -1,0 +1,88 @@
+[
+  {
+    "seq": "v_00HRwkvvjtQ_c007",
+    "rank": 1,
+    "interest": 1.15,
+    "types": [
+      "block_proxy",
+      "likely_made_basket",
+      "shot_attempt"
+    ],
+    "top_type": "likely_made_basket",
+    "confidence": 0.6,
+    "start_sec": 0.0,
+    "end_sec": 6.8,
+    "start_frame": 1,
+    "end_frame": 171,
+    "clip": "outputs/events_bb/v_00HRwkvvjtQ_c007/clips/01_likely_made_basket.mp4",
+    "frames": 171
+  },
+  {
+    "seq": "v_00HRwkvvjtQ_c007",
+    "rank": 2,
+    "interest": 1.15,
+    "types": [
+      "likely_made_basket",
+      "shot_attempt",
+      "steal_proxy"
+    ],
+    "top_type": "likely_made_basket",
+    "confidence": 0.6,
+    "start_sec": 4.44,
+    "end_sec": 13.24,
+    "start_frame": 112,
+    "end_frame": 332,
+    "clip": "outputs/events_bb/v_00HRwkvvjtQ_c007/clips/02_likely_made_basket.mp4",
+    "frames": 221
+  },
+  {
+    "seq": "v_00HRwkvvjtQ_c007",
+    "rank": 3,
+    "interest": 0.853,
+    "types": [
+      "block_proxy",
+      "shot_attempt"
+    ],
+    "top_type": "block_proxy",
+    "confidence": 0.48,
+    "start_sec": 22.64,
+    "end_sec": 28.24,
+    "start_frame": 567,
+    "end_frame": 707,
+    "clip": "outputs/events_bb/v_00HRwkvvjtQ_c007/clips/03_block_proxy.mp4",
+    "frames": 141
+  },
+  {
+    "seq": "v_00HRwkvvjtQ_c007",
+    "rank": 4,
+    "interest": 0.7,
+    "types": [
+      "steal_proxy"
+    ],
+    "top_type": "steal_proxy",
+    "confidence": 0.4,
+    "start_sec": 14.0,
+    "end_sec": 20.4,
+    "start_frame": 351,
+    "end_frame": 511,
+    "clip": "outputs/events_bb/v_00HRwkvvjtQ_c007/clips/04_steal_proxy.mp4",
+    "frames": 161
+  },
+  {
+    "seq": "v_00HRwkvvjtQ_c007",
+    "rank": 5,
+    "interest": 0.7,
+    "types": [
+      "shot_attempt",
+      "steal_proxy"
+    ],
+    "top_type": "steal_proxy",
+    "confidence": 0.78,
+    "start_sec": 19.32,
+    "end_sec": 28.24,
+    "start_frame": 484,
+    "end_frame": 707,
+    "clip": "outputs/events_bb/v_00HRwkvvjtQ_c007/clips/05_steal_proxy.mp4",
+    "frames": 224
+  }
+]

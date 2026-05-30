@@ -2203,3 +2203,92 @@ three artifact fixes ~70 min; Part C clip+validate+pre-roll fix ~40 min; Part D 
 - `outputs/deliverables/event_highlights_football/` — `index.md`/`index.json`, `contact_<seq>.jpg`,
   `sample_highlight.mp4`, `README.md` (committed); `auto_draft_reel.mp4` + per-moment clips local.
 - `.gitignore` — whitelist the Day-24 deliverable (jpg/png/md/json + `sample_highlight.mp4`).
+
+## Day 25 — Basketball Event Detection + Ranked Highlight Clipping (output #3 parity)
+
+**Goal.** Bring output #3 to basketball: reuse the Day-24 architecture, basketball-tuned, with
+INTEREST RANKING (basketball is shot-dense → rank so the StuCo editor isn't drowned) + a
+'likely made basket' detector using the hoop location from the Day-21 court homography.
+
+### Working set (honest constraint)
+**Only `v_00HRwkvvjtQ_c007`** — it is the *only* basketball clip with a saved court homography
+(`outputs/deliverables/<seq>/court/homography.json`, manual-marked, holdout 0.30 m). Homography =
+the hoop-calibration the made-basket detector needs, so the other clips (c001/c003/c005/c008) can't
+do court-relative/made-basket detection without manual court-marking (a GUI step). This is exactly
+the DPS setup dependency the PRD flags. c007 is a **right-half-court** view: the right hoop projects
+in-frame at px(824,366); the left hoop is off-frame.
+
+### Honest event tiers
+- **Tier 1 (kinematic):** `shot_attempt` (ball launches toward a hoop zone, launch-anchored),
+  `fast_break` (sustained fast full-court ball + players streaming one way).
+- **Tier 2 (proxy):** `likely_made_basket` (ball reaches the rim zone + play reverses; **NOT a
+  confirmed score** — no net/height, plausibility-level ball; catches makes *and* near-misses),
+  `block_proxy` (shot reaches rim then sharply reverses away), `steal_proxy` (open-court possession flip).
+- **Tier 3 (NOT built):** made-basket certainty, fouls (referee judgment → AUDIO lever), violations.
+
+### Shot-dense → interest ranking (the basketball-specific design)
+High-recall CAPTURE + sort best-first. INTEREST weights: made_basket 1.00 > fast_break 0.82 >
+block 0.74 > steal 0.60 > shot_attempt 0.50, +0.25·confidence. The curation index is SORTED so
+made-baskets/blocks float to the top. On c007: 18 raw candidates → **5 ranked moments**, and the two
+`likely_made_basket` moments rank #1/#2, block #3, steals #4/#5 — the ranking works.
+
+### Made-basket detection (hoop from homography)
+Project ball pixel→court (Day-21 H), distance to the in-frame hoop. Rim zone = <1.8 m. A made
+candidate = ball reaches the rim zone, then within ~2 s the play reverses (possession flip OR ball
+heads back out). The ball reaches **0.3 m** from the right hoop @f53 → a real shot/make, ranked #1.
+
+### Reused Day-24 lessons (all carried, matter MORE on occlusion-heavy basketball)
+- **Lost ball = DEAD, never interpolated** into fake velocity (speed zeroed where ball missing) —
+  ball valid only 422/707 frames here, so this was essential.
+- **Shot = launch-anchored** (`detect_shot_flights`): a lost-ball stretch that departs a possessed
+  spot and approaches the hoop, anchored to the LAUNCH (the release) so the clip shows the shooter.
+- Teleport guard (ball >25 m/s court-step = homography noise; 66 guarded), peak-proximity clustering,
+  4 s pre-roll, A-feed (ball-faithful variant) clipping.
+
+### Validation
+- **No sparse labels:** SportsMOT is tracking-only (`gt.txt`/`seqinfo.ini`), no event timestamps →
+  no label-anchored recall. Internal anchor: ball-to-hoop 0.3 m confirms a shot is present.
+- **USER perceptual** is the primary judge (surfaced ranked clips + contact sheet + index; Claude
+  Code does NOT self-declare quality on perceptual deliverables). **← awaiting user verdict.**
+
+### AUDIO — next lever (same as football)
+Whistle → fouls/stoppages; crowd-roar → made-basket confirmation. Motion-only today.
+
+### DPS caveats
+Hoop calibration = manual court-marking setup dependency (football had none). Plausibility-level ball
++ occlusion → noisier events; lost-ball discipline + ranking keep the top clean. All thresholds
+camera-scale + court-marking dependent → re-tune at DPS. SportsMOT is a proxy; method transfers, not numbers.
+
+### Errors / surprises
+- Subagent conflated football (SNGS-116–120) with basketball — basketball outputs live in `_bb`
+  dirs (`ball_track_bb`, `team_assign_bb`, `follow_cam_bb`); verified the real working set directly
+  before building (would otherwise have re-run football).
+- Basketball ball track has no court coords (homography post-dates Day-19) → project pixel→court here.
+- numpy int64 from `np.where` broke `json.dumps` → added a numpy-aware JSON default.
+- **Follow-cam didn't show the ball reach the hoop (user feedback).** The Day-15/16 basketball A-feed
+  is a *possession-handoff* feed: when the ball is LOST (exactly during a shot's up-arc) it falls back
+  to the last-holder (the shooter), so clips showed players, not the ball arriving at the rim. Fix:
+  `clip_highlights_basketball.py --crop ball` (now default) builds a STRICT ball-tracking crop —
+  follows the Kalman ball every frame, interpolates lost gaps between real sightings (traverses to
+  where the ball reappears), smoothed; robust to camera motion since it's pixel-space.
+- **Single-frame homography vs a moving camera (honesty finding).** The c007 court homography was
+  marked on ONE frame (540), but this broadcast clip pans/zooms (mean frame-to-frame gray diff ~40–70
+  vs f540). So ball→court projection is only valid near f540 → the hoop-relative `likely_made_basket`
+  / `block_proxy` labels are **weak proxies**, not reliable made-calls (e.g. a "make @f53" was really a
+  center-court dribble). Kept the honest "likely"/proxy naming + added the caveat; pixel-space signals
+  (ball motion, possession) and the strict-ball crop are unaffected. At a DPS FIXED mount one
+  calibration holds all match, so this is a proxy-footage artifact, not a method flaw.
+
+### Time
+Wall ~2.5h: Part 0 artifact-mapping + hoop projection ~40 min (subagent confusion cost time);
+Part A/B `detect_events_basketball.py` ~70 min; Part C/D clip + package + notes ~40 min.
+
+### Files added / changed
+- `PRD'S/PRD_Day25_basketball_events.md` — session plan.
+- `scripts/detect_events_basketball.py` — Part A features + Part B detectors + interest ranking →
+  `outputs/events_bb/<seq>/{features.json, events.json, features_plot.png}`. Reuses Day-24 helpers.
+- `scripts/clip_highlights_basketball.py` — Part C/D: clip ranked moments from follow-cam variant A
+  + ranked curation package.
+- `outputs/deliverables/event_highlights_basketball/` — `index.md`/`index.json`, `contact_<seq>.jpg`,
+  `sample_highlight.mp4`, `README.md` (committed); `auto_draft_reel.mp4` + clips local.
+- `.gitignore` — whitelist the Day-25 basketball deliverable.

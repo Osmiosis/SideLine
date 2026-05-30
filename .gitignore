@@ -97,6 +97,14 @@ outputs/deliverables/event_highlights_football/*
 !outputs/deliverables/event_highlights_football/*.md
 !outputs/deliverables/event_highlights_football/*.json
 !outputs/deliverables/event_highlights_football/sample_highlight.mp4
+# Day-25 basketball event highlights (output #3 parity): ranked index + contact sheets + sample clip.
+!outputs/deliverables/event_highlights_basketball/
+outputs/deliverables/event_highlights_basketball/*
+!outputs/deliverables/event_highlights_basketball/*.jpg
+!outputs/deliverables/event_highlights_basketball/*.png
+!outputs/deliverables/event_highlights_basketball/*.md
+!outputs/deliverables/event_highlights_basketball/*.json
+!outputs/deliverables/event_highlights_basketball/sample_highlight.mp4
 # Day-19 trained ball-vs-head classifier (model weights, not crop data) -- reusable artifact
 !outputs/ball_head/
 outputs/ball_head/*
