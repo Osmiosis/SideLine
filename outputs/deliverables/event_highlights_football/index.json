@@ -1,0 +1,522 @@
+[
+  {
+    "seq": "SNGS-116",
+    "idx": 0,
+    "types": [
+      "stoppage_review",
+      "tackle_proxy"
+    ],
+    "confidence": 0.6,
+    "start_sec": 4.6,
+    "end_sec": 16.6,
+    "start_frame": 116,
+    "end_frame": 416,
+    "covers_gsr_label": true,
+    "gsr_label": "Corner",
+    "clip": "outputs/events/SNGS-116/clips/00_stoppage_review_5s.mp4",
+    "frames": 301
+  },
+  {
+    "seq": "SNGS-116",
+    "idx": 1,
+    "types": [
+      "tackle_proxy"
+    ],
+    "confidence": 0.4,
+    "start_sec": 19.68,
+    "end_sec": 26.08,
+    "start_frame": 493,
+    "end_frame": 653,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-116/clips/01_tackle_proxy_20s.mp4",
+    "frames": 161
+  },
+  {
+    "seq": "SNGS-116",
+    "idx": 2,
+    "types": [
+      "tackle_proxy"
+    ],
+    "confidence": 0.5,
+    "start_sec": 22.04,
+    "end_sec": 28.44,
+    "start_frame": 552,
+    "end_frame": 712,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-116/clips/02_tackle_proxy_22s.mp4",
+    "frames": 161
+  },
+  {
+    "seq": "SNGS-116",
+    "idx": 3,
+    "types": [
+      "tackle_proxy"
+    ],
+    "confidence": 0.4,
+    "start_sec": 24.0,
+    "end_sec": 29.96,
+    "start_frame": 601,
+    "end_frame": 750,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-116/clips/03_tackle_proxy_24s.mp4",
+    "frames": 150
+  },
+  {
+    "seq": "SNGS-117",
+    "idx": 0,
+    "types": [
+      "tackle_proxy"
+    ],
+    "confidence": 0.4,
+    "start_sec": 3.2,
+    "end_sec": 9.6,
+    "start_frame": 81,
+    "end_frame": 241,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-117/clips/00_tackle_proxy_3s.mp4",
+    "frames": 161
+  },
+  {
+    "seq": "SNGS-117",
+    "idx": 1,
+    "types": [
+      "stoppage_review"
+    ],
+    "confidence": 0.36,
+    "start_sec": 5.24,
+    "end_sec": 12.4,
+    "start_frame": 132,
+    "end_frame": 311,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-117/clips/01_stoppage_review_5s.mp4",
+    "frames": 180
+  },
+  {
+    "seq": "SNGS-117",
+    "idx": 2,
+    "types": [
+      "tackle_proxy"
+    ],
+    "confidence": 0.5,
+    "start_sec": 8.4,
+    "end_sec": 14.8,
+    "start_frame": 211,
+    "end_frame": 371,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-117/clips/02_tackle_proxy_8s.mp4",
+    "frames": 161
+  },
+  {
+    "seq": "SNGS-117",
+    "idx": 3,
+    "types": [
+      "fast_transition",
+      "likely_goal_candidate",
+      "shot",
+      "stoppage_review",
+      "tackle_proxy"
+    ],
+    "confidence": 0.98,
+    "start_sec": 21.2,
+    "end_sec": 29.96,
+    "start_frame": 531,
+    "end_frame": 750,
+    "covers_gsr_label": true,
+    "gsr_label": "Offside",
+    "clip": "outputs/events/SNGS-117/clips/03_fast_transition_21s.mp4",
+    "frames": 220
+  },
+  {
+    "seq": "SNGS-118",
+    "idx": 0,
+    "types": [
+      "tackle_proxy"
+    ],
+    "confidence": 0.4,
+    "start_sec": 0.0,
+    "end_sec": 7.4,
+    "start_frame": 1,
+    "end_frame": 186,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-118/clips/00_tackle_proxy_0s.mp4",
+    "frames": 186
+  },
+  {
+    "seq": "SNGS-118",
+    "idx": 1,
+    "types": [
+      "tackle_proxy"
+    ],
+    "confidence": 0.5,
+    "start_sec": 3.4,
+    "end_sec": 9.8,
+    "start_frame": 86,
+    "end_frame": 246,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-118/clips/01_tackle_proxy_3s.mp4",
+    "frames": 161
+  },
+  {
+    "seq": "SNGS-118",
+    "idx": 2,
+    "types": [
+      "shot",
+      "tackle_proxy"
+    ],
+    "confidence": 0.98,
+    "start_sec": 5.84,
+    "end_sec": 12.44,
+    "start_frame": 147,
+    "end_frame": 312,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-118/clips/02_shot_6s.mp4",
+    "frames": 166
+  },
+  {
+    "seq": "SNGS-118",
+    "idx": 3,
+    "types": [
+      "shot",
+      "tackle_proxy"
+    ],
+    "confidence": 0.89,
+    "start_sec": 8.56,
+    "end_sec": 14.64,
+    "start_frame": 215,
+    "end_frame": 367,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-118/clips/03_shot_9s.mp4",
+    "frames": 153
+  },
+  {
+    "seq": "SNGS-118",
+    "idx": 4,
+    "types": [
+      "likely_goal_candidate",
+      "shot",
+      "tackle_proxy"
+    ],
+    "confidence": 0.64,
+    "start_sec": 9.84,
+    "end_sec": 21.84,
+    "start_frame": 247,
+    "end_frame": 547,
+    "covers_gsr_label": true,
+    "gsr_label": "Shots off target",
+    "clip": "outputs/events/SNGS-118/clips/04_likely_goal_candidate_10s.mp4",
+    "frames": 301
+  },
+  {
+    "seq": "SNGS-118",
+    "idx": 5,
+    "types": [
+      "stoppage_review"
+    ],
+    "confidence": 0.55,
+    "start_sec": 15.28,
+    "end_sec": 24.68,
+    "start_frame": 383,
+    "end_frame": 618,
+    "covers_gsr_label": true,
+    "gsr_label": "Shots off target",
+    "clip": "outputs/events/SNGS-118/clips/05_stoppage_review_15s.mp4",
+    "frames": 236
+  },
+  {
+    "seq": "SNGS-118",
+    "idx": 6,
+    "types": [
+      "likely_goal_candidate",
+      "shot"
+    ],
+    "confidence": 0.81,
+    "start_sec": 18.72,
+    "end_sec": 27.16,
+    "start_frame": 469,
+    "end_frame": 680,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-118/clips/06_likely_goal_candidate_19s.mp4",
+    "frames": 212
+  },
+  {
+    "seq": "SNGS-119",
+    "idx": 0,
+    "types": [
+      "likely_goal_candidate",
+      "shot"
+    ],
+    "confidence": 0.76,
+    "start_sec": 0.0,
+    "end_sec": 6.68,
+    "start_frame": 1,
+    "end_frame": 168,
+    "covers_gsr_label": true,
+    "gsr_label": "Clearance",
+    "clip": "outputs/events/SNGS-119/clips/00_likely_goal_candidate_0s.mp4",
+    "frames": 168
+  },
+  {
+    "seq": "SNGS-119",
+    "idx": 1,
+    "types": [
+      "likely_goal_candidate",
+      "shot"
+    ],
+    "confidence": 0.69,
+    "start_sec": 0.08,
+    "end_sec": 8.6,
+    "start_frame": 3,
+    "end_frame": 216,
+    "covers_gsr_label": true,
+    "gsr_label": "Clearance",
+    "clip": "outputs/events/SNGS-119/clips/01_likely_goal_candidate_0s.mp4",
+    "frames": 214
+  },
+  {
+    "seq": "SNGS-119",
+    "idx": 2,
+    "types": [
+      "tackle_proxy"
+    ],
+    "confidence": 0.4,
+    "start_sec": 3.4,
+    "end_sec": 9.8,
+    "start_frame": 86,
+    "end_frame": 246,
+    "covers_gsr_label": true,
+    "gsr_label": "Clearance",
+    "clip": "outputs/events/SNGS-119/clips/02_tackle_proxy_3s.mp4",
+    "frames": 161
+  },
+  {
+    "seq": "SNGS-119",
+    "idx": 3,
+    "types": [
+      "likely_goal_candidate",
+      "shot",
+      "tackle_proxy"
+    ],
+    "confidence": 0.8,
+    "start_sec": 5.6,
+    "end_sec": 14.32,
+    "start_frame": 141,
+    "end_frame": 359,
+    "covers_gsr_label": true,
+    "gsr_label": "Clearance",
+    "clip": "outputs/events/SNGS-119/clips/03_likely_goal_candidate_6s.mp4",
+    "frames": 219
+  },
+  {
+    "seq": "SNGS-119",
+    "idx": 4,
+    "types": [
+      "likely_goal_candidate",
+      "shot"
+    ],
+    "confidence": 0.93,
+    "start_sec": 7.24,
+    "end_sec": 15.68,
+    "start_frame": 182,
+    "end_frame": 393,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-119/clips/04_likely_goal_candidate_7s.mp4",
+    "frames": 212
+  },
+  {
+    "seq": "SNGS-119",
+    "idx": 5,
+    "types": [
+      "stoppage_review",
+      "tackle_proxy"
+    ],
+    "confidence": 0.55,
+    "start_sec": 10.76,
+    "end_sec": 19.72,
+    "start_frame": 270,
+    "end_frame": 494,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-119/clips/05_stoppage_review_11s.mp4",
+    "frames": 225
+  },
+  {
+    "seq": "SNGS-119",
+    "idx": 6,
+    "types": [
+      "stoppage_review",
+      "tackle_proxy"
+    ],
+    "confidence": 0.4,
+    "start_sec": 13.48,
+    "end_sec": 22.68,
+    "start_frame": 338,
+    "end_frame": 568,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-119/clips/06_stoppage_review_13s.mp4",
+    "frames": 231
+  },
+  {
+    "seq": "SNGS-119",
+    "idx": 7,
+    "types": [
+      "stoppage_review"
+    ],
+    "confidence": 0.53,
+    "start_sec": 19.68,
+    "end_sec": 28.52,
+    "start_frame": 493,
+    "end_frame": 714,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-119/clips/07_stoppage_review_20s.mp4",
+    "frames": 222
+  },
+  {
+    "seq": "SNGS-119",
+    "idx": 8,
+    "types": [
+      "fast_transition",
+      "tackle_proxy"
+    ],
+    "confidence": 0.74,
+    "start_sec": 24.0,
+    "end_sec": 29.96,
+    "start_frame": 601,
+    "end_frame": 750,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-119/clips/08_fast_transition_24s.mp4",
+    "frames": 150
+  },
+  {
+    "seq": "SNGS-120",
+    "idx": 0,
+    "types": [
+      "likely_goal_candidate",
+      "shot",
+      "stoppage_review",
+      "tackle_proxy"
+    ],
+    "confidence": 0.68,
+    "start_sec": 0.0,
+    "end_sec": 8.28,
+    "start_frame": 1,
+    "end_frame": 208,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-120/clips/00_likely_goal_candidate_0s.mp4",
+    "frames": 208
+  },
+  {
+    "seq": "SNGS-120",
+    "idx": 1,
+    "types": [
+      "stoppage_review"
+    ],
+    "confidence": 0.43,
+    "start_sec": 1.92,
+    "end_sec": 9.72,
+    "start_frame": 49,
+    "end_frame": 244,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-120/clips/01_stoppage_review_2s.mp4",
+    "frames": 196
+  },
+  {
+    "seq": "SNGS-120",
+    "idx": 2,
+    "types": [
+      "fast_transition",
+      "shot"
+    ],
+    "confidence": 0.98,
+    "start_sec": 6.44,
+    "end_sec": 14.52,
+    "start_frame": 162,
+    "end_frame": 364,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-120/clips/02_fast_transition_6s.mp4",
+    "frames": 203
+  },
+  {
+    "seq": "SNGS-120",
+    "idx": 3,
+    "types": [
+      "fast_transition",
+      "stoppage_review",
+      "tackle_proxy"
+    ],
+    "confidence": 0.84,
+    "start_sec": 10.32,
+    "end_sec": 18.52,
+    "start_frame": 259,
+    "end_frame": 464,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-120/clips/03_fast_transition_10s.mp4",
+    "frames": 206
+  },
+  {
+    "seq": "SNGS-120",
+    "idx": 4,
+    "types": [
+      "tackle_proxy"
+    ],
+    "confidence": 0.5,
+    "start_sec": 13.48,
+    "end_sec": 21.44,
+    "start_frame": 338,
+    "end_frame": 537,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-120/clips/04_tackle_proxy_13s.mp4",
+    "frames": 200
+  },
+  {
+    "seq": "SNGS-120",
+    "idx": 5,
+    "types": [
+      "tackle_proxy"
+    ],
+    "confidence": 0.6,
+    "start_sec": 20.04,
+    "end_sec": 26.44,
+    "start_frame": 502,
+    "end_frame": 662,
+    "covers_gsr_label": true,
+    "gsr_label": "Foul",
+    "clip": "outputs/events/SNGS-120/clips/05_tackle_proxy_20s.mp4",
+    "frames": 161
+  },
+  {
+    "seq": "SNGS-120",
+    "idx": 6,
+    "types": [
+      "stoppage_review"
+    ],
+    "confidence": 0.33,
+    "start_sec": 25.12,
+    "end_sec": 29.96,
+    "start_frame": 629,
+    "end_frame": 750,
+    "covers_gsr_label": false,
+    "gsr_label": null,
+    "clip": "outputs/events/SNGS-120/clips/06_stoppage_review_25s.mp4",
+    "frames": 122
+  }
+]

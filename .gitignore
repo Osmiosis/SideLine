@@ -88,6 +88,15 @@ outputs/deliverables/coach_package_basketball/*
 !outputs/deliverables/coach_package_basketball/*.pdf
 !outputs/deliverables/coach_package_basketball/*.json
 !outputs/deliverables/coach_package_basketball/tactical_sample_basketball.mp4
+# Day-24 event highlight candidates (output #3): index + contact sheets + ONE small sample clip.
+# Per-moment clips + full auto_draft_reel.mp4 stay LOCAL (oversized; covered by *.mp4 / outputs/*).
+!outputs/deliverables/event_highlights_football/
+outputs/deliverables/event_highlights_football/*
+!outputs/deliverables/event_highlights_football/*.jpg
+!outputs/deliverables/event_highlights_football/*.png
+!outputs/deliverables/event_highlights_football/*.md
+!outputs/deliverables/event_highlights_football/*.json
+!outputs/deliverables/event_highlights_football/sample_highlight.mp4
 # Day-19 trained ball-vs-head classifier (model weights, not crop data) -- reusable artifact
 !outputs/ball_head/
 outputs/ball_head/*

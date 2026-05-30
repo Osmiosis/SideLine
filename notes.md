@@ -2111,3 +2111,95 @@ package + README + notes.
   + team-split heatmaps + team-coloured video + `track_teams_emb.json` + `validation_emb.json`
   (Day-22 `*_bb.json` kept as the colour baseline for the before/after).
 - (gitignored, regenerable) `outputs/team_assign_bb/{crops.npz, hand_labels.json}` (Day-22).
+
+## Day 24 — Event Detection + Highlight Clipping (output #3, football)
+
+**Goal.** The third DPS output: auto-surface candidate exciting moments from MOTION for a human
+(Student Council) to curate into a highlight reel. Motion-only; HIGH-RECALL by design.
+
+### Honest event tiers (what motion CAN / CANNOT do)
+- **Tier 1 — solid kinematic:** `shot` (ball accel spike + heading toward a goal region),
+  `fast_transition` (sustained up-pitch ball movement).
+- **Tier 2 — honest proxies (caveated):** `likely_goal_candidate` (shot toward goal → ball near
+  goal then dead/restart; an INFERENCE — no goal-line/net detection — so it also catches
+  saves/near-misses; **never** called "goal"), `tackle_proxy` (opposing players converge + possession
+  flip; noisy), `stoppage_review` (ball dead + players cluster; correlates with fouls/throw-ins/
+  injuries/subs; **never** called "foul").
+- **Tier 3 — NOT built (not honestly detectable from motion):** fouls (referee judgment — no
+  kinematic signature separates foul from fair challenge), skill-moves (research-level pose).
+
+### High-recall design + WHY
+DPS use = a StuCo editor posts a reel → a human curates before posting. A missed goal is gone
+forever; a false positive is a 2-second skip. So tune for **catch-everything, human-filters**, not
+precision. The deliverable is a candidate SET + a skim index, explicitly not a finished reel.
+
+### Validation path (Part 0)
+SoccerNet-GSR is **not** the dense Action-Spotting benchmark — there is no frame-level event stream.
+But every GSR clip carries **one clip-level `action_class` + `action_position`** that maps to a
+single frame (via `clip_start`/`frame_rate`). So validation is **hybrid**:
+- **Label-anchored (sparse):** 1 known event/clip, 5 total (116 Corner@157, 117 Offside@610,
+  118 Shots-off-target@387, 119 Clearance@164, 120 Foul@608). Does a candidate window cover it?
+  **Result: 5/5 covered.** The shot detector fires on the Shots-off-target clip; the stoppage proxy
+  fires on the Foul clip — the two direct trust checks.
+- **Perceptual (primary for precision):** labels are 1/clip so they cannot score false positives →
+  contact sheets + clips watched by eye. Shots pan to the goalmouth; transitions follow breaks;
+  tackle/stoppage moments show contested play. FPs are low-confidence midfield `tackle_proxy` (skips).
+
+### Method (reuse, no re-detection/tracking)
+`scripts/detect_events.py` (Part A+B): from Day-9 players / Day-10 homography / Day-11 teams /
+Day-12 ball → per-frame motion features (ball kinematics pixel+pitch, ball-toward-goal distance+
+heading, possession + flips, opposing-player convergence, player-spread halt signal) → high-recall
+detectors → candidate "moments". `scripts/clip_highlights.py` (Part C+D): cut each moment from the
+**Day-13 follow-cam variant A** (ball-faithful — the right feed for ball-centric events; B/C suppress
+the aerial ball), tag type/conf/timestamp, build index + per-seq contact sheets + a marked
+auto-draft reel. **31 candidate moments across 5 clips, 4.7–12 s each.**
+
+### Teleport guards (honest split)
+- **Players:** step > 10 m/s = tracking teleport, dropped (Day-20 `SPEED_ARTEFACT`, sprint peak ~10).
+- **Ball:** pitch step > 40 m/s = homography-noise teleport, interpolated. The ball guard is
+  DELIBERATELY higher than the player 10 m/s guard — a real shot is 25–30+ m/s, so a 10 m/s cap
+  would erase the exact events we detect.
+
+### AUDIO — the documented next lever (note, not built)
+DPS phones record audio. A whistle detector (fouls/stoppages) + crowd-roar spikes (goal
+confirmation) are the honest path to real fouls and goal-confirmation. `stoppage_review` is the
+**motion-half** of a future foul detector that audio completes. Today is motion-only.
+
+### DPS caveats
+Every threshold (shot speed, goal-region pixels, convergence radii, halt duration) is
+**camera-scale-dependent → must be re-tuned at the DPS mount**. SoccerNet is a proxy: the method
+transfers, the numbers do not. Human-in-the-loop curation is the intended workflow.
+
+### Errors / surprises (even if fixed)
+- **Lost-ball interpolation fabricated events.** Linearly interpolating ball position across a long
+  lost-ball gap produces a *constant non-zero* velocity → a fake `fast_transition` and a misplaced
+  stoppage. Fix: speed is zeroed wherever the ball position was missing (lost → dead, not fake).
+  fast_transition count dropped 9→4 (honest).
+- **Overlap-merge collapsed to whole-clip windows.** These 30 s SoccerNet clips are pre-curated
+  action-dense windows, so padded windows chain-overlap into one 30 s blob. Fix: cluster by event
+  **peak proximity** (>1.6 s gap = new moment) + a 12 s cap → distinct 5–8 s clips. (On continuous
+  DPS footage this is moot — events are sparse.)
+- **Stoppage missed the actual Foul.** Same lost-ball cause: speed never hit ~0 during the dead
+  ball. Fix: treat *lost ball* as a halt signal → stoppage now fires on all clips incl. the Foul.
+- **Clips showed the aftermath, not the strike** (user feedback on SNGS-118). Deeper than pre-roll:
+  a real shot launches the ball fast/aerial, so the tracker LOSES it at the kick — speed-based
+  detection only re-fires when the ball ARRIVES near goal (SNGS-118: strike 15.5 s, ball lost
+  16–22 s, speed-peak 22.7 s), so no pre-roll from there reaches the strike. Fix: `detect_shot_flights()`
+  finds the lost-ball stretch that departs a possessed position and approaches a goal, and anchors the
+  clip to the LAUNCH (last detected frame before the gap = the strike). Verified: the A-feed crop frames
+  the shooter mid-strike at the launch frame. (Also raised pre-roll 3 s→4 s, peak-anchored.)
+
+### Time
+Wall ~3h: Part 0 label probe ~20 min; Part A features + plausibility ~50 min; Part B detectors +
+three artifact fixes ~70 min; Part C clip+validate+pre-roll fix ~40 min; Part D package/notes/commit
+~20 min.
+
+### Files added / changed
+- `PRD'S/PRD_Day24_event_highlights.md` — session plan.
+- `scripts/detect_events.py` — Part A motion features + Part B high-recall detectors → per-seq
+  `outputs/events/<seq>/{features.json, events.json, features_plot.png}`.
+- `scripts/clip_highlights.py` — Part C/D: clip moments from the A-feed (variant A) + curation
+  package (index + contact sheets + sample clip + auto-draft reel).
+- `outputs/deliverables/event_highlights_football/` — `index.md`/`index.json`, `contact_<seq>.jpg`,
+  `sample_highlight.mp4`, `README.md` (committed); `auto_draft_reel.mp4` + per-moment clips local.
+- `.gitignore` — whitelist the Day-24 deliverable (jpg/png/md/json + `sample_highlight.mp4`).
