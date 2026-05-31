@@ -1,0 +1,48 @@
+{
+  "baseline_relinked_mod": {
+    "IDs_per_GT_median": 183,
+    "IDs_per_GT_mean": 165.0,
+    "purity": 0.116,
+    "IDF1": 0.008,
+    "id_switches": 2576,
+    "over_merge_strict": 437,
+    "raw_ids": 4186
+  },
+  "day32_settled_60anchors": {
+    "IDs_per_GT_median": 179,
+    "IDs_per_GT_mean": 158.4,
+    "purity": 0.117,
+    "IDF1": 0.009,
+    "id_switches": 2554,
+    "over_merge_strict": 409,
+    "raw_ids": 4045
+  },
+  "day32_kickoff_4anchors": {
+    "IDs_per_GT_median": 183,
+    "IDs_per_GT_mean": 164.6,
+    "purity": 0.116,
+    "IDF1": 0.008,
+    "id_switches": 2574,
+    "over_merge_strict": 435,
+    "raw_ids": 4178
+  },
+  "registration_gt_check": {
+    "settled": {
+      "merges_same_GT": 2,
+      "merges_DIFFERENT_GT": 5,
+      "merges_undetermined": 205,
+      "note": "endpoints both GT-matched: same=good (re-pinned one player), DIFFERENT=over-merge"
+    },
+    "kickoff": {
+      "merges_same_GT": 0,
+      "merges_DIFFERENT_GT": 0,
+      "merges_undetermined": 16,
+      "note": "endpoints both GT-matched: same=good (re-pinned one player), DIFFERENT=over-merge"
+    }
+  },
+  "anchors": {
+    "settled": 60,
+    "kickoff_genuine": 4
+  },
+  "verdict": "DROP \u2014 negligible identity lift; genuine dead-balls too sparse (~4/half); loose anchors give spurious registration (more wrong than right vs GT)"
+}

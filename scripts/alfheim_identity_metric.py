@@ -132,6 +132,20 @@ def compute(mot_path, H, samples, times, stride):
     idfp = total_track_matched - idtp
     idf1 = (2 * idtp) / max(1, (2 * idtp + idfp + idfn))
 
+    # over-merge: a tracked ID matched to >=2 DIFFERENT GT players = it fused two real players.
+    # (the Day-30 guard: re-linking/anchoring must not join different players.) Build tid -> GT cooc.
+    tid_to_gt = defaultdict(Counter)
+    for tag, c in cooc.items():
+        for tid, n in c.items():
+            tid_to_gt[tid][tag] += n
+    over_merge_any = 0      # track touches >=2 GT (incl 1-frame leaks)
+    over_merge_strict = 0   # track's 2nd GT has >=3 matched frames (genuine spanning, not noise)
+    for tid, gc in tid_to_gt.items():
+        if len(gc) >= 2:
+            over_merge_any += 1
+            if sorted(gc.values(), reverse=True)[1] >= 3:
+                over_merge_strict += 1
+
     frags = [v["distinct_track_ids"] for v in per_gt.values()]
     tot_matched = sum(v["matched_frames"] for v in per_gt.values())
     tot_inview = sum(v["inview_frames"] for v in per_gt.values())
@@ -153,6 +167,8 @@ def compute(mot_path, H, samples, times, stride):
         },
         "identity_purity_mean": round(float(np.mean(purity_list)), 3) if purity_list else 0,
         "id_switches_vs_GT_total": idsw_total,
+        "over_merge_tracks_2plus_GT": over_merge_any,
+        "over_merge_tracks_strict": over_merge_strict,
         "IDF1": round(idf1, 3),
         "IDTP": idtp, "IDFP": idfp, "IDFN": idfn,
         "raw_unique_track_ids_in_mot": len({t for fr in by_frame.values() for t in [d[0] for d in fr]}),
@@ -179,7 +195,8 @@ def main():
     out.write_text(json.dumps(rep, indent=2))
     print(json.dumps({k: rep[k] for k in (
         "n_gt_players_tracked", "IDs_per_GT_player", "identity_purity_mean",
-        "id_switches_vs_GT_total", "IDF1", "raw_unique_track_ids_in_mot")}, indent=2))
+        "id_switches_vs_GT_total", "over_merge_tracks_2plus_GT", "over_merge_tracks_strict",
+        "IDF1", "raw_unique_track_ids_in_mot")}, indent=2))
     print(f"  -> {out}")
 
 

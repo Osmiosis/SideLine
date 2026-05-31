@@ -2696,3 +2696,52 @@ clip-count × sec/tag (optimistic — excludes the often-impossible ID step).
 - Committed package `outputs/deliverables/fullmatch_scale_football/day31_*` (findings.md, tagging_volume.json
   + .png, ball_probe_summary.json, widecam_ballrecall_evidence.png). Ball-probe window JSON + relinked MOTs
   stay LOCAL (outputs/ gitignored). Alfheim data stays off-repo.
+
+## Day 32 — Formation-invariant dead-ball identity anchor (PROBE) — ZXY-validated — football
+
+Probed ONE untried appearance-free identity lever: re-anchor track IDs at dead-balls by registering
+consecutive settled position-sets (formation-INVARIANT point-set registration — no tactical template, so it
+transfers to DPS). Measure-first, honest keep/drop; scorer = Day-30 ZXY metric; baseline = Day-30 re-linked
+safe −18% (4,186 IDs). Alfheim full half = worst-case fixed single cam. **Verdict: DROP.**
+
+**Part A — anchors (+ genuineness discriminator).** Generic low-motion+spread over-fired → **60** "anchors"
+(this match walks 56.5% per ZXY, so low-motion ≠ dead-ball). Added a **kickoff filter** (centre circle ±10 m
+near-empty + players split across halfway line, ≤0.6 m/s — detects a real kickoff's geometry, no ball needed;
+prompted by a user suggestion to use ball-dead-at-centre). It found **4** genuine centre-circle dead-balls in
+47 min (start-of-half kickoff + ~3 restarts). **Genuine dead-balls are extremely sparse → the lever has
+almost nothing to work with** (Part-A finding).
+
+**Part B — registration + re-unify.** Trimmed rigid ICP (rotation+translation, geometry only) between
+consecutive anchor sets → union-find merge of corresponded IDs. Over-merge guard = direct ZXY check.
+- settled (60): 212 merges, IDs 4,186→4,045 (−3.4%); GT-check **5 DIFFERENT-player merges vs 2 same** →
+  registration between low-motion snapshots minutes apart is mostly spurious.
+- kickoff (4): 16 merges, IDs 4,186→4,178 (−0.2%); too few to verify.
+
+**Part C — lift vs ZXY (before/after):**
+
+| Metric | Day-30 re-linked | Day-32 settled (60) | Day-32 kickoff (4) |
+|---|---|---|---|
+| IDs/GT median | 183 | 179 (−2.2%) | 183 (flat) |
+| purity | 0.116 | 0.117 | 0.116 |
+| IDF1 | 0.008 | 0.009 | 0.008 |
+| over-merge strict | 437 | 409 | 435 |
+
+**Purity + IDF1 FLAT both modes** (the only verdict metric; raw-ID drop in settled mode = away/short-track
+consolidation, not identity recovery). **DROP**: anchoring fails from both ends — genuine dead-balls too
+sparse (~4/half) to bound drift; loosening the definition gets spurious registrations (5 wrong : 2 right).
+
+**Synthesis.** Lower-bound logic doesn't apply (no positive on worst-case → no DPS lower bound claimed); and
+dead-ball *sparsity* (~4/half) is structural → cleaner DPS dual-cam improves registration accuracy but not the
+number of resets, so the sparse-reset ceiling likely transfers. Per-player outputs stay blocked at full-match
+scale (Day-30/31). Remaining untried lever = global min-cost-flow stitcher, but it needs cleaner tracklets →
+**defer to real DPS dual-cam footage.** Cheapest lever tested and shelved.
+
+**Caveats:** ZXY home-team-only metric; sparse anchors bound≠eliminate drift; Alfheim worst-case single-cam
+proxy; over-merge verifiable only where both merge endpoints hit home GT.
+
+### Files added (Day 32)
+- `scripts/alfheim_formation_anchor.py` (Part A settled/kickoff anchor detection + Part B trimmed-ICP
+  registration + union-find re-unify + direct ZXY over-merge check). Added over-merge metric
+  (`over_merge_tracks_2plus_GT`/`_strict`) to `scripts/alfheim_identity_metric.py` (backward-compatible).
+- Committed package `outputs/deliverables/fullmatch_scale_football/day32_*` (findings.md, before_after.json,
+  anchors_timeline.png). Anchored MOTs + metric JSONs stay LOCAL. Alfheim data off-repo.
