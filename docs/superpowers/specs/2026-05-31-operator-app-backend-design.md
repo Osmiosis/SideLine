@@ -53,7 +53,7 @@ docs/superpowers/specs/2026-05-31-operator-app-backend-design.md  # this file
 
 - Server binds `0.0.0.0:<port>` (default 8000). On startup it resolves and prints the LAN URL (e.g. `http://192.168.x.x:8000`) so the operator can point a phone/laptop at it.
 - Frontend served as static files from `Website/` at `/`.
-- Reuses the existing repo `.venv` (Python 3.14) and its CV deps (opencv, torch, ultralytics). Web-only deps go in `requirements-backend.txt`.
+- Reuses the existing repo `.venv` (Python 3.11.9) and its CV deps (opencv, torch, ultralytics). Web-only deps go in `requirements-backend.txt`.
 
 ---
 
@@ -213,7 +213,7 @@ The worker runs the **shared foundation once**, then the requested deliverable s
 - **Web:** FastAPI, uvicorn, python-multipart (streamed uploads), pydantic. → `backend/requirements-backend.txt`.
 - **State:** SQLite via stdlib `sqlite3` (no external DB).
 - **CV:** reuse the existing repo `.venv` and its installed deps (opencv-python, torch, ultralytics) — the backend only invokes the scripts, never re-imports their CV logic.
-- **Runtime:** Python 3.14 in `.venv`; server bound to `0.0.0.0:8000` on the LAN.
+- **Runtime:** Python 3.11.9 in the repo `.venv` (the CV stack — torch 2.11+cu128, opencv, ultralytics — lives here, so the backend runs in the same venv); server bound to `0.0.0.0:8000` on the LAN. `pytest` + `httpx` already present for tests.
 
 ---
 
