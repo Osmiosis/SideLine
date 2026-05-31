@@ -33,6 +33,11 @@ def test_write_status_mirrors_json(tmp_path):
     status = json.loads((store.job_dir(cfg.job_id) / "status.json").read_text())
     assert status["state"] == "tracking"
     assert status["stage_label"] == "Following players"
+    from backend import db
+    row = db.get_job(store.conn, cfg.job_id)
+    assert row["state"] == "tracking"
+    assert row["stage"] == "tracking"
+    assert row["progress"] == 40
 
 
 def test_video_path_resolves_inside_job_dir(tmp_path):

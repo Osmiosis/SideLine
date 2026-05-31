@@ -13,6 +13,9 @@ _STAGE_MESSAGES: dict[str, str] = {
     "analytics": "Something went wrong while building the analytics. Please try again.",
     "events": "Something went wrong while finding key moments. Please try again.",
     "player_highlights": "Something went wrong while building player reels. Please try again.",
+    # Human-pause / bookkeeping stages — not real failures; benign text just in case.
+    "tagging_pending": "We're waiting on player names. Please finish tagging.",
+    "tagging_done": "Something went wrong after tagging. Please try again.",
 }
 
 _GENERIC = "Something went wrong while processing this match. Please try again."

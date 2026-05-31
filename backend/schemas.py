@@ -46,7 +46,8 @@ class JobConfig(BaseModel):
     sport: Sport
     match_name: str
     match_date: str
-    video_path: str
+    video_path: str = Field(
+        description="Filename relative to the job directory; resolve via JobStore.video_path().")
     calibration_points: list[CalibrationPoint]
     roster: list[str]
     player_tags: dict[str, str]
