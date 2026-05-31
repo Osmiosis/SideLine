@@ -1009,21 +1009,26 @@ function countUp(el){
    DASHBOARD
    ============================================================ */
 let dashInit=false;
-function initDashboard(){
-  if(dashInit) return; dashInit=true;
+async function initDashboard(){
   const grid=document.getElementById('matchGrid');
   grid.innerHTML='';
   const nc=document.createElement('div'); nc.className='card new-card reveal'; nc.dataset.go='setup';
   nc.innerHTML=`<div class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg></div><b>New Match</b><span>Start from a recording</span>`;
   grid.appendChild(nc);
-  MATCHES.forEach(m=>{
+  let jobs=[];
+  try{ jobs=await API.listJobs(); }catch(e){ jobs=null; }
+  const items = jobs===null
+    ? MATCHES.map((m,i)=>({demo:true, ...m}))               // offline fallback: demo cards
+    : jobs.map(j=>({job_id:j.job_id, name:j.match_name, date:j.match_date, sport:j.sport,
+                    status:(j.state==='ready'?'ready':j.state==='failed'?'draft':'proc'), seed:(j.match_name.length*7)%30}));
+  items.forEach(m=>{
     const badge = m.status==='ready'?'<span class="badge ready"><span class="led"></span>Ready</span>'
       : m.status==='proc'?'<span class="badge proc"><span class="led"></span>Processing</span>'
       : '<span class="badge draft"><span class="led"></span>Draft</span>';
     const sportIcon = m.sport==='basketball'
       ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5 5c4 3 4 11 0 14M19 5c-4 3-4 11 0 14"/></svg>'
       : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 3l4 3-1.5 5h-5L8 6z"/></svg>';
-    const el=document.createElement('div'); el.className='card match reveal'; el.dataset.go=m.status==='ready'?'results':'processing';
+    const el=document.createElement('div'); el.className='card match reveal';
     el.innerHTML=`
       <div class="thumb"><canvas></canvas>
         <div class="sport-chip">${sportIcon}${m.sport[0].toUpperCase()+m.sport.slice(1)}</div>
@@ -1033,8 +1038,13 @@ function initDashboard(){
         <h3>${m.name}</h3>
         <div class="match-meta">${badge}<span>·</span><span>${m.date}</span></div>
       </div>`;
+    el.addEventListener('click',()=>{
+      if(m.demo){ go(m.status==='ready'?'results':'processing'); return; }
+      AppState.currentJobId=m.job_id;
+      go(m.status==='ready'?'results':'processing');
+    });
     grid.appendChild(el);
-    drawFootage(el.querySelector('canvas'), m.sport, m.seed);
+    drawFootage(el.querySelector('canvas'), m.sport, m.seed||7);
   });
   document.querySelectorAll('#v-dashboard .stat .n').forEach(countUp);
   observeReveals();
@@ -1390,38 +1400,45 @@ function stopRadar(){ if(radarStop)cancelAnimationFrame(radarStop); }
    RESULTS
    ============================================================ */
 let resultsInit=false;
-function initResults(){
+async function initResults(){
   const rv=document.getElementById('reportVid'); let cv=rv.querySelector('canvas');
   if(!cv){cv=document.createElement('canvas');rv.insertBefore(cv,rv.firstChild);}
   drawFootage(cv,selSport,42,{track:true});
+
+  // tabs (wire once)
   if(!resultsInit){
     resultsInit=true;
-    const cl=document.getElementById('clipList'); cl.innerHTML='';
-    EVENTS.forEach(ev=>{
-      const el=document.createElement('div'); el.className='card cliprow';
-      el.innerHTML=`<div class="ct"><canvas></canvas><span class="dur">${ev.dur}</span></div>
-        <div class="ci"><b>${ev.t}</b><div class="tags"><span class="rank">#${ev.rank}</span>${ev.tags.map(t=>`<span>${t}</span>`).join('')}</div></div>
-        <button class="dlbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round"/></svg></button>`;
-      el.querySelector('.dlbtn').addEventListener('click',e=>{e.stopPropagation();toast('Downloading clip…');});
-      cl.appendChild(el);
-      drawFootage(el.querySelector('canvas'),selSport,ev.seed,{players:true});
-    });
-    const pg=document.getElementById('playerGrid'); pg.innerHTML='';
-    ROSTER_SEED.forEach((name,i)=>{
-      const el=document.createElement('div'); el.className='card pcard';
-      el.innerHTML=`<div class="pt-thumb"><canvas></canvas></div>
-        <div class="pbar"><div class="pj">${(i*3+5)%30+1}</div><div class="pn"><b>${name}</b><span>${4+(i%5)} highlights · ${30+i*4}s</span></div>
-        <button class="dlbtn" style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round"/></svg></button></div>`;
-      el.querySelector('.dlbtn').addEventListener('click',()=>toast(`Downloading ${name}'s reel…`));
-      pg.appendChild(el);
-      drawPlayerThumb(el.querySelector('canvas'),i*9+2);
-    });
     document.querySelectorAll('.rtab').forEach(t=>t.addEventListener('click',()=>{
       document.querySelectorAll('.rtab').forEach(z=>z.classList.remove('active')); t.classList.add('active');
       document.querySelectorAll('.rpanel').forEach(p=>p.classList.remove('show'));
       document.getElementById('rp-'+t.dataset.rtab).classList.add('show');
     }));
-    document.querySelector('#rp-coach .pbtn').addEventListener('click',()=>toast('Playing annotated video…'));
+  }
+
+  const id=AppState.currentJobId;
+  let files=[];
+  try{ if(id) files=await API.listOutputs(id); }catch(e){ files=[]; }
+
+  // Event-highlights / coach outputs -> real downloadable file rows
+  const cl=document.getElementById('clipList'); if(cl){
+    cl.innerHTML='';
+    if(!files.length){
+      cl.innerHTML='<div class="empty" style="opacity:.7;padding:18px">No files yet. They appear here when processing finishes.</div>';
+    } else {
+      files.forEach(fn=>{
+        const el=document.createElement('div'); el.className='card cliprow';
+        el.innerHTML=`<div class="ct"><canvas></canvas></div>
+          <div class="ci"><b>${fn}</b><div class="tags"><span>${id}</span></div></div>
+          <a class="dlbtn" href="${API.outputUrl(id,fn)}" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round"/></svg></a>`;
+        cl.appendChild(el);
+        drawFootage(el.querySelector('canvas'),selSport,(fn.length*5)%30,{players:true});
+      });
+    }
+  }
+
+  // Player reels deferred to Plan 4
+  const pg=document.getElementById('playerGrid'); if(pg){
+    pg.innerHTML='<div class="empty" style="opacity:.7;padding:18px">Player highlight reels are coming soon.</div>';
   }
 }
 
