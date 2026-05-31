@@ -1320,17 +1320,29 @@ function initProcessing(){
   });
   startRadar();
   if(procTimer)clearInterval(procTimer);
-  let p=0; const total=STAGES.length;
   const fill=document.getElementById('procFill'),pct=document.getElementById('procPct'),eta=document.getElementById('procEta');
+  const total=STAGES.length;
+  // map a backend stage name to one of the 5 UI stage rows
+  function uiStageIndex(stage){
+    const map={decoding:0,detecting:0,tracking:1,teams:1,ball:1,analytics:2,events:3,player_highlights:4,ready:4};
+    return (stage in map)?map[stage]:0;
+  }
   setStage(0);
-  procTimer=setInterval(()=>{
-    p+=Math.random()*4+1.5; if(p>=100){p=100;clearInterval(procTimer);finishProc();}
-    fill.style.width=p+'%'; pct.textContent=Math.round(p)+'%';
-    const stageNow=Math.min(total-1,Math.floor(p/100*total));
-    setStage(stageNow);
-    const rem=Math.round((100-p)/100*180); eta.textContent=p>=100?'Complete':`about ${rem} min left`;
-  },420);
-  document.getElementById('skipProc').onclick=()=>{ clearInterval(procTimer); fill.style.width='100%'; pct.textContent='100%'; finishProc(); };
+  async function poll(){
+    if(!document.getElementById('v-processing').classList.contains('show')){ clearInterval(procTimer); return; }
+    try{
+      const s=await API.getStatus(AppState.currentJobId);
+      const p=Math.max(0,Math.min(100,s.progress||0));
+      fill.style.width=p+'%'; pct.textContent=Math.round(p)+'%';
+      if(s.stage_label) document.getElementById('procStageLabel')?.replaceChildren(document.createTextNode(s.stage_label));
+      setStage(uiStageIndex(s.stage||'decoding'));
+      if(s.state==='ready'){ clearInterval(procTimer); fill.style.width='100%'; pct.textContent='100%'; finishProc(); }
+      else if(s.state==='failed'){ clearInterval(procTimer); eta.textContent=s.error||'Something went wrong.'; toast(s.error||'Processing failed'); }
+      else { eta.textContent='Working… you can leave and come back'; }
+    }catch(err){ /* transient; keep polling */ }
+  }
+  poll();
+  procTimer=setInterval(poll,1500);
 }
 function setStage(n){
   STAGES.forEach((s,i)=>{
