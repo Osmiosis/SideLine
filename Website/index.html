@@ -1102,7 +1102,7 @@ function initCourt(){
   // real freeze-frame from the uploaded video
   let img=frame.querySelector('img.frameimg');
   if(!img){ img=document.createElement('img'); img.className='frameimg';
-    img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover';
+    img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:fill';
     frame.insertBefore(img, frame.firstChild); }
   if(AppState.currentJobId){ img.src=API.frameUrl(AppState.currentJobId)+'?t='+Date.now(); }
   drawDiagram();
@@ -1471,7 +1471,7 @@ window.addEventListener('resize',()=>{
   const id=v.id.replace('v-','');
   if(id==='dashboard'){MATCHES.forEach((m,i)=>{const cvs=document.querySelectorAll('#matchGrid .match canvas');cvs[i]&&drawFootage(cvs[i],m.sport,m.seed);});}
   if(id==='setup'){drawFieldIcon(ensureCanvas(document.getElementById('field-football')),'football');drawFieldIcon(ensureCanvas(document.getElementById('field-basketball')),'basketball');}
-  if(id==='court'){drawFootage(document.querySelector('#frame canvas'),selSport,42,{players:true});renderMarks();drawDiagram();}
+  if(id==='court'){renderMarks();drawDiagram();}
 });
 initDashboard();
 observeReveals();
