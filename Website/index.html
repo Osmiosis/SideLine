@@ -736,8 +736,7 @@ label.fl{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margi
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>
             This usually takes a few hours. You can close this tab — we'll keep working and have everything ready when you come back.
           </div>
-          <div style="margin-top:20px"><button class="btn btn-ghost" data-go="dashboard">Back to dashboard</button>
-            <button class="btn btn-ghost" id="skipProc" style="margin-left:8px;opacity:.6">Skip ahead (demo)</button></div>
+          <div style="margin-top:20px"><button class="btn btn-ghost" data-go="dashboard">Back to dashboard</button></div>
         </div>
       </section>
 
@@ -1114,6 +1113,11 @@ function initCourt(){
   // real freeze-frame from the uploaded video
   let img=frame.querySelector('img.frameimg');
   if(!img){ img=document.createElement('img'); img.className='frameimg';
+    // object-fit:fill (not cover) is deliberate: clicks are recorded as
+    // fraction-of-container * naturalWidth/Height, which is an EXACT source-pixel
+    // mapping only when the image content box equals the container box. cover would
+    // crop and silently offset calibration points. (Plan 3 TODO: size #frame to the
+    // video aspect ratio so it's undistorted AND exact.)
     img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:fill';
     frame.insertBefore(img, frame.firstChild); }
   if(AppState.currentJobId){ img.src=API.frameUrl(AppState.currentJobId)+'?t='+Date.now(); }
