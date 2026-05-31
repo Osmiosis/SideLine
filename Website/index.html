@@ -364,6 +364,8 @@ label.fl{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margi
 .deliv .note{display:none;margin-top:11px;font-family:var(--mono);font-size:11px;color:var(--amber);align-items:center;gap:6px;letter-spacing:.02em}
 .deliv.sel .note{display:flex}
 .deliv .note svg{width:13px;height:13px}
+.deliv.soon{opacity:.55;filter:grayscale(.4);cursor:not-allowed}
+.deliv.soon::after{content:'Coming soon';position:absolute;top:10px;right:10px;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:2px 8px}
 
 /* ============================ PROCESSING ============================ */
 .proc-wrap{max-width:780px;margin:0 auto;text-align:center}
@@ -710,7 +712,7 @@ label.fl{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margi
 
         <div class="actionbar">
           <div class="left"><b id="delivSelCount">2</b> outputs selected</div>
-          <button class="btn btn-primary btn-lg" data-go="processing" id="genBtn">
+          <button class="btn btn-primary btn-lg" id="genBtn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.1 6.3H21l-5.4 4 2 6.4L12 16l-5.6 3.7 2-6.4L3 9.3h6.9z"/></svg>
             Generate
           </button>
@@ -1257,13 +1259,14 @@ function nextClip(){
 /* ============================================================
    DELIVERABLES
    ============================================================ */
-let delivInit=false; let selectedDeliv=new Set(['coach_analytics','event_highlights']);
+let delivInit=false, genWired=false; let selectedDeliv=new Set(['coach_analytics','event_highlights']);
 function initDeliverables(){
   const grid=document.getElementById('delivGrid');
   if(!delivInit){
     delivInit=true; grid.innerHTML='';
     DELIVERABLES.forEach(d=>{
-      const el=document.createElement('div'); el.className='deliv'+(selectedDeliv.has(d.id)?' sel':''); el.dataset.id=d.id;
+      const soon=(d.id==='player_highlights');
+      const el=document.createElement('div'); el.className='deliv'+(selectedDeliv.has(d.id)?' sel':'')+(soon?' soon':''); el.dataset.id=d.id;
       el.innerHTML=`
         <div class="preview"><canvas></canvas></div>
         <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l4 4 10-11" stroke-linecap="round"/></svg></div>
@@ -1273,6 +1276,7 @@ function initDeliverables(){
           ${d.note?`<div class="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4m0 4h.01"/><circle cx="12" cy="12" r="9"/></svg>${d.note}</div>`:''}
         </div>`;
       el.addEventListener('click',()=>{
+        if(soon){ toast('Player Highlights is coming soon'); return; }
         if(selectedDeliv.has(d.id))selectedDeliv.delete(d.id); else selectedDeliv.add(d.id);
         el.classList.toggle('sel'); updateDelivCount();
       });
@@ -1282,6 +1286,17 @@ function initDeliverables(){
     });
   }
   updateDelivCount();
+  if(!genWired){
+    genWired=true;
+    document.getElementById('genBtn').addEventListener('click',async()=>{
+      const chosen=[...selectedDeliv];
+      if(!chosen.length){ toast('Pick at least one deliverable'); return; }
+      try{
+        await API.setDeliverables(AppState.currentJobId, chosen);
+        go('processing');
+      }catch(err){ toast(err.message||'Could not start processing'); }
+    });
+  }
 }
 function updateDelivCount(){
   const n=selectedDeliv.size;
