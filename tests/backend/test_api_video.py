@@ -37,3 +37,19 @@ def test_frame_before_upload_is_409(client):
     jid = _new_job(client)
     fr = client.get(f"/api/jobs/{jid}/frame")
     assert fr.status_code == 409
+
+
+def test_empty_upload_resets_state_and_removes_file(client):
+    jid = _new_job(client)
+    r = client.post(f"/api/jobs/{jid}/video", content=b"",
+                    headers={"content-type": "application/octet-stream"})
+    assert r.status_code == 400
+    store = client.app.state.store
+    assert not store.video_path(jid).exists()
+    assert client.get(f"/api/jobs/{jid}/status").json()["state"] == "created"
+
+
+def test_upload_unknown_job_is_404(client):
+    r = client.post("/api/jobs/does-not-exist/video", content=b"abc",
+                    headers={"content-type": "application/octet-stream"})
+    assert r.status_code == 404

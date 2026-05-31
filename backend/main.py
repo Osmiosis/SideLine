@@ -11,6 +11,7 @@ from fastapi.staticfiles import StaticFiles
 
 from backend import config, db
 from backend.jobs import JobStore
+from backend.pipeline import stage_label
 from backend.schemas import (CalibrationRequest, CreateJobRequest, DeliverablesRequest,
                              JobStatus, JobSummary, RosterRequest, TagsRequest)
 from backend.worker import Worker
@@ -55,7 +56,6 @@ def create_app(jobs_dir: Path | str = config.JOBS_DIR,
     def job_status(job_id: str) -> JobStatus:
         _require_job(job_id)
         row = db.get_job(store.conn, job_id)
-        from backend.pipeline import stage_label
         return JobStatus(
             job_id=job_id, state=row["state"], stage=row["stage"],
             progress=row["progress"],
@@ -72,6 +72,9 @@ def create_app(jobs_dir: Path | str = config.JOBS_DIR,
             async for chunk in request.stream():
                 out.write(chunk)
         if dest.stat().st_size == 0:
+            dest.unlink(missing_ok=True)
+            store.write_status(job_id, state="created", stage=None, progress=0,
+                               stage_label=None, error=None)
             raise HTTPException(status_code=400, detail="No video received.")
         store.write_status(job_id, state="calibration_pending", stage=None,
                            progress=0, stage_label="Ready for court setup",
