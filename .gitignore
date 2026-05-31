@@ -159,3 +159,6 @@ Thumbs.db
 
 # Operator App backend runtime job data
 jobs/
+
+# JS syntax-check scratch dir
+build/
