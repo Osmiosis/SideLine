@@ -583,6 +583,7 @@ label.fl{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margi
           <div class="panel-h"><span class="idx">3</span> Match video</div>
           <div class="panel-d">Drop the full recording — game footage is large, so this can take a moment. We'll show you progress the whole way.</div>
           <div class="drop" id="drop">
+            <input type="file" id="videoFile" accept="video/*" style="display:none">
             <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 16V4m0 0L8 8m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg></div>
             <b>Drop your video here, or <span>browse</span></b>
             <p>MP4, MOV up to 8 GB · a full half is fine</p>
@@ -602,7 +603,7 @@ label.fl{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margi
 
         <div class="actionbar">
           <div class="left">Step <b>1</b> of 6 — Setup</div>
-          <button class="btn btn-primary" data-go="court" id="setupNext">Continue to Court Setup
+          <button class="btn btn-primary" data-go="court" id="setupNext" disabled>Continue to Court Setup
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
         </div>
@@ -1051,20 +1052,39 @@ function initSetup(){
     s.classList.add('sel'); selSport=s.dataset.sport;
   }));
   const drop=document.getElementById('drop');
-  drop.addEventListener('click',simulateUpload);
+  const fileInput=document.getElementById('videoFile');
+  drop.addEventListener('click',()=>fileInput.click());
+  fileInput.addEventListener('change',()=>{ if(fileInput.files[0]) startUpload(fileInput.files[0]); });
   drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('drag');});
   drop.addEventListener('dragleave',()=>drop.classList.remove('drag'));
-  drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('drag');simulateUpload();});
+  drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('drag');
+    const f=e.dataTransfer.files[0]; if(f) startUpload(f); });
 }
 let uploaded=false;
-function simulateUpload(){
+async function startUpload(file){
   const bar=document.getElementById('upbar'); bar.classList.add('show');
   const fill=document.getElementById('upfill'), pct=document.getElementById('uppct'), stat=document.getElementById('upstat');
-  let p=0; uploaded=false;
-  const t=setInterval(()=>{
-    p+=Math.random()*9+3; if(p>=100){p=100;clearInterval(t);stat.textContent='Upload complete — video ready';uploaded=true;toast('Video uploaded');}
-    fill.style.width=p+'%'; pct.textContent=Math.round(p)+'%';
-  },180);
+  uploaded=false;
+  // disable continue until done
+  const cont=document.getElementById('setupNext'); if(cont) cont.disabled=true;
+  stat.textContent='Uploading footage…';
+  try{
+    if(!AppState.currentJobId){
+      AppState.currentJobId = await API.createJob(
+        selSport,
+        document.getElementById('mName').value.trim() || 'Untitled match',
+        document.getElementById('mDate').value || new Date().toISOString().slice(0,10));
+    }
+    await API.uploadVideo(AppState.currentJobId, file, frac=>{
+      const p=Math.round(frac*100); fill.style.width=p+'%'; pct.textContent=p+'%';
+    });
+    fill.style.width='100%'; pct.textContent='100%';
+    stat.textContent='Upload complete — video ready'; uploaded=true; toast('Video uploaded');
+    if(cont) cont.disabled=false;
+  }catch(err){
+    stat.textContent=err.message || 'Upload failed. Please try again.';
+    toast('Upload failed'); uploaded=false;
+  }
 }
 
 /* ============================================================
