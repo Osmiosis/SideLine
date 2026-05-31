@@ -1,0 +1,19 @@
+{
+  "video": "outputs/alfheim/first_half.mp4",
+  "window_src_frames": [
+    18000,
+    36000
+  ],
+  "stride": 4,
+  "fps_src": 30,
+  "conf_floor": 0.15,
+  "n_processed": 4500,
+  "n_with_ball": 1352,
+  "raw_recall": 0.3004,
+  "multi_ball_frames": 265,
+  "multi_ball_rate": 0.0589,
+  "conf_mean": 0.416,
+  "conf_median": 0.369,
+  "conf_p10": 0.174,
+  "conf_p90": 0.728
+}

@@ -1,0 +1,60 @@
+{
+  "mot": "outputs/track_results/alfheim_fh_cam1/first_half_relink_mod.txt",
+  "fps_effective": 15.0,
+  "match_minutes": 47.1,
+  "total_tracks": 4186,
+  "min_track_frames": 15,
+  "min_track_sec": 1.0,
+  "n_substantial_tracks": 2224,
+  "ball": {
+    "ball_used": false
+  },
+  "tagging_volume": {
+    "total_clips": 2224,
+    "via_involvement_tracks": 0,
+    "involvement_clips": 0,
+    "via_presence_tracks": 2224,
+    "presence_clips": 2224,
+    "presence_share_pct": 100.0
+  },
+  "MINIMUM_tagging_volume_ball_free": {
+    "clips": 2224,
+    "note": "presence-only lower bound: 1 tag per substantial track",
+    "tag_time_min": {
+      "fast_5s": 185.3,
+      "realistic_10s": 370.7,
+      "careful_20s": 741.3
+    }
+  },
+  "estimated_human_tag_time": {
+    "fast_5s": {
+      "sec_per_tag": 5,
+      "total_sec": 11120,
+      "total_min": 185.3,
+      "total_hours": 3.09
+    },
+    "realistic_10s": {
+      "sec_per_tag": 10,
+      "total_sec": 22240,
+      "total_min": 370.7,
+      "total_hours": 6.18
+    },
+    "careful_20s": {
+      "sec_per_tag": 20,
+      "total_sec": 44480,
+      "total_min": 741.3,
+      "total_hours": 12.36
+    }
+  },
+  "clips_per_track": {
+    "min": 1,
+    "median": 1.0,
+    "mean": 1.0,
+    "max": 1
+  },
+  "inclusivity": {
+    "substantial_tracks_with_footage": 2224,
+    "coverage_pct": 100.0,
+    "note": "100% of substantial tracks get >=1 clip (presence guarantees it). BUT with ~191 track-IDs per real player (Day-30 fragmentation), these are TRACK reels, not player reels -- the human tagging is what reconstitutes the ~22 real players."
+  }
+}

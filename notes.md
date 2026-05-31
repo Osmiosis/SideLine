@@ -2636,3 +2636,63 @@ IDF1; still a proxy; over-link monitored (19 % baseline noise floor limits how f
 - Committed package `outputs/deliverables/defrag_football/` (findings.md, defrag_summary.json, break_causes.png,
   defrag_vs_identity.png). Re-linked MOTs + metric JSONs stay LOCAL (outputs/ gitignored). Alfheim data stays
   off-repo. Committed (NOT pushed — auto-mode classifier blocks direct-to-main AI pushes; user pushes).
+
+## Day 31 — Full-match scale test COMPLETED: events + player-highlights at 45 min (football)
+
+Finishes the Day-29 deferral. Day-29 ran foundation+analytics at full scale but deferred the two
+ball/identity-dependent outputs (their scripts were SoccerNet-coupled). Day-31 decouples them and gets the
+two missing scale numbers on the Alfheim stitched half (47.1 min, 30 fps). Reused Day-29 MOT → Day-30
+re-linked safe −18% tracks (4,186 IDs) + fixed H; no re-detection of players.
+
+**Blocker found at start (probe-then-branch).** The PRD assumed a ball track existed — it did NOT
+(Day-29 was `classes=0`, players only; no team-assign for Alfheim either). Both outputs are ball-anchored.
+Per the addendum, probed ball recall cheaply before trusting any 47-min number.
+
+**Part A — decoupling.** Built two generic-input scripts (MOT + fps + optional ball/H, no `<seq>`/GSR/
+follow_cam structure): `alfheim_ball_probe.py` (ball-recall probe) and `alfheim_player_tagging.py`
+(involvement+presence tagging-volume analyzer). This generality is operator-app progress (runs on arbitrary
+footage). Full `detect_events.py` decoupling left undone *on purpose* — the ball gate failed, so there is
+no ball to feed it (over-investing a blocked path; addendum's "don't adapt until greenlit").
+
+**Part B — events = EVIDENCE-BACKED BLOCKED.** Ball probe (10-min window, conf≥0.15): **raw recall 30.0%**
+(1,352/4,500), conf median 0.37, multi-ball 5.9%, spot-checked detections ambiguous (low-conf blobs
+indistinguishable from distant-head FPs). Velocity-based event detectors need the ball across consecutive
+frames; at 30% recall 70% of speeds would be fabricated → any density number measures the detector's
+failure, not real events (metric-vs-reality trap). So reported as blocked-with-evidence, not a fake number.
+**Root cause:** soccana trained on broadcast (large ball); Alfheim is wide fixed elevated (ball = few px on
+grass). **Real DPS finding:** DPS wide phone capture hits the same wall — output #3 on wide fixed cams needs
+a wide-cam-tuned ball detector or higher-res capture.
+
+**Part C — player tagging volume = THE NUMBER (delivered fully, ball-resilient).** Presence fallback needs
+no ball, so it carries the number. Framing that makes it robust: every substantial track must be tagged
+once (the tagging unit); presence gives each ≥1 clip ball-free; involvement only *adds* clips → **#substantial
+tracks is the MINIMUM tagging volume**. On the 4,186 re-linked tracks (15 fps effective):
+- **2,224 substantial tracks (≥1 s) → 2,224 clips to tag for one half.**
+- Est. human tag time: **3.1 h** @5s/clip · **6.2 h** @10s · **12.4 h** @20s. **PROHIBITIVE.**
+- Stricter filters don't rescue it: ≥3 s = 1,662, ≥5 s = 1,427, ≥10 s = 1,098 clips (~3 h still). And median
+  track len = 1.3 s → most fragments too short/small on a wide cam to even *identify* → per-fragment tagging
+  often impossible, not just slow.
+- **Corrects an over-optimistic Day-30 note:** Day-30 said tagging "stays viable" (true at 30 s-clip scale,
+  ~40 clips). The full-match test reveals what the proxy hid — at match scale it's 2,224. Scale is what
+  breaks it (the point of the test).
+- **Inclusivity survives in principle, not practice:** presence guarantees 100% coverage, but with ~191
+  track-IDs/player a pre-tag "player reel" is a TRACK reel; tagging reconstitutes the ~22 real players, and
+  that *is* the multi-hour cost.
+
+**Synthesis (all 3 outputs now full-match-tested).** Foundation: scales (Day-29). Analytics: team/aggregate
+yes, per-player no (homography-limited, not identity). Events: blocked (ball untrackable on wide fixed cam).
+Player highlights: 100% coverage in principle but 2,224 clips ≈ 3–12 h tagging = not viable at full-match
+scale. The two flagship per-instance outputs both fail at scale for *upstream* reasons (small-object/ball
+detection; identity fragmentation), not downstream clip/event logic — so the levers are better detection /
+multi-cam / appearance, not tuning the highlight code.
+
+**Caveats:** Alfheim = fixed single-cam proxy, real full match but not DPS (kit/court/lighting/optics differ
+→ findings transfer in kind, exact numbers will shift); probe = 10-min night-match window; tag-time =
+clip-count × sec/tag (optimistic — excludes the often-impossible ID step).
+
+### Files added (Day 31)
+- `scripts/alfheim_ball_probe.py` (decoupled ball-recall probe), `scripts/alfheim_player_tagging.py`
+  (decoupled generic involvement+presence tagging-volume analyzer).
+- Committed package `outputs/deliverables/fullmatch_scale_football/day31_*` (findings.md, tagging_volume.json
+  + .png, ball_probe_summary.json, widecam_ballrecall_evidence.png). Ball-probe window JSON + relinked MOTs
+  stay LOCAL (outputs/ gitignored). Alfheim data stays off-repo.
