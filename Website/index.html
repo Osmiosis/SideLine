@@ -646,7 +646,7 @@ label.fl{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margi
 
         <div class="actionbar">
           <div class="left">Step <b>2</b> of 6 — Court setup</div>
-          <button class="btn btn-primary" data-go="roster" id="courtNext" disabled>Confirm calibration
+          <button class="btn btn-primary" id="courtNext" disabled>Confirm calibration
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
       </section>
@@ -1090,7 +1090,7 @@ async function startUpload(file){
 /* ============================================================
    COURT MARKING
    ============================================================ */
-let courtInit=false; let marks=[];
+let courtInit=false; let courtNextWired=false; let marks=[];
 const CALIB_PTS=[
   {label:'far-left corner', dx:.14,dy:.2},
   {label:'far-right corner', dx:.86,dy:.2},
@@ -1099,8 +1099,12 @@ const CALIB_PTS=[
 ];
 function initCourt(){
   const frame=document.getElementById('frame');
-  let cv=frame.querySelector('canvas'); if(!cv){cv=document.createElement('canvas');frame.insertBefore(cv,frame.firstChild);}
-  drawFootage(cv, selSport, 42, {players:true});
+  // real freeze-frame from the uploaded video
+  let img=frame.querySelector('img.frameimg');
+  if(!img){ img=document.createElement('img'); img.className='frameimg';
+    img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover';
+    frame.insertBefore(img, frame.firstChild); }
+  if(AppState.currentJobId){ img.src=API.frameUrl(AppState.currentJobId)+'?t='+Date.now(); }
   drawDiagram();
   if(courtInit) return; courtInit=true;
   renderPtList();
@@ -1118,6 +1122,20 @@ function initCourt(){
       addMark(CALIB_PTS[i].dx,CALIB_PTS[i].dy,true); i++;
     },280);
   });
+  if(!courtNextWired){
+    courtNextWired=true;
+    document.getElementById('courtNext').addEventListener('click',async()=>{
+      const frameEl=document.getElementById('frame');
+      const imgEl=frameEl.querySelector('img.frameimg');
+      const fw=(imgEl&&imgEl.naturalWidth)||frameEl.clientWidth||1280;
+      const fh=(imgEl&&imgEl.naturalHeight)||frameEl.clientHeight||960;
+      const labels=CALIB_PTS.map(p=>p.label);
+      try{
+        await API.saveCalibration(AppState.currentJobId, marks, labels, fw, fh);
+        toast('Court setup saved'); go('deliverables');
+      }catch(err){ toast(err.message||'Could not save court setup'); }
+    });
+  }
 }
 function addMark(px,py,auto){
   const idx=marks.length; marks.push({px,py});
