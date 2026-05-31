@@ -156,3 +156,6 @@ Thumbs.db
 
 # Notes (uncomment if you want notes private)
 # notes.md
+
+# Operator App backend runtime job data
+jobs/
