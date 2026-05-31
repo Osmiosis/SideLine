@@ -51,3 +51,26 @@ def test_run_one_no_queued_job_is_noop(tmp_path):
     store = JobStore(tmp_path)
     w = worker.Worker(store)
     assert w.run_one() is False  # nothing to do
+
+
+def test_run_one_marks_failed_with_friendly_error(tmp_path, monkeypatch):
+    from backend import pipeline
+    store = JobStore(tmp_path)
+    jid = _make_queued_job(store, ["coach_analytics"])
+
+    def _boom(job_dir, stage):
+        raise RuntimeError("internal traceback detail that must not leak")
+
+    monkeypatch.setattr(pipeline, "run_stage_stub", _boom)
+    w = worker.Worker(store)
+    w.run_one()
+
+    from backend import db
+    row = db.get_job(store.conn, jid)
+    assert row["state"] == "failed"
+    assert row["error"]  # friendly message present
+    assert "traceback" not in row["error"].lower()
+    assert "RuntimeError" not in (row["error"] or "")
+    # technical detail is logged server-side only
+    logs = list((store.job_dir(jid) / "logs").glob("*.log"))
+    assert logs and "internal traceback detail" in logs[0].read_text(encoding="utf-8")

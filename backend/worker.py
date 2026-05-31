@@ -35,6 +35,7 @@ class Worker:
             start_idx = stages.index("tagging_done") + 1
 
         total = len(stages)
+        stage = "unknown"
         try:
             for i in range(start_idx, total):
                 stage = stages[i]
@@ -63,7 +64,6 @@ class Worker:
                 job_id, state="ready", stage="ready", progress=100,
                 stage_label=pipeline.stage_label("ready"), error=None)
         except Exception:  # noqa: BLE001 — friendly out, detail to log
-            stage = locals().get("stage", "unknown")
             errors.log_stage_failure(
                 self.store.job_dir(job_id), stage=stage,
                 detail=traceback.format_exc())
