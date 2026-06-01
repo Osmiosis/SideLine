@@ -303,6 +303,14 @@ def render_sample(seq: str, records: list, gt: dict, frames_dir: Path, out_path:
     cv2.imwrite(str(out_path), img)
     return frame_idx
 
+# ---------- Static-H helper (operator-uploaded footage path) ----------
+def _static_H_by_frame(homography_path, n_frames):
+    import json as _json
+    import numpy as _np
+    H = _np.array(_json.load(open(homography_path))["H_court_from_img"], dtype=_np.float64)
+    return {f: H for f in range(1, n_frames + 1)}
+
+
 # ---------- Main ----------
 def main():
     ap = argparse.ArgumentParser()
@@ -316,6 +324,8 @@ def main():
     ap.add_argument("--init-conf", type=float, default=0.35, help="Min conf to (re)initialize")
     ap.add_argument("--aerial-thresh", type=float, default=25.0, help="Pitch m/s above this = aerial-suspect")
     ap.add_argument("--tol-px", type=float, default=50.0, help="Effective-coverage tolerance px vs GT")
+    ap.add_argument("--homography", default=None,
+                    help="path to homography.json; use this static H instead of GT-derived per-frame H")
     args = ap.parse_args()
 
     seqs = [args.seq] if args.seq else SEQS_DEFAULT
@@ -335,13 +345,15 @@ def main():
         det_frames = len(cache)
         print(f"  raw cache: {det_frames}/{n_frames} frames have a ball det ({100*det_frames/n_frames:.1f}%)")
 
-        # Load GT
-        gt = load_ball_gt(Path(args.zip), seq)
-        print(f"  GT ball frames: {len(gt)}/{n_frames}")
-
-        # Sanity gate: GT-as-detection
-        rmse_gt, n_eval = sanity_gate_gt_as_detection(gt, n_frames, args.vel_gate, args.max_gap)
-        print(f"  sanity gate (GT-as-det): RMSE={rmse_gt:.2f}px over {n_eval} evals")
+        # Load GT (skipped when --homography is set; no GT available for uploaded footage)
+        if not args.homography:
+            gt = load_ball_gt(Path(args.zip), seq)
+            print(f"  GT ball frames: {len(gt)}/{n_frames}")
+            rmse_gt, n_eval = sanity_gate_gt_as_detection(gt, n_frames, args.vel_gate, args.max_gap)
+            print(f"  sanity gate (GT-as-det): RMSE={rmse_gt:.2f}px over {n_eval} evals")
+        else:
+            gt = {}
+            rmse_gt, n_eval = None, 0
 
         # Kalman tracker on real detections
         records = run_kalman(cache, n_frames, vel_gate_px=args.vel_gate,
@@ -350,9 +362,12 @@ def main():
         for r in records: statuses[r["status"]] += 1
         print(f"  Kalman output: detected={statuses['detected']}, predicted={statuses['predicted']}, lost={statuses['lost']}")
 
-        # Project to pitch (Day-10 H derived from per-frame GT correspondences)
-        gt_pts = load_gt(Path(args.zip), seq)
-        H_by_frame, _ = derive_per_frame_H(gt_pts)
+        # Project to pitch
+        if args.homography:
+            H_by_frame = _static_H_by_frame(args.homography, n_frames)
+        else:
+            gt_pts = load_gt(Path(args.zip), seq)
+            H_by_frame, _ = derive_per_frame_H(gt_pts)
         records = project_trajectory(records, H_by_frame,
                                      aerial_pitch_speed_thresh=args.aerial_thresh)
         n_aerial = sum(1 for r in records if r["aerial_suspect"])
