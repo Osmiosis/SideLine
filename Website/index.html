@@ -506,10 +506,6 @@ label.fl{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margi
       <button class="step locked" data-step="results"><span class="dot">6</span> Results</button>
     </div>
 
-    <div class="side-foot">
-      <div class="avatar">MR</div>
-      <div class="meta"><b>Ms. Rivera</b><br><span>PE Dept · Lincoln HS</span></div>
-    </div>
   </aside>
   <div class="scrim" id="scrim"></div>
 
@@ -525,7 +521,7 @@ label.fl{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margi
             <button class="menu-btn" id="menuBtn" style="margin-bottom:14px">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
-            <div class="eyebrow">Welcome back, Ms. Rivera</div>
+            <div class="eyebrow">Welcome back</div>
             <div class="headline-reveal"><h1>Your match library</h1></div>
             <p class="sub">Turn any recorded game into coach reports, highlight reels, and per-player clips — no editing skills needed.</p>
           </div>
@@ -576,7 +572,7 @@ label.fl{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margi
           <div class="panel-h"><span class="idx">2</span> Match details</div>
           <div class="panel-d">Just so you can find it later.</div>
           <div class="field-row">
-            <div><label class="fl">Match name</label><input class="inp" id="mName" value="Varsity vs. Westfield" placeholder="e.g. Varsity vs. Westfield"></div>
+            <div><label class="fl">Match name</label><input class="inp" id="mName" placeholder="e.g. Varsity vs. Westfield"></div>
             <div><label class="fl">Match date</label><input class="inp" id="mDate" type="date" value="2026-05-29"></div>
           </div>
         </div>
@@ -594,8 +590,8 @@ label.fl{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margi
             <div class="row">
               <div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h9l5 5v11a1 1 0 01-1 1H6a1 1 0 01-1-1z"/><path d="M14 4v5h5"/><polygon points="10,13 15,16 10,19" fill="currentColor" stroke="none"/></svg></div>
               <div style="flex:1">
-                <div class="fname">varsity_vs_westfield_H1.mp4</div>
-                <div class="fsize" id="fsize">3.8 GB</div>
+                <div class="fname" id="fname">video.mp4</div>
+                <div class="fsize" id="fsize"></div>
               </div>
             </div>
             <div class="track"><i id="upfill"></i></div>
@@ -747,7 +743,7 @@ label.fl{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margi
         <div class="top">
           <div>
             <div class="eyebrow">Step 6 of 6 · Ready</div>
-            <div class="headline-reveal"><h1>Varsity vs. Westfield</h1></div>
+            <div class="headline-reveal"><h1 id="resultsTitle">Match results</h1></div>
             <p class="sub">Everything's done. Preview each output, then download what you need.</p>
           </div>
           <button class="btn btn-ghost btn-lg">
@@ -1039,7 +1035,7 @@ async function initDashboard(){
       </div>`;
     el.addEventListener('click',()=>{
       if(m.demo){ go(m.status==='ready'?'results':'processing'); return; }
-      AppState.currentJobId=m.job_id;
+      AppState.currentJobId=m.job_id; AppState.currentMatchName=m.name;
       go(m.status==='ready'?'results':'processing');
     });
     grid.appendChild(el);
@@ -1076,14 +1072,19 @@ async function startUpload(file){
   const bar=document.getElementById('upbar'); bar.classList.add('show');
   const fill=document.getElementById('upfill'), pct=document.getElementById('uppct'), stat=document.getElementById('upstat');
   uploaded=false;
+  // show the real chosen file name + size
+  const fn=document.getElementById('fname'); if(fn) fn.textContent=file.name;
+  const fs=document.getElementById('fsize');
+  if(fs) fs.textContent=(file.size/1e9>=1?(file.size/1e9).toFixed(2)+' GB':(file.size/1e6).toFixed(1)+' MB');
   // disable continue until done
   const cont=document.getElementById('setupNext'); if(cont) cont.disabled=true;
   stat.textContent='Uploading footage…';
   try{
     if(!AppState.currentJobId){
+      AppState.currentMatchName = document.getElementById('mName').value.trim() || 'Untitled match';
       AppState.currentJobId = await API.createJob(
         selSport,
-        document.getElementById('mName').value.trim() || 'Untitled match',
+        AppState.currentMatchName,
         document.getElementById('mDate').value || new Date().toISOString().slice(0,10));
     }
     await API.uploadVideo(AppState.currentJobId, file, frac=>{
@@ -1405,6 +1406,8 @@ function stopRadar(){ if(radarStop)cancelAnimationFrame(radarStop); }
    ============================================================ */
 let resultsInit=false;
 async function initResults(){
+  const title=document.getElementById('resultsTitle');
+  if(title) title.textContent=AppState.currentMatchName || 'Match results';
   const rv=document.getElementById('reportVid'); let cv=rv.querySelector('canvas');
   if(!cv){cv=document.createElement('canvas');rv.insertBefore(cv,rv.firstChild);}
   drawFootage(cv,selSport,42,{track:true});

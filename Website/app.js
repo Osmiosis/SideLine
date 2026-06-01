@@ -21,7 +21,7 @@ const _build = {
 };
 
 // ---- shared client state ----
-const AppState = { currentJobId: null };
+const AppState = { currentJobId: null, currentMatchName: null };
 
 // ---- network client (browser only; uses fetch/XHR) ----
 const API = {
