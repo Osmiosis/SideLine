@@ -123,7 +123,10 @@ def create_app(jobs_dir: Path | str = config.JOBS_DIR,
         manifest_path = store.clips_manifest_path(job_id)
         if not manifest_path.exists():
             return {"ready": False, "clips": []}
-        records = json.loads(manifest_path.read_text(encoding="utf-8"))
+        data = json.loads(manifest_path.read_text(encoding="utf-8"))
+        # clips_manifest.json is a dict {seq, n_clips, ..., clips:[...]}; older/synthetic
+        # forms may be a bare list. Normalize to the per-clip records.
+        records = data.get("clips", []) if isinstance(data, dict) else data
         clips = []
         for rec in records:
             clip_id = rec.get("clip_id") or rec.get("clip", "")
