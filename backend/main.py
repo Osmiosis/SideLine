@@ -158,9 +158,13 @@ def create_app(jobs_dir: Path | str = config.JOBS_DIR,
         store.update_config(job_id, player_tags=req.player_tags)
         # Write clip_tags.json for assemble_player_reels(_bb) to read
         store.write_clip_tags(job_id, req.player_tags)
-        # Re-enqueue with tagging_done sentinel so worker resumes to reels
-        store.write_status(job_id, state="queued", stage="tagging_done",
-                           progress=0, stage_label=None, error=None)
+        # Re-enqueue to reels ONLY if the job is actually parked at the tagging
+        # pause; otherwise just persist the tags (don't jump to reels with no clips).
+        row = db.get_job(store.conn, job_id)
+        if row and row["state"] == "tagging_pending":
+            store.write_status(job_id, state="queued", stage="tagging_done",
+                               progress=row["progress"] or 0, stage_label=None, error=None)
+            return {"state": "queued"}
         return {"ok": True}
 
     @app.post("/api/jobs/{job_id}/deliverables")
