@@ -87,8 +87,9 @@ def load_ball(seq, root="outputs/ball_track_bb"):
     return json.loads((Path(root) / seq / "trajectory.json").read_text())
 
 
-def load_homography(seq):
-    H = json.loads(Path(f"outputs/deliverables/{seq}/court/homography.json").read_text())
+def load_homography(seq, path=None):
+    p = path if path else f"outputs/deliverables/{seq}/court/homography.json"
+    H = json.loads(Path(p).read_text())
     return np.array(H["H_court_from_img"], float), np.array(H["H_img_from_court"], float), H
 
 
@@ -394,6 +395,10 @@ def main():
     ap.add_argument("--track-dir", default="outputs/track_results/bball_ftdet_bytetrack")
     ap.add_argument("--follow-dir", default="outputs/follow_cam_bb")
     ap.add_argument("--out", default="outputs/events_bb")
+    ap.add_argument("--homography", default=None,
+                    help="path to homography.json (overrides hardcoded outputs/deliverables/<seq>/court/homography.json)")
+    ap.add_argument("--teams", default=None,
+                    help="path to track_teams_emb.json (overrides hardcoded outputs/team_assign_bb/track_teams_emb.json)")
     args = ap.parse_args()
 
     seqs = [args.seq] if args.seq else SEQS_DEFAULT
@@ -401,12 +406,13 @@ def main():
         print(f"\n=== {seq} ===")
         out_seq = Path(args.out) / seq; out_seq.mkdir(parents=True, exist_ok=True)
         recs = load_ball(seq, args.ball_dir); n = len(recs)
-        H_ci, H_ic, Hmeta = load_homography(seq)
+        H_ci, H_ic, Hmeta = load_homography(seq, path=args.homography)
         fc = json.loads((Path(args.follow_dir) / seq / "follow_cam.json").read_text())
         W, Hh = fc["frame_w"], fc["frame_h"]
         hoops = in_frame_hoops(H_ic, W, Hh)
         players = load_players_court(Path(args.track_dir) / f"{seq}.txt", H_ci)
-        teams = load_teams(seq)
+        teams_path = args.teams if args.teams else "outputs/team_assign_bb/track_teams_emb.json"
+        teams = load_teams(seq, path=teams_path)
         print(f"  frames={n} hoops in-frame={list(hoops)} (homography holdout {Hmeta.get('holdout_mean_err_m')}m) "
               f"teams={Counter(teams.values())}")
 
