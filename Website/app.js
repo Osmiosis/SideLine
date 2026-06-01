@@ -100,6 +100,26 @@ const API = {
   },
 
   outputUrl(id, filename) { return _build.outputUrl(id, filename); },
+
+  async getTaggingClips(id) {
+    const r = await fetch(_build.jobUrl(id, 'tagging-clips'));
+    if (!r.ok) throw new Error('Could not load tagging clips.');
+    return r.json();
+  },
+
+  tagClipVideoUrl(id, clipId) {
+    return `/api/jobs/${id}/tagging-clips/${encodeURIComponent(clipId)}/video`;
+  },
+
+  async setTags(id, playerTags) {
+    const r = await fetch(_build.jobUrl(id, 'tags'), {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ player_tags: playerTags }),
+    });
+    if (!r.ok) throw new Error('Could not submit player tags.');
+    return r.json();
+  },
 };
 
 // expose as globals for the inline <script> (browser)

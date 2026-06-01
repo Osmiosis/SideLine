@@ -1211,22 +1211,95 @@ function drawDiagram(){
    ROSTER + TAGGING
    ============================================================ */
 let rosterInit=false; let roster=[]; let tagIdx=0; let tagged=0;
-const N_CLIPS=8;
+// real-clips state (populated when job hits tagging_pending)
+let taggingClips=[]; let clipTags={};
+const N_CLIPS=8;  // fallback for demo/no-job mode
+
 function initRoster(){
+  // Ensure a canvas fallback exists in the clip stage (demo/no-job mode)
   const stage=document.getElementById('clipStage');
-  let cv=stage.querySelector('canvas'); if(!cv){cv=document.createElement('canvas');stage.insertBefore(cv,stage.firstChild);}
-  drawFootage(cv,selSport,tagIdx*7+3,{track:true});
+  if(!taggingClips.length){
+    // demo mode: draw a simulated frame
+    let cv=stage.querySelector('canvas'); if(!cv){cv=document.createElement('canvas');stage.insertBefore(cv,stage.firstChild);}
+    drawFootage(cv,selSport,tagIdx*7+3,{track:true});
+  }
   if(rosterInit) return; rosterInit=true;
-  ROSTER_SEED.forEach(addRosterName);
+  // In demo/pre-tagging mode seed with ROSTER_SEED; in real mode names come
+  // from what the operator already typed (roster array may already be set).
+  if(!roster.length) ROSTER_SEED.forEach(addRosterName);
   const inp=document.getElementById('rosterInput');
   inp.addEventListener('keydown',e=>{ if(e.key==='Enter'&&inp.value.trim()){addRosterName(inp.value.trim());inp.value='';} });
   renderTagRoster();
-  document.getElementById('skipClip').addEventListener('click',()=>nextClip());
+  document.getElementById('skipClip').addEventListener('click',()=>nextClip(true));
   document.addEventListener('keydown',e=>{
     if(!document.getElementById('v-roster').classList.contains('show'))return;
     const n=parseInt(e.key); if(n>=1&&n<=roster.length){ tagClip(roster[n-1].name); }
   });
 }
+
+// Called by the processing poll when state === tagging_pending
+async function loadTaggingClips(){
+  const id=AppState.currentJobId; if(!id) return;
+  try{
+    // Save the roster names the operator has typed so the backend has them
+    if(roster.length) await API.saveRoster(id, roster.map(r=>r.name));
+    const data=await API.getTaggingClips(id);
+    if(data.clips && data.clips.length){
+      taggingClips=data.clips; tagIdx=0; clipTags={};
+      showRealClip(0);
+      updateTagProgress();
+      // Show a "Done tagging" button if it isn't already wired
+      ensureDoneTaggingBtn();
+    }
+  }catch(e){ /* leave in demo/waiting state */ }
+}
+
+function ensureDoneTaggingBtn(){
+  const foot=document.querySelector('.tag-foot');
+  if(foot && !foot.querySelector('#doneTagging')){
+    const btn=document.createElement('button');
+    btn.id='doneTagging'; btn.className='btn btn-primary'; btn.style.cssText='padding:8px 16px;font-size:13px';
+    btn.textContent='Done tagging';
+    btn.addEventListener('click', submitTags);
+    foot.appendChild(btn);
+  }
+}
+
+function showRealClip(idx){
+  const clip=taggingClips[idx]; if(!clip)return;
+  const stage=document.getElementById('clipStage');
+  // Remove any existing video or canvas used for demo
+  stage.querySelectorAll('video.clip-video').forEach(v=>v.remove());
+  // Keep the canvas but hide it; video sits on top
+  const cv=stage.querySelector('canvas'); if(cv) cv.style.display='none';
+  const vid=document.createElement('video');
+  vid.className='clip-video';
+  vid.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000';
+  vid.src=API.tagClipVideoUrl(AppState.currentJobId, clip.clip_id);
+  vid.autoplay=true; vid.muted=true; vid.loop=true; vid.controls=true;
+  stage.insertBefore(vid, stage.firstChild);
+  // Update label overlay
+  const track=document.getElementById('clipTrack');
+  track.querySelector('.lbl').textContent='?';
+  track.style.cssText='display:none'; // hide the simulated box; video has its own frame
+  document.getElementById('clipQ').textContent='Who is this player?';
+  document.getElementById('clipCount').textContent=`Clip ${idx+1} / ${taggingClips.length}`;
+}
+
+async function submitTags(){
+  const id=AppState.currentJobId; if(!id) return;
+  const btn=document.getElementById('doneTagging'); if(btn) btn.disabled=true;
+  try{
+    await API.setTags(id, clipTags);
+    toast('Tags saved — resuming…');
+    // Reset tagging state for next time
+    taggingClips=[]; clipTags={};
+    go('processing');
+  }catch(err){
+    toast(err.message||'Could not submit tags'); if(btn) btn.disabled=false;
+  }
+}
+
 let jersey=7;
 function addRosterName(name){
   const num=(jersey=(jersey*3+5)%30+1);
@@ -1251,24 +1324,54 @@ function tagClip(name){
   const track=document.getElementById('clipTrack');
   track.querySelector('.lbl').textContent=name;
   track.style.borderColor='var(--accent)';
+  // real-clip mode: record the tag
+  if(taggingClips.length){
+    const clip=taggingClips[tagIdx];
+    if(clip) clipTags[clip.clip_id]=name;
+  }
   tagged++; toast(`Tagged: ${name}`);
-  setTimeout(nextClip,260);
+  setTimeout(()=>nextClip(false),260);
 }
-function nextClip(){
+function updateTagProgress(){
+  const total=taggingClips.length||N_CLIPS;
+  const done=Math.min(tagged,total);
+  document.getElementById('tagProgress').textContent=`${done} of ${total} done`;
+  document.getElementById('tagBar').style.width=(done/total*100)+'%';
+}
+function nextClip(skip){
+  // real-clip mode: record skip
+  if(taggingClips.length && skip){
+    const clip=taggingClips[tagIdx];
+    if(clip) clipTags[clip.clip_id]='__skip__';
+  }
   tagIdx=(tagIdx+1);
-  if(tagIdx>=N_CLIPS){ tagIdx=N_CLIPS; }
-  const done=Math.min(tagged,N_CLIPS);
-  document.getElementById('tagProgress').textContent=`${done} of ${N_CLIPS} done`;
-  document.getElementById('tagBar').style.width=(done/N_CLIPS*100)+'%';
-  if(tagIdx>=N_CLIPS){ document.getElementById('clipQ').textContent='All clips tagged 🎉'; document.getElementById('clipCount').textContent='Done'; return; }
-  document.getElementById('clipCount').textContent=`Clip ${tagIdx+1} / ${N_CLIPS}`;
-  const stage=document.getElementById('clipStage'); drawFootage(stage.querySelector('canvas'),selSport,tagIdx*7+3,{track:true});
-  const track=document.getElementById('clipTrack'); track.querySelector('.lbl').textContent='?'; track.style.borderColor='var(--accent)';
-  const rand=rng(tagIdx*13+1);
-  track.style.left=(25+rand()*45)+'%'; track.style.top=(25+rand()*35)+'%';
-  track.style.height=(90+rand()*50)+'px'; track.style.width=(45+rand()*30)+'px';
-  const qs=['Who has the ball?','Who made this run?','Who scored here?','Who is defending?','Who passed it?'];
-  document.getElementById('clipQ').textContent=qs[tagIdx%qs.length];
+  const total=taggingClips.length||N_CLIPS;
+  if(!skip) tagged++;  // skip doesn't count as tagged (skip branch above already recorded)
+  // recalc without double-counting
+  const done=Object.values(clipTags).filter(v=>v!=='__skip__').length||Math.min(tagged,total);
+  document.getElementById('tagProgress').textContent=`${done} of ${total} done`;
+  document.getElementById('tagBar').style.width=(done/total*100)+'%';
+  if(tagIdx>=total){
+    document.getElementById('clipQ').textContent='All clips tagged';
+    document.getElementById('clipCount').textContent='Done';
+    // Auto-submit if we have a real job
+    if(taggingClips.length && AppState.currentJobId) submitTags();
+    return;
+  }
+  document.getElementById('clipCount').textContent=`Clip ${tagIdx+1} / ${total}`;
+  if(taggingClips.length){
+    showRealClip(tagIdx);
+  } else {
+    // demo mode
+    const stage=document.getElementById('clipStage');
+    const cv=stage.querySelector('canvas'); if(cv) drawFootage(cv,selSport,tagIdx*7+3,{track:true});
+    const track=document.getElementById('clipTrack'); track.querySelector('.lbl').textContent='?'; track.style.borderColor='var(--accent)';
+    const rand=rng(tagIdx*13+1);
+    track.style.left=(25+rand()*45)+'%'; track.style.top=(25+rand()*35)+'%';
+    track.style.height=(90+rand()*50)+'px'; track.style.width=(45+rand()*30)+'px';
+    const qs=['Who has the ball?','Who made this run?','Who scored here?','Who is defending?','Who passed it?'];
+    document.getElementById('clipQ').textContent=qs[tagIdx%qs.length];
+  }
 }
 
 /* ============================================================
@@ -1280,8 +1383,7 @@ function initDeliverables(){
   if(!delivInit){
     delivInit=true; grid.innerHTML='';
     DELIVERABLES.forEach(d=>{
-      const soon=(d.id==='player_highlights');
-      const el=document.createElement('div'); el.className='deliv'+(selectedDeliv.has(d.id)?' sel':'')+(soon?' soon':''); el.dataset.id=d.id;
+      const el=document.createElement('div'); el.className='deliv'+(selectedDeliv.has(d.id)?' sel':''); el.dataset.id=d.id;
       el.innerHTML=`
         <div class="preview"><canvas></canvas></div>
         <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12l4 4 10-11" stroke-linecap="round"/></svg></div>
@@ -1291,7 +1393,6 @@ function initDeliverables(){
           ${d.note?`<div class="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4m0 4h.01"/><circle cx="12" cy="12" r="9"/></svg>${d.note}</div>`:''}
         </div>`;
       el.addEventListener('click',()=>{
-        if(soon){ toast('Player Highlights is coming soon'); return; }
         if(selectedDeliv.has(d.id))selectedDeliv.delete(d.id); else selectedDeliv.add(d.id);
         el.classList.toggle('sel'); updateDelivCount();
       });
@@ -1353,6 +1454,7 @@ function initProcessing(){
       setStage(uiStageIndex(s.stage||'decoding'));
       if(s.state==='ready'){ clearInterval(procTimer); fill.style.width='100%'; pct.textContent='100%'; finishProc(); }
       else if(s.state==='failed'){ clearInterval(procTimer); eta.textContent=s.error||'Something went wrong.'; toast(s.error||'Processing failed'); }
+      else if(s.state==='tagging_pending'){ clearInterval(procTimer); go('roster'); loadTaggingClips(); }
       else { eta.textContent='Working… you can leave and come back'; }
     }catch(err){ /* transient; keep polling */ }
   }
@@ -1443,9 +1545,30 @@ async function initResults(){
     }
   }
 
-  // Player reels deferred to Plan 4
+  // Player highlight reels — files under player_highlights/
   const pg=document.getElementById('playerGrid'); if(pg){
-    pg.innerHTML='<div class="empty" style="opacity:.7;padding:18px">Player highlight reels are coming soon.</div>';
+    const reelFiles=files.filter(fn=>fn.startsWith('player_highlights/'));
+    if(!reelFiles.length){
+      pg.innerHTML='<div class="empty" style="opacity:.7;padding:18px">No player reels yet. They appear here once tagging is complete and the reels finish rendering.</div>';
+    } else {
+      pg.innerHTML='';
+      document.getElementById('plCount').textContent=reelFiles.length+' reel'+(reelFiles.length!==1?'s':'');
+      reelFiles.forEach(fn=>{
+        const name=fn.split('/').pop().replace(/\.mp4$/i,'').replace(/_/g,' ');
+        const el=document.createElement('div'); el.className='card pcard';
+        el.innerHTML=`
+          <div class="pt-thumb"><canvas style="position:absolute;inset:0;width:100%;height:100%"></canvas></div>
+          <div class="pbar">
+            <div class="pj">${name.slice(0,2).toUpperCase()}</div>
+            <div class="pn"><b>${name}</b><span>Player reel</span></div>
+            <a class="dlbtn" href="${API.outputUrl(id,fn)}" download title="Download reel">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round"/></svg>
+            </a>
+          </div>`;
+        pg.appendChild(el);
+        drawPlayerThumb(el.querySelector('canvas'),(fn.length*7)%30);
+      });
+    }
   }
 }
 
