@@ -148,18 +148,18 @@ def _football_steps() -> list[Step]:
             "--involvement-dir", J(c, "involvement"),
             "--follow-dir", J(c, "outputs", "follow_cam"),
             "--source", J(c, "frames"),
-            "--out", J(c, "player_highlights"))),
+            "--out", J(c, "outputs", "player_highlights"))),
         Step("tagging_pending", "tagging_pending", "player_highlights",
              lambda c: None),
         Step("reels", "player_highlights", "player_highlights", lambda c: _py(
             _sd("assemble_player_reels.py"), c.job_id,
             "--involvement-dir", J(c, "involvement"),
-            "--clips-dir", J(c, "player_highlights"),
+            "--clips-dir", J(c, "outputs", "player_highlights"),
             "--tracker-dir", J(c, "outputs", "tracks"),
             "--team-file", J(c, "outputs", "team_assign", "track_teams.json"),
             "--follow-dir", J(c, "outputs", "follow_cam"),
             "--source", J(c, "frames"),
-            "--out", J(c, "deliverables", "player_highlights"),
+            "--out", J(c, "outputs", "player_highlights"),
             "--render-seqs", c.job_id)),
     ]
 
@@ -256,18 +256,18 @@ def _basketball_steps() -> list[Step]:
             "--follow-dir", J(c, "follow_cam"),
             "--source", J(c, "frames"),
             "--ball-dir", J(c, "ball_track"),
-            "--out", J(c, "player_highlights"))),
+            "--out", J(c, "outputs", "player_highlights"))),
         Step("tagging_pending", "tagging_pending", "player_highlights",
              lambda c: None),
         Step("reels", "player_highlights", "player_highlights", lambda c: _py(
             _sd("assemble_player_reels_bb.py"), c.job_id,
             "--involvement-dir", J(c, "involvement"),
-            "--clips-dir", J(c, "player_highlights"),
+            "--clips-dir", J(c, "outputs", "player_highlights"),
             "--tracker-dir", J(c, "tracks", "players"),
             "--team-file", J(c, "team_assign", "track_teams_emb.json"),
             "--follow-dir", J(c, "follow_cam"),
             "--source", J(c, "frames"),
-            "--out", J(c, "deliverables", "player_highlights"),
+            "--out", J(c, "outputs", "player_highlights"),
             "--render-seqs", c.job_id)),
     ]
 

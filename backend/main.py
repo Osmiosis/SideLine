@@ -185,17 +185,22 @@ def create_app(jobs_dir: Path | str = config.JOBS_DIR,
         out_dir = store.job_dir(job_id) / "outputs"
         if not out_dir.is_dir():
             return []
-        return sorted(p.name for p in out_dir.iterdir() if p.is_file())
+        # deliverables are nested (deliverables/<seq>/coach/*.pdf, event_highlights/*,
+        # player_highlights/<seq>/reels/*.mp4) — list recursively as relative POSIX paths.
+        return sorted(p.relative_to(out_dir).as_posix()
+                      for p in out_dir.rglob("*") if p.is_file())
 
-    @app.get("/api/jobs/{job_id}/outputs/{filename}")
+    @app.get("/api/jobs/{job_id}/outputs/{filename:path}")
     def download_output(job_id: str, filename: str) -> FileResponse:
         _require_job(job_id)
-        if "/" in filename or "\\" in filename or ".." in filename:
+        out_dir = (store.job_dir(job_id) / "outputs").resolve()
+        path = (out_dir / filename).resolve()
+        # traversal guard: the resolved path must stay inside outputs/
+        if out_dir not in path.parents and path != out_dir:
             raise HTTPException(status_code=400, detail="Invalid file name.")
-        path = store.job_dir(job_id) / "outputs" / filename
         if not path.is_file():
             raise HTTPException(status_code=404, detail="File not found.")
-        return FileResponse(str(path), filename=filename)
+        return FileResponse(str(path), filename=path.name)
 
     if config.WEBSITE_DIR.is_dir():
         app.mount("/", StaticFiles(directory=str(config.WEBSITE_DIR),

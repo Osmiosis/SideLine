@@ -16,13 +16,13 @@ def test_tagging_clips_empty_before_pause(client):
 def test_tags_writes_clip_tags_and_requeues(client):
     jid = _ph_job(client)
     store = client.app.state.store
-    # simulate a parked job with a manifest + one clip on disk
-    ph = store.job_dir(jid) / "player_highlights" / jid
+    # simulate a parked job with a manifest + one clip on disk (under outputs/)
+    ph = store.job_dir(jid) / "outputs" / "player_highlights" / jid
     (ph / "clips").mkdir(parents=True)
     (ph / "clips" / "t001_m00_5s.mp4").write_bytes(b"fakeclip")
     # real clips_manifest.json shape: dict with a "clips" array; entries use a
     # "clip" PATH field (not clip_id) — the endpoint derives the basename.
-    (store.job_dir(jid) / "player_highlights" / jid / "clips_manifest.json").write_text(
+    (ph / "clips_manifest.json").write_text(
         json.dumps({"seq": jid, "n_clips": 1, "clips": [
             {"track_id": 1, "role": "TeamA", "start_frame": 1, "end_frame": 50,
              "clip": f"outputs/player_highlights/{jid}/clips/t001_m00_5s.mp4",
