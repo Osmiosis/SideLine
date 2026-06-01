@@ -1528,13 +1528,20 @@ async function initResults(){
   let files=[];
   try{ if(id) files=await API.listOutputs(id); }catch(e){ files=[]; }
 
-  // Event-highlights / coach outputs -> real downloadable file rows
+  // Event-highlights / coach outputs -> real downloadable file rows.
+  // /outputs is recursive (includes intermediate artifacts) — show only the
+  // user-facing deliverables: event-highlight media + the coach report.
+  const isDeliverable = fn =>
+    fn.startsWith('event_highlights/') ||
+    (fn.includes('/coach/') && /\.(pdf|png|mp4)$/i.test(fn)) ||
+    (fn.startsWith('events/') && fn.includes('/clips/') && /\.mp4$/i.test(fn));
   const cl=document.getElementById('clipList'); if(cl){
+    const delivFiles=files.filter(isDeliverable);
     cl.innerHTML='';
-    if(!files.length){
+    if(!delivFiles.length){
       cl.innerHTML='<div class="empty" style="opacity:.7;padding:18px">No files yet. They appear here when processing finishes.</div>';
     } else {
-      files.forEach(fn=>{
+      delivFiles.forEach(fn=>{
         const el=document.createElement('div'); el.className='card cliprow';
         el.innerHTML=`<div class="ct"><canvas></canvas></div>
           <div class="ci"><b>${fn}</b><div class="tags"><span>${id}</span></div></div>
@@ -1547,7 +1554,7 @@ async function initResults(){
 
   // Player highlight reels — files under player_highlights/
   const pg=document.getElementById('playerGrid'); if(pg){
-    const reelFiles=files.filter(fn=>fn.startsWith('player_highlights/'));
+    const reelFiles=files.filter(fn=>fn.startsWith('player_highlights/')&&fn.includes('/reels/'));
     if(!reelFiles.length){
       pg.innerHTML='<div class="empty" style="opacity:.7;padding:18px">No player reels yet. They appear here once tagging is complete and the reels finish rendering.</div>';
     } else {
