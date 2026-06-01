@@ -255,7 +255,6 @@ def _basketball_steps() -> list[Step]:
             "--involvement-dir", J(c, "involvement"),
             "--follow-dir", J(c, "follow_cam"),
             "--source", J(c, "frames"),
-            "--ball-dir", J(c, "ball_track"),
             "--out", J(c, "outputs", "player_highlights"))),
         Step("tagging_pending", "tagging_pending", "player_highlights",
              lambda c: None),
@@ -267,8 +266,7 @@ def _basketball_steps() -> list[Step]:
             "--team-file", J(c, "team_assign", "track_teams_emb.json"),
             "--follow-dir", J(c, "follow_cam"),
             "--source", J(c, "frames"),
-            "--out", J(c, "outputs", "player_highlights"),
-            "--render-seqs", c.job_id)),
+            "--out", J(c, "outputs", "player_highlights"))),
     ]
 
 
