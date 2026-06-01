@@ -444,10 +444,12 @@ def build_pdf(seq, metrics, outdir, pdf_path):
     sax.text(0.55, 0.9, "Distance covered (team, smoothed)", fontsize=11, fontweight="bold")
     sax.text(0.55, 0.45, f"Team A  {td['TeamA']:.0f} m      Team B  {td['TeamB']:.0f} m",
              fontsize=14, color="#1b5e20", fontweight="bold")
-    sax.text(0.55, 0.10,
-             f"(team total within +{v['team_distance_vs_gt_pct']:.0f}% of ground truth; "
-             f"position error {v['homography_median_err_m']:.2f} m)",
-             fontsize=7.5, color="#888")
+    if v.get('team_distance_vs_gt_pct') is not None and v.get('homography_median_err_m') is not None:
+        _dist_caption = (f"(team total within +{v['team_distance_vs_gt_pct']:.0f}% of ground truth; "
+                         f"position error {v['homography_median_err_m']:.2f} m)")
+    else:
+        _dist_caption = "(team total from operator-calibrated positions)"
+    sax.text(0.55, 0.10, _dist_caption, fontsize=7.5, color="#888")
 
     # ---- DERIVED band label ----
     lab2 = fig.add_subplot(gs[45:48, :]); lab2.axis("off")

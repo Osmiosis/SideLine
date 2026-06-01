@@ -374,15 +374,18 @@ def main():
         n_projected = sum(1 for r in records if r["pitch_x_m"] is not None)
         print(f"  projected to pitch: {n_projected}; aerial-suspect: {n_aerial} ({100*n_aerial/max(1,n_projected):.1f}%)")
 
-        # Validate
-        val = validate(records, gt, n_frames, tol_px=args.tol_px)
-        print(f"  raw-det rate (frames vs GT): {val['raw_detection_rate']:.3f}")
-        print(f"  Kalman-provided rate: {val['kalman_provided_rate']:.3f}")
-        print(f"  Effective within {args.tol_px:.0f}px: {val['effective_within_tol_rate']:.3f}")
-        print(f"  RMSE detected={val['rmse_detected_px']:.2f}px (n={val['n_detected_eval']})  "
-              f"predicted={val['rmse_predicted_px']:.2f}px (n={val['n_predicted_eval']})"
-              if val['rmse_predicted_px'] is not None
-              else f"  RMSE detected={val['rmse_detected_px']:.2f}px (n={val['n_detected_eval']})  no predicted-frame evals")
+        # Validate — GT-only; skip when running on operator footage (no GT).
+        if args.homography:
+            val = {}
+        else:
+            val = validate(records, gt, n_frames, tol_px=args.tol_px)
+            print(f"  raw-det rate (frames vs GT): {val['raw_detection_rate']:.3f}")
+            print(f"  Kalman-provided rate: {val['kalman_provided_rate']:.3f}")
+            print(f"  Effective within {args.tol_px:.0f}px: {val['effective_within_tol_rate']:.3f}")
+            print(f"  RMSE detected={val['rmse_detected_px']:.2f}px (n={val['n_detected_eval']})  "
+                  f"predicted={val['rmse_predicted_px']:.2f}px (n={val['n_predicted_eval']})"
+                  if val['rmse_predicted_px'] is not None
+                  else f"  RMSE detected={val['rmse_detected_px']:.2f}px (n={val['n_detected_eval']})  no predicted-frame evals")
 
         # Render
         frames_dir = Path(args.source) / seq / "img1"
