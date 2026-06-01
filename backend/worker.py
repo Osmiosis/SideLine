@@ -26,42 +26,19 @@ class Worker:
             return False
         job_id = row["job_id"]
         cfg = self.store.read_config(job_id)
-        stages = pipeline.resolve_stages(cfg)
-
-        # Resume point: if a stage is recorded and it's past tagging, skip done ones.
-        start_idx = 0
-        recorded = row["stage"]
-        if recorded == "tagging_done" and "tagging_done" in stages:
-            start_idx = stages.index("tagging_done") + 1
-
-        total = len(stages)
+        steps = pipeline.resolve_steps(cfg)
+        ctx = pipeline.StepCtx(job_dir=self.store.job_dir(job_id),
+                               job_id=job_id, sport=cfg.sport)
+        total = len(steps)
         stage = "unknown"
         try:
-            for i in range(start_idx, total):
-                stage = stages[i]
-                progress = round(100 * i / total)
-
-                if stage == "tagging_pending":
-                    # human pause: park the job and stop here.
-                    self.store.write_status(
-                        job_id, state="tagging_pending", stage="tagging_pending",
-                        progress=progress,
-                        stage_label=pipeline.stage_label("tagging_pending"),
-                        error=None)
-                    return True
-
-                if stage == "tagging_done":
-                    # bookkeeping marker only; no work.
-                    continue
-
-                # mark in-progress, run the (stub) stage, then advance.
-                self.store.write_status(
-                    job_id, state=stage, stage=stage, progress=progress,
-                    stage_label=pipeline.stage_label(stage), error=None)
-                pipeline.run_stage_stub(self.store.job_dir(job_id), stage)
-
-            self.store.write_status(
-                job_id, state="ready", stage="ready", progress=100,
+            for i, step in enumerate(steps):
+                stage = step.ui_stage
+                self.store.write_status(job_id, state=step.ui_stage, stage=step.ui_stage,
+                    progress=round(100 * i / total),
+                    stage_label=pipeline.stage_label(step.ui_stage), error=None)
+                pipeline.run_step(step, ctx, self.store.job_dir(job_id) / "logs")
+            self.store.write_status(job_id, state="ready", stage="ready", progress=100,
                 stage_label=pipeline.stage_label("ready"), error=None)
         except Exception:  # noqa: BLE001 — friendly out, detail to log
             errors.log_stage_failure(
@@ -69,7 +46,7 @@ class Worker:
                 detail=traceback.format_exc())
             self.store.write_status(
                 job_id, state="failed", stage=stage,
-                progress=row["progress"] or 0, stage_label=None,
+                progress=0, stage_label=None,
                 error=errors.friendly_message(stage))
         return True
 

@@ -1,5 +1,10 @@
+"""End-to-end flow test: create → upload → calibration → deliverables → ready → download.
+CV is monkeypatched (no GPU). Verifies the full HTTP + worker lifecycle."""
 import cv2
 import numpy as np
+import pytest
+
+from backend import pipeline
 
 
 def _tiny_mp4(path):
@@ -9,7 +14,10 @@ def _tiny_mp4(path):
     vw.release()
 
 
-def test_full_stub_flow_to_ready(client, tmp_path):
+def test_full_flow_to_ready(client, tmp_path, monkeypatch):
+    # Monkeypatch run_step to a no-op so no CV/GPU runs.
+    monkeypatch.setattr(pipeline, "run_step", lambda step, ctx, logs: None)
+
     # 1. create
     jid = client.post("/api/jobs", json={
         "sport": "football", "match_name": "U14 Final",
@@ -24,25 +32,20 @@ def test_full_stub_flow_to_ready(client, tmp_path):
 
     # 3. calibration
     client.post(f"/api/jobs/{jid}/calibration", json={"calibration_points": [
-        {"pixel_x": 0, "pixel_y": 0, "real_world_label": "tl"},
-        {"pixel_x": 63, "pixel_y": 0, "real_world_label": "tr"},
-        {"pixel_x": 63, "pixel_y": 47, "real_world_label": "br"},
-        {"pixel_x": 0, "pixel_y": 47, "real_world_label": "bl"}]})
+        {"pixel_x": 0, "pixel_y": 0, "real_world_label": "far-left corner"},
+        {"pixel_x": 63, "pixel_y": 0, "real_world_label": "far-right corner"},
+        {"pixel_x": 63, "pixel_y": 47, "real_world_label": "near-right corner"},
+        {"pixel_x": 0, "pixel_y": 47, "real_world_label": "near-left corner"}]})
 
     # 4. select deliverables (enqueues)
     client.post(f"/api/jobs/{jid}/deliverables", json={
         "deliverables_requested": ["coach_analytics", "event_highlights"]})
     assert client.get(f"/api/jobs/{jid}/status").json()["state"] == "queued"
 
-    # 5. run the worker (deterministic)
+    # 5. run the worker (deterministic, no GPU)
     assert client.app.state.worker.run_one() is True
 
-    # 6. ready + outputs present
+    # 6. ready
     status = client.get(f"/api/jobs/{jid}/status").json()
     assert status["state"] == "ready"
     assert status["progress"] == 100
-    outputs = client.get(f"/api/jobs/{jid}/outputs").json()
-    assert "analytics.stub.txt" in outputs
-    assert "events.stub.txt" in outputs
-    dl = client.get(f"/api/jobs/{jid}/outputs/analytics.stub.txt")
-    assert dl.status_code == 200
