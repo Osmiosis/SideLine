@@ -6,6 +6,8 @@ Plan 3 replaces the Plan-1 stub runner with a proper Step-based engine.
 """
 from __future__ import annotations
 
+import configparser
+import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -137,7 +139,92 @@ def _football_steps() -> list[Step]:
     ]
 
 
-PIPELINES: dict[str, Callable[[], list[Step]]] = {"football": _football_steps}
+def _seqlen(job_dir: Path, seq: str) -> int:
+    ini = job_dir / "frames" / seq / "seqinfo.ini"
+    cp = configparser.ConfigParser()
+    cp.read(ini)
+    try:
+        return int(cp["Sequence"]["seqLength"])
+    except Exception:
+        return 100000  # fallback; coach clamps to available frames
+
+
+def _basketball_steps() -> list[Step]:
+    def decode(ctx):
+        return lambda: adapters.decode_video(
+            ctx.job_dir / "raw_video.mp4", ctx.job_dir / "frames", seq=ctx.job_id)
+
+    def homography(ctx):
+        def _run():
+            cfg = JobConfig.model_validate_json(
+                (ctx.job_dir / "job_config.json").read_text(encoding="utf-8"))
+            payload = adapters.write_homography(
+                [p.model_dump() for p in cfg.calibration_points], ctx.sport,
+                ctx.job_dir / "homography.json")
+            # coach_deliverable_basketball reads <deliverables>/<seq>/court/homography.json
+            court = ctx.job_dir / "outputs" / "deliverables" / ctx.job_id / "court"
+            court.mkdir(parents=True, exist_ok=True)
+            shutil.copy(ctx.job_dir / "homography.json", court / "homography.json")
+            return payload
+        return _run
+
+    J = lambda ctx, *p: str(ctx.job_dir.joinpath(*p))
+    M = lambda name: str(config.MODELS_DIR / name)
+    return [
+        Step("decode", "decoding", None, decode),
+        Step("homography", "decoding", None, homography),
+        Step("detect-players", "detecting", None, lambda c: _py(
+            _sd("build_det_cache.py"), "--detector", M("basketball_player.pt"),
+            "--source", J(c, "frames"), "--out", J(c, "det_cache", "players"),
+            "--class-name", "player", "--only", c.job_id)),
+        Step("track-players", "tracking", None, lambda c: _py(
+            _sd("track_from_cache.py"), "--cache", J(c, "det_cache", "players"),
+            "--source", J(c, "frames"), "--out", J(c, "tracks", "players"))),
+        Step("ball-cache", "ball", None, lambda c: _py(
+            _sd("build_det_cache.py"), "--detector", M("basketball_ft.pt"),
+            "--source", J(c, "frames"), "--out", J(c, "det_cache", "ball"),
+            "--class-name", "ball", "--only", c.job_id)),
+        Step("ball-kalman", "ball", None, lambda c: _py(
+            _sd("analyze_ball_basketball.py"), c.job_id,
+            "--cache-dir", J(c, "det_cache", "ball"), "--source", J(c, "frames"),
+            "--out", J(c, "ball_track"), "--track-dir", J(c, "tracks", "players"),
+            "--require-player", "--motion-consistency")),
+        Step("team-assign", "teams", None, lambda c: _py(
+            _sd("bball_team_embed.py"), "--seq", c.job_id,
+            "--track", J(c, "tracks", "players"), "--frames-root", J(c, "frames"),
+            "--court", J(c, "homography.json"), "--out", J(c, "team_assign"))),
+        # coach_analytics tail
+        Step("coach", "analytics", "coach_analytics", lambda c: _py(
+            _sd("coach_deliverable_basketball.py"), c.job_id,
+            "--win", "1", str(_seqlen(c.job_dir, c.job_id)),
+            "--deliverables", J(c, "outputs", "deliverables"),
+            "--track", J(c, "tracks", "players"), "--ball", J(c, "ball_track"),
+            "--frames-root", J(c, "frames"),
+            "--team-assign", J(c, "team_assign", "track_teams_emb.json"),
+            "--no-video")),
+        # event_highlights tail
+        Step("follow-cam", "events", "event_highlights", lambda c: _py(
+            _sd("follow_cam_basketball.py"), c.job_id,
+            "--ball-dir", J(c, "ball_track"), "--track-dir", J(c, "tracks", "players"),
+            "--source", J(c, "frames"), "--out", J(c, "follow_cam"), "--no-render")),
+        Step("detect-events", "events", "event_highlights", lambda c: _py(
+            _sd("detect_events_basketball.py"), c.job_id,
+            "--ball-dir", J(c, "ball_track"), "--track-dir", J(c, "tracks", "players"),
+            "--follow-dir", J(c, "follow_cam"), "--out", J(c, "events"),
+            "--homography", J(c, "homography.json"),
+            "--teams", J(c, "team_assign", "track_teams_emb.json"))),
+        Step("clip", "events", "event_highlights", lambda c: _py(
+            _sd("clip_highlights_basketball.py"), c.job_id,
+            "--events-dir", J(c, "events"), "--follow-dir", J(c, "follow_cam"),
+            "--source", J(c, "frames"), "--ball-dir", J(c, "ball_track"),
+            "--out", J(c, "outputs", "event_highlights"), "--crop", "ball")),
+    ]
+
+
+PIPELINES: dict[str, Callable[[], list[Step]]] = {
+    "football": _football_steps,
+    "basketball": _basketball_steps,
+}
 
 
 def resolve_steps(cfg: JobConfig) -> list[Step]:
