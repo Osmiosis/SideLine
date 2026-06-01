@@ -1,12 +1,17 @@
 """Static configuration for the Operator App backend. Constants only — no logic."""
 from __future__ import annotations
 
+import sys as _sys
 from pathlib import Path
 
 # Repo root = parent of the backend/ package directory.
 REPO_ROOT: Path = Path(__file__).resolve().parent.parent
 JOBS_DIR: Path = REPO_ROOT / "jobs"
 WEBSITE_DIR: Path = REPO_ROOT / "Website"
+
+PYTHON_EXE: str = _sys.executable           # the venv interpreter running the server
+SCRIPTS_DIR: Path = REPO_ROOT / "scripts"
+MODELS_DIR: Path = REPO_ROOT / "models"
 
 # Network
 HOST: str = "0.0.0.0"
