@@ -144,6 +144,12 @@ def finalize_roles(track_teams, cluster_team):
 
 
 def validate(track_teams, out_dir):
+    # Hand-label validation only exists for the SportsMOT benchmark. On operator
+    # footage these files are absent — skip validation, return a benign stub.
+    if not (out_dir / "hand_labels.json").exists() or not (out_dir / "crops.npz").exists():
+        return {"overall": 0.0, "per_class": {"A": None, "B": None},
+                "ref_bench_exclusion_recall": None, "n_ref_bench": 0,
+                "team_crops_excluded_frac": None, "skipped": True}
     labels = json.loads((out_dir / "hand_labels.json").read_text())
     manifest = json.loads(str(np.load(out_dir / "crops.npz", allow_pickle=True)["manifest"]))
     pairs = []
@@ -186,6 +192,7 @@ def main():
     seqs = [args.seq] if args.seq else SEQS_DEFAULT
     court_seq = args.seq if args.seq else COURT_SEQ_DEFAULT
     out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
     device = "cuda"
     hj = json.loads(Path(args.court).read_text())
     court_ci = np.array(hj["H_court_from_img"], np.float32); court_m = bc.court_model(hj.get("model", "ncaa"))

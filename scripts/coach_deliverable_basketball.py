@@ -457,7 +457,8 @@ def main():
 
     court_dir = Path(args.deliverables) / seq / "court"
     hj = json.loads((court_dir / "homography.json").read_text())
-    val = json.loads((court_dir / "validation.json").read_text())
+    _val_path = court_dir / "validation.json"   # only exists for GUI-marked calibration
+    val = json.loads(_val_path.read_text()) if _val_path.exists() else {}
     H_ci = np.array(hj["H_court_from_img"], np.float32)
     m = bc.court_model(hj.get("model", "ncaa"))
     outdir = Path(args.deliverables) / seq / "coach"
