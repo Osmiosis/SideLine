@@ -18,6 +18,12 @@ test('outputUrl encodes the filename', () => {
     '/api/jobs/abc/outputs/report%201.pdf');
 });
 
+test('outputUrl keeps slashes in nested paths (encodes segments)', () => {
+  assert.equal(
+    _build.outputUrl('abc', 'player_highlights/seq 1/reels/Alex B.mp4'),
+    '/api/jobs/abc/outputs/player_highlights/seq%201/reels/Alex%20B.mp4');
+});
+
 test('calibrationPayload maps normalized marks to pixel points', () => {
   const marks = [{ px: 0.5, py: 0.25 }, { px: 0.1, py: 0.9 }];
   const labels = ['far-left corner', 'far-right corner'];

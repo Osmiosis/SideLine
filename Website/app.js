@@ -7,7 +7,10 @@ const _build = {
   jobsUrl() { return '/api/jobs'; },
   jobUrl(id, sub) { return `/api/jobs/${id}/${sub}`; },
   outputUrl(id, filename) {
-    return `/api/jobs/${id}/outputs/${encodeURIComponent(filename)}`;
+    // filename may be a nested relative path (e.g. player_highlights/<seq>/reels/Alex.mp4);
+    // encode each segment but keep the slashes so the {filename:path} route matches.
+    const enc = String(filename).split('/').map(encodeURIComponent).join('/');
+    return `/api/jobs/${id}/outputs/${enc}`;
   },
   calibrationPayload(marks, labels, frameW, frameH) {
     return {
