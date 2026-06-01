@@ -44,3 +44,16 @@ def test_write_homography_solves_and_matches_schema(tmp_path):
     # a known pixel maps near its pitch metre target
     p = cv2.perspectiveTransform(np.array([[[0.0, 0.0]]], np.float32), H)[0][0]
     assert abs(p[0] - (-52.5)) < 1.0 and abs(p[1] - 34.0) < 1.0
+
+
+def test_write_homography_rejects_degenerate_points(tmp_path):
+    import pytest
+    # all four points collinear -> findHomography returns None
+    cal = [
+        {"pixel_x": 0, "pixel_y": 0, "real_world_label": "far-left corner"},
+        {"pixel_x": 10, "pixel_y": 0, "real_world_label": "far-right corner"},
+        {"pixel_x": 20, "pixel_y": 0, "real_world_label": "near-right corner"},
+        {"pixel_x": 30, "pixel_y": 0, "real_world_label": "near-left corner"},
+    ]
+    with pytest.raises(ValueError):
+        adapters.write_homography(cal, "football", tmp_path / "h.json")

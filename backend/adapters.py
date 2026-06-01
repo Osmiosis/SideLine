@@ -59,6 +59,10 @@ def write_homography(calibration_points: list[dict], sport: str,
     dst = np.array(landmarks.world_points(sport, labels), dtype=np.float32)
     H_ci, _ = cv2.findHomography(src, dst)   # pixel -> metres
     H_ic, _ = cv2.findHomography(dst, src)   # metres -> pixel
+    if H_ci is None or H_ic is None:
+        raise ValueError(
+            "Court setup could not be solved — the marked points look degenerate "
+            "(collinear or overlapping). Please re-mark the corners.")
     payload = {
         "seq": None, "sport": sport,
         "H_court_from_img": H_ci.tolist(),
