@@ -30,10 +30,26 @@ class Worker:
         ctx = pipeline.StepCtx(job_dir=self.store.job_dir(job_id),
                                job_id=job_id, sport=cfg.sport)
         total = len(steps)
+
+        # Resume index: if re-enqueued after tagging, skip to the step AFTER tagging_pending.
+        start_idx = 0
+        if row["stage"] == "tagging_done":
+            for i, s in enumerate(steps):
+                if s.key == "tagging_pending":
+                    start_idx = i + 1
+                    break
+
         stage = "unknown"
         try:
-            for i, step in enumerate(steps):
+            for i, step in enumerate(steps[start_idx:], start=start_idx):
                 stage = step.ui_stage
+                # Pause marker: park the job and return without running a command.
+                if step.key == "tagging_pending":
+                    self.store.write_status(job_id, state="tagging_pending",
+                        stage="tagging_pending",
+                        progress=round(100 * i / total),
+                        stage_label=pipeline.stage_label("tagging_pending"), error=None)
+                    return True
                 self.store.write_status(job_id, state=step.ui_stage, stage=step.ui_stage,
                     progress=round(100 * i / total),
                     stage_label=pipeline.stage_label(step.ui_stage), error=None)
