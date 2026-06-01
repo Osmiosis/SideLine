@@ -27,6 +27,14 @@ from analyze_pitch import load_gt, derive_per_frame_H, load_tracker as load_trac
 SEQS_DEFAULT = ["SNGS-116", "SNGS-117", "SNGS-118", "SNGS-119", "SNGS-120"]
 MAX_CLAIM_DIST_M = 5.0   # ball claimed only if closest player is within this distance
 
+
+# ---------- Static-H helper (operator-uploaded footage path) ----------
+def _static_H_by_frame(homography_path, n_frames):
+    import json as _json
+    import numpy as _np
+    H = _np.array(_json.load(open(homography_path))["H_court_from_img"], dtype=_np.float64)
+    return {f: H for f in range(1, n_frames + 1)}
+
 def load_tracker_xywh(path: Path):
     rows = []
     for line in path.read_text().splitlines():
@@ -65,6 +73,8 @@ def main():
     ap.add_argument("--tracker-dir", default="outputs/track_results/sn_soccana_botsort_gmc")
     ap.add_argument("--ball-track-dir", default="outputs/ball_track")
     ap.add_argument("--team-assign-dir", default="outputs/team_assign")
+    ap.add_argument("--homography", default=None,
+                    help="path to homography.json; use this static H instead of GT-derived per-frame H")
     args = ap.parse_args()
 
     seqs = [args.seq] if args.seq else SEQS_DEFAULT
@@ -80,9 +90,13 @@ def main():
         # Load Day-9 tracker player output
         track_path = Path(args.tracker_dir, f"{seq}.txt")
         player_rows = load_tracker_xywh(track_path)
-        # Load Day-10 H per frame (from GT correspondences)
-        gt_pts = load_gt(Path(args.zip), seq)
-        H_by_frame, _ = derive_per_frame_H(gt_pts)
+        # Load H per frame (static from homography.json, or GT-derived when no --homography)
+        if args.homography:
+            n_frames_pos = max((r[0] for r in player_rows), default=1)
+            H_by_frame = _static_H_by_frame(args.homography, n_frames_pos)
+        else:
+            gt_pts = load_gt(Path(args.zip), seq)
+            H_by_frame, _ = derive_per_frame_H(gt_pts)
         # Team labels per (seq, tid)
         team_for_tid = {int(k): v["role"] for k, v in team_data[seq].items()}
 
