@@ -2,6 +2,7 @@
 HTTP layer only — delegates to JobStore/db; never touches CV logic."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import cv2
@@ -116,10 +117,50 @@ def create_app(jobs_dir: Path | str = config.JOBS_DIR,
         store.update_config(job_id, roster=req.roster)
         return {"ok": True}
 
+    @app.get("/api/jobs/{job_id}/tagging-clips")
+    def get_tagging_clips(job_id: str) -> dict:
+        _require_job(job_id)
+        manifest_path = store.clips_manifest_path(job_id)
+        if not manifest_path.exists():
+            return {"ready": False, "clips": []}
+        records = json.loads(manifest_path.read_text(encoding="utf-8"))
+        clips = []
+        for rec in records:
+            clip_id = rec.get("clip_id") or rec.get("clip", "")
+            # If clip field is a full path, take the basename
+            if not clip_id or "/" in clip_id or "\\" in clip_id:
+                clip_id = Path(clip_id).name
+            clips.append({
+                "clip_id": clip_id,
+                "track_id": rec.get("track_id"),
+                "role": rec.get("role"),
+                "start_frame": rec.get("start_frame"),
+                "end_frame": rec.get("end_frame"),
+                "video_url": f"/api/jobs/{job_id}/tagging-clips/{clip_id}/video",
+            })
+        return {"ready": True, "clips": clips}
+
+    @app.get("/api/jobs/{job_id}/tagging-clips/{clip}/video")
+    def get_clip_video(job_id: str, clip: str) -> FileResponse:
+        _require_job(job_id)
+        try:
+            path = store.clip_path(job_id, clip)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid clip name.")
+        if not path.is_file():
+            raise HTTPException(status_code=404, detail="Clip not found.")
+        return FileResponse(str(path), media_type="video/mp4", filename=clip)
+
     @app.post("/api/jobs/{job_id}/tags")
     def save_tags(job_id: str, req: TagsRequest) -> dict:
         _require_job(job_id)
+        # Persist tags into job config
         store.update_config(job_id, player_tags=req.player_tags)
+        # Write clip_tags.json for assemble_player_reels(_bb) to read
+        store.write_clip_tags(job_id, req.player_tags)
+        # Re-enqueue with tagging_done sentinel so worker resumes to reels
+        store.write_status(job_id, state="queued", stage="tagging_done",
+                           progress=0, stage_label=None, error=None)
         return {"ok": True}
 
     @app.post("/api/jobs/{job_id}/deliverables")

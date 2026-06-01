@@ -85,3 +85,21 @@ class JobStore:
 
     def exists(self, job_id: str) -> bool:
         return self.config_path(job_id).exists()
+
+    # ---- player-highlights helpers ----
+
+    def clips_manifest_path(self, job_id: str) -> Path:
+        """Path to clips_manifest.json written by clip_player_highlights(_bb)."""
+        return self.job_dir(job_id) / "player_highlights" / job_id / "clips_manifest.json"
+
+    def write_clip_tags(self, job_id: str, tags: dict) -> None:
+        """Write clip_tags.json to the path assemble_player_reels(_bb) reads."""
+        dest = self.job_dir(job_id) / "player_highlights" / job_id / "clip_tags.json"
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(json.dumps(tags, indent=2), encoding="utf-8")
+
+    def clip_path(self, job_id: str, clip: str) -> Path:
+        """Return the absolute path for a clip filename, with traversal guard."""
+        if "/" in clip or "\\" in clip or ".." in clip:
+            raise ValueError(f"Invalid clip name: {clip!r}")
+        return self.job_dir(job_id) / "player_highlights" / job_id / "clips" / clip
