@@ -33,7 +33,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from analyze_pitch import (PITCH_X_HALF, PITCH_Y_HALF, load_gt, load_tracker,
                            derive_per_frame_H, project_tracker, render_heatmap)
 
-SEQS = ["SNGS-116", "SNGS-117", "SNGS-118", "SNGS-119", "SNGS-120"]
+SEQS_DEFAULT = ["SNGS-116", "SNGS-117", "SNGS-118", "SNGS-119", "SNGS-120"]
 TORSO_Y_FRAC = (0.20, 0.55)
 TORSO_X_FRAC = (0.25, 0.75)
 MIN_TORSO_AREA = 50  # px; below this, the patch is too small to be reliable
@@ -395,7 +395,11 @@ def main():
     ap.add_argument("--out", default="outputs/team_assign")
     ap.add_argument("--sample-seq", default="SNGS-118")
     ap.add_argument("--sample-frame", type=int, default=100)
+    ap.add_argument("--seqs", default=None,
+                    help="comma-separated seq names; overrides the hardcoded SoccerNet list")
     args = ap.parse_args()
+
+    seqs = args.seqs.split(",") if args.seqs else SEQS_DEFAULT
 
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
     tracker_dir = Path(args.tracker_dir)
@@ -406,7 +410,7 @@ def main():
     print(f"=== Part A: torso feature extraction ===")
     records_by_seq = {}
     skipped_by_seq = {}
-    for seq in SEQS:
+    for seq in seqs:
         frames_dir = data_root / seq / "img1"
         recs, skipped = extract_features_seq(tracker_dir / f"{seq}.txt", frames_dir)
         records_by_seq[seq] = recs
@@ -414,7 +418,7 @@ def main():
         print(f"  {seq}: {len(recs)} torso features ({skipped} skipped tiny/missing)")
 
     # Pool features
-    all_records = [r for seq in SEQS for r in records_by_seq[seq]]
+    all_records = [r for seq in seqs for r in records_by_seq[seq]]
     features_lab = np.array([(r[2], r[3], r[4]) for r in all_records], dtype=np.float32)
     features_bgr = np.array([(r[5], r[6], r[7]) for r in all_records], dtype=np.float32)
 
@@ -448,7 +452,7 @@ def main():
     det_clusters_by_seq = {}
     features_cluster_by_seq = {}
     offset = 0
-    for seq in SEQS:
+    for seq in seqs:
         n = len(records_by_seq[seq])
         det_clusters_by_seq[seq] = labels[offset:offset+n]
         features_cluster_by_seq[seq] = features_cluster[offset:offset+n]
@@ -456,7 +460,7 @@ def main():
 
     # Per-tracklet vote + distance-to-team
     track_teams_by_seq = {}
-    for seq in SEQS:
+    for seq in seqs:
         track_teams_by_seq[seq] = per_tracklet_vote(
             records_by_seq[seq], det_clusters_by_seq[seq],
             features_cluster_by_seq[seq], centers_cluster)
@@ -467,7 +471,7 @@ def main():
                                percentile=args.non_outfield_percentile)
     mode = "abs" if args.non_outfield_percentile is None else f"p={args.non_outfield_percentile}%"
     print(f"\n  Non-outfield (referee) distance threshold (a/b space): {thresh:.2f}  ({mode})")
-    for seq in SEQS:
+    for seq in seqs:
         roles = Counter(v["role"] for v in track_teams_by_seq[seq].values())
         n_tracks = len(track_teams_by_seq[seq])
         print(f"  {seq}: {n_tracks} tracks -> TeamA={roles['TeamA']}, TeamB={roles['TeamB']}, NonOutfield={roles['NonOutfield']}")
@@ -490,12 +494,12 @@ def main():
             "mean_dist_to_team": v["mean_dist_to_team"],
             "votes": v["votes"],
         } for tid, v in track_teams_by_seq[seq].items()}
-        for seq in SEQS
+        for seq in seqs
     }, indent=2))
 
     # Part C: sample renders
     print(f"\n=== Part C: sample renders ({args.sample_seq}) ===")
-    frames_dirs = {seq: data_root / seq / "img1" for seq in SEQS}
+    frames_dirs = {seq: data_root / seq / "img1" for seq in seqs}
     render_sample_torsos(records_by_seq, det_clusters_by_seq, frames_dirs,
                          centers_bgr, cluster_role, out / "sample_torsos.png")
     print(f"  -> sample_torsos.png")
@@ -505,23 +509,29 @@ def main():
                               out / f"{args.sample_seq}_team_colored_f{args.sample_frame}.png",
                               frame_idx=args.sample_frame)
     print(f"  -> {args.sample_seq}_team_colored_f{args.sample_frame}.png")
-    render_team_heatmaps(args.sample_seq, zip_path, sample_recs,
-                         track_teams_by_seq[args.sample_seq], out)
-    print(f"  -> team_heatmap_TeamA.png + team_heatmap_TeamB.png + team_heatmap_NonOutfield.png")
+    try:
+        render_team_heatmaps(args.sample_seq, zip_path, sample_recs,
+                             track_teams_by_seq[args.sample_seq], out)
+        print(f"  -> team_heatmap_TeamA.png + team_heatmap_TeamB.png + team_heatmap_NonOutfield.png")
+    except Exception as e:
+        print(f"  render_team_heatmaps skipped (no GT zip or error): {e}")
 
-    # Part D: validate
+    # Part D: validate (skipped when GT zip is absent/missing)
     print(f"\n=== Part D: validate vs GSR ===")
-    val = validate(records_by_seq, zip_path, track_teams_by_seq)
-    print(f"  matched detections: {val['n_pairs']} (no-match: {val['n_no_match_iou_lt_thresh']})")
-    print(f"  OUTFIELD TEAM ACCURACY (players + GKs): {val['outfield_team_accuracy_all_GT_outfield']:.3f}")
-    print(f"    (acc_LR={val['alignment']['acc_LR']:.3f}  acc_RL={val['alignment']['acc_RL']:.3f})")
-    print(f"  PLAYER-ONLY team accuracy: {val['player_only_team_accuracy']:.3f}")
-    print(f"  GK-ONLY team accuracy: {val['goalkeeper_only_team_accuracy']:.3f}  "
-          f"(GKs flagged non-outfield: {val['n_goalkeepers_flagged_NonOutfield']}/{val['n_goalkeepers_total']})")
-    rd = val["referee_detection"]
-    print(f"  REFEREE detection: P={rd['precision']:.3f}  R={rd['recall']:.3f}  F1={rd['f1']:.3f}  tp={rd['tp']} fp={rd['fp']} fn={rd['fn']}")
-    print(f"    NonOutfield pred role breakdown: {rd['pred_NonOutfield_role_breakdown']}")
-    (out / "validation.json").write_text(json.dumps(val, indent=2))
+    try:
+        val = validate(records_by_seq, zip_path, track_teams_by_seq)
+        print(f"  matched detections: {val['n_pairs']} (no-match: {val['n_no_match_iou_lt_thresh']})")
+        print(f"  OUTFIELD TEAM ACCURACY (players + GKs): {val['outfield_team_accuracy_all_GT_outfield']:.3f}")
+        print(f"    (acc_LR={val['alignment']['acc_LR']:.3f}  acc_RL={val['alignment']['acc_RL']:.3f})")
+        print(f"  PLAYER-ONLY team accuracy: {val['player_only_team_accuracy']:.3f}")
+        print(f"  GK-ONLY team accuracy: {val['goalkeeper_only_team_accuracy']:.3f}  "
+              f"(GKs flagged non-outfield: {val['n_goalkeepers_flagged_NonOutfield']}/{val['n_goalkeepers_total']})")
+        rd = val["referee_detection"]
+        print(f"  REFEREE detection: P={rd['precision']:.3f}  R={rd['recall']:.3f}  F1={rd['f1']:.3f}  tp={rd['tp']} fp={rd['fp']} fn={rd['fn']}")
+        print(f"    NonOutfield pred role breakdown: {rd['pred_NonOutfield_role_breakdown']}")
+        (out / "validation.json").write_text(json.dumps(val, indent=2))
+    except Exception as e:
+        print(f"  GT validation skipped (no GT zip or error): {e}")
 
 if __name__ == "__main__":
     main()
