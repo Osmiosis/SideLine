@@ -51,8 +51,8 @@ class StepCtx:
 class Step:
     key: str
     ui_stage: str
-    deliverable: str | None          # None = foundation (always runs)
-    build: Callable[[StepCtx], object]  # returns argv list (subprocess) OR callable()
+    deliverable: str | None | set[str]  # None = foundation (always runs); set = runs if ANY requested
+    build: Callable[[StepCtx], object]  # returns argv list (subprocess) OR callable() OR None
 
 
 def _py(*args) -> list[str]:
@@ -124,7 +124,7 @@ def _football_steps() -> list[Step]:
             "--track-dir", J(c, "outputs", "tracks"),
             "--team-json", J(c, "outputs", "team_assign", "track_teams.json"),
             "--zip", "", "--out", J(c, "outputs", "events"))),
-        Step("follow-cam", "events", "event_highlights", lambda c: _py(
+        Step("follow-cam", "events", {"event_highlights", "player_highlights"}, lambda c: _py(
             _sd("follow_cam.py"), c.job_id,
             "--ball-dir", J(c, "outputs", "ball_track"),
             "--track-dir", J(c, "outputs", "tracks"),
@@ -136,6 +136,31 @@ def _football_steps() -> list[Step]:
             "--follow-dir", J(c, "outputs", "follow_cam"),
             "--source", J(c, "frames"),
             "--out", J(c, "outputs", "event_highlights"))),
+        # player_highlights tail (Part 1: involvement + clip-candidates; pause; Part 2: reels)
+        Step("involvement", "player_highlights", "player_highlights", lambda c: _py(
+            _sd("detect_involvement.py"), c.job_id,
+            "--tracker-dir", J(c, "outputs", "tracks"),
+            "--ball-dir", J(c, "outputs", "ball_track"),
+            "--team-file", J(c, "outputs", "team_assign", "track_teams.json"),
+            "--out", J(c, "involvement"))),
+        Step("clip-candidates", "player_highlights", "player_highlights", lambda c: _py(
+            _sd("clip_player_highlights.py"), c.job_id,
+            "--involvement-dir", J(c, "involvement"),
+            "--follow-dir", J(c, "outputs", "follow_cam"),
+            "--source", J(c, "frames"),
+            "--out", J(c, "player_highlights"))),
+        Step("tagging_pending", "tagging_pending", "player_highlights",
+             lambda c: None),
+        Step("reels", "player_highlights", "player_highlights", lambda c: _py(
+            _sd("assemble_player_reels.py"), c.job_id,
+            "--involvement-dir", J(c, "involvement"),
+            "--clips-dir", J(c, "player_highlights"),
+            "--tracker-dir", J(c, "outputs", "tracks"),
+            "--team-file", J(c, "outputs", "team_assign", "track_teams.json"),
+            "--follow-dir", J(c, "outputs", "follow_cam"),
+            "--source", J(c, "frames"),
+            "--out", J(c, "deliverables", "player_highlights"),
+            "--render-seqs", c.job_id)),
     ]
 
 
@@ -203,7 +228,7 @@ def _basketball_steps() -> list[Step]:
             "--team-assign", J(c, "team_assign", "track_teams_emb.json"),
             "--no-video")),
         # event_highlights tail
-        Step("follow-cam", "events", "event_highlights", lambda c: _py(
+        Step("follow-cam", "events", {"event_highlights", "player_highlights"}, lambda c: _py(
             _sd("follow_cam_basketball.py"), c.job_id,
             "--ball-dir", J(c, "ball_track"), "--track-dir", J(c, "tracks", "players"),
             "--source", J(c, "frames"), "--out", J(c, "follow_cam"), "--no-render")),
@@ -218,6 +243,32 @@ def _basketball_steps() -> list[Step]:
             "--events-dir", J(c, "events"), "--follow-dir", J(c, "follow_cam"),
             "--source", J(c, "frames"), "--ball-dir", J(c, "ball_track"),
             "--out", J(c, "outputs", "event_highlights"), "--crop", "ball")),
+        # player_highlights tail (Part 1: involvement + clip-candidates; pause; Part 2: reels)
+        Step("involvement", "player_highlights", "player_highlights", lambda c: _py(
+            _sd("detect_involvement_bb.py"), c.job_id,
+            "--tracker-dir", J(c, "tracks", "players"),
+            "--ball-dir", J(c, "ball_track"),
+            "--team-file", J(c, "team_assign", "track_teams_emb.json"),
+            "--out", J(c, "involvement"))),
+        Step("clip-candidates", "player_highlights", "player_highlights", lambda c: _py(
+            _sd("clip_player_highlights_bb.py"), c.job_id,
+            "--involvement-dir", J(c, "involvement"),
+            "--follow-dir", J(c, "follow_cam"),
+            "--source", J(c, "frames"),
+            "--ball-dir", J(c, "ball_track"),
+            "--out", J(c, "player_highlights"))),
+        Step("tagging_pending", "tagging_pending", "player_highlights",
+             lambda c: None),
+        Step("reels", "player_highlights", "player_highlights", lambda c: _py(
+            _sd("assemble_player_reels_bb.py"), c.job_id,
+            "--involvement-dir", J(c, "involvement"),
+            "--clips-dir", J(c, "player_highlights"),
+            "--tracker-dir", J(c, "tracks", "players"),
+            "--team-file", J(c, "team_assign", "track_teams_emb.json"),
+            "--follow-dir", J(c, "follow_cam"),
+            "--source", J(c, "frames"),
+            "--out", J(c, "deliverables", "player_highlights"),
+            "--render-seqs", c.job_id)),
     ]
 
 
@@ -231,17 +282,27 @@ def resolve_steps(cfg: JobConfig) -> list[Step]:
     sport = cfg.sport
     if sport not in PIPELINES:
         raise ValueError(f"no pipeline for sport {sport}")
+    requested = set(cfg.deliverables_requested)
     out = []
     for s in PIPELINES[sport]():
-        if s.deliverable is None or s.deliverable in cfg.deliverables_requested:
+        d = s.deliverable
+        if d is None:
             out.append(s)
+        elif isinstance(d, set):
+            if d & requested:  # any intersection → include
+                out.append(s)
+        else:
+            if d in requested:
+                out.append(s)
     return out
 
 
 def run_step(step: Step, ctx: StepCtx, log_dir: Path) -> None:
     """Run one step: a callable adapter or a subprocess. Tee output to a log;
-    raise on failure."""
+    raise on failure. A None build is a no-op (used by tagging_pending pause marker)."""
     built = step.build(ctx)
+    if built is None:
+        return
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / f"{step.key}.log"
     if callable(built):
