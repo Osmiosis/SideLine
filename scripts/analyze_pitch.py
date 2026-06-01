@@ -204,6 +204,14 @@ def render_heatmap(positions_xy: np.ndarray, out_path: Path, title: str, bins: i
     plt.savefig(out_path, facecolor="#2e7d32", bbox_inches="tight")
     plt.close(fig)
 
+# ---------- Static-H helper (operator-uploaded footage path) ----------
+def _static_H_by_frame(homography_path, n_frames):
+    import json as _json
+    import numpy as _np
+    H = _np.array(_json.load(open(homography_path))["H_court_from_img"], dtype=_np.float64)
+    return {f: H for f in range(1, n_frames + 1)}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("seq", help="Seq name, e.g. SNGS-116")
@@ -212,34 +220,47 @@ def main():
     ap.add_argument("--out", default="outputs/deliverables")
     ap.add_argument("--smooth-win", type=int, default=5)
     ap.add_argument("--top-n-players", type=int, default=4, help="Render top-N most-tracked player heatmaps")
+    ap.add_argument("--homography", default=None,
+                    help="path to homography.json; use this static H instead of GT-derived per-frame H")
     args = ap.parse_args()
 
     out_dir = Path(args.out) / args.seq
     out_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"=== {args.seq} ===")
-    gt_pts = load_gt(Path(args.zip), args.seq)
-    print(f"  GT player+GK points: {len(gt_pts)}")
 
     track = load_tracker(Path(args.tracker) / f"{args.seq}.txt")
     print(f"  tracker rows: {len(track)}")
 
-    H_by_frame, holdout = derive_per_frame_H(gt_pts)
-    n_frames_with_H = len(H_by_frame)
-    print(f"  per-frame H derived: {n_frames_with_H} frames")
-
-    # Validation summary
-    all_errs = [e for f, pts in holdout.items() for *_xy, e in pts]
-    val_sum = {
-        "n_frames_with_H": n_frames_with_H,
-        "n_holdout_points": len(all_errs),
-        "mean_err_m": float(np.mean(all_errs)) if all_errs else None,
-        "median_err_m": float(np.median(all_errs)) if all_errs else None,
-        "p90_err_m": float(np.percentile(all_errs, 90)) if all_errs else None,
-        "p99_err_m": float(np.percentile(all_errs, 99)) if all_errs else None,
-    }
-    print(f"  validation: median_err={val_sum['median_err_m']:.2f}m  "
-          f"mean={val_sum['mean_err_m']:.2f}m  p90={val_sum['p90_err_m']:.2f}m  p99={val_sum['p99_err_m']:.2f}m")
+    if args.homography:
+        # Derive n_frames from max frame index in tracker MOT
+        n_frames = max((row[0] for row in track), default=1)
+        H_by_frame = _static_H_by_frame(args.homography, n_frames)
+        n_frames_with_H = len(H_by_frame)
+        print(f"  static H loaded from {args.homography}; n_frames={n_frames}")
+        val_sum = {
+            "n_frames_with_H": n_frames_with_H,
+            "n_holdout_points": 0,
+            "mean_err_m": None, "median_err_m": None,
+            "p90_err_m": None, "p99_err_m": None,
+        }
+    else:
+        gt_pts = load_gt(Path(args.zip), args.seq)
+        print(f"  GT player+GK points: {len(gt_pts)}")
+        H_by_frame, holdout = derive_per_frame_H(gt_pts)
+        n_frames_with_H = len(H_by_frame)
+        print(f"  per-frame H derived: {n_frames_with_H} frames")
+        all_errs = [e for f, pts in holdout.items() for *_xy, e in pts]
+        val_sum = {
+            "n_frames_with_H": n_frames_with_H,
+            "n_holdout_points": len(all_errs),
+            "mean_err_m": float(np.mean(all_errs)) if all_errs else None,
+            "median_err_m": float(np.median(all_errs)) if all_errs else None,
+            "p90_err_m": float(np.percentile(all_errs, 90)) if all_errs else None,
+            "p99_err_m": float(np.percentile(all_errs, 99)) if all_errs else None,
+        }
+        print(f"  validation: median_err={val_sum['median_err_m']:.2f}m  "
+              f"mean={val_sum['mean_err_m']:.2f}m  p90={val_sum['p90_err_m']:.2f}m  p99={val_sum['p99_err_m']:.2f}m")
 
     positions = project_tracker(track, H_by_frame)
     print(f"  unique tracker IDs with projected positions: {len(positions)}")
@@ -250,17 +271,22 @@ def main():
     print(f"  TRACKER team distance: raw={raw_total:.0f}m  smoothed={sm_total:.0f}m  "
           f"(jitter inflation {100*(raw_total-sm_total)/sm_total:.0f}%)")
 
-    # GT-derived team distance (direct from bbox_pitch -- no homography needed; the truth reference)
-    gt_by_tid = gt_positions_by_tid(Path(args.zip), args.seq)
-    gt_distances = compute_distances({tid: traj for tid, traj in gt_by_tid.items()},
-                                     smooth_win=args.smooth_win)
-    gt_raw = sum(d["raw_m"] for d in gt_distances.values())
-    gt_sm = sum(d["smoothed_m"] for d in gt_distances.values())
-    print(f"  GT      team distance: raw={gt_raw:.0f}m  smoothed={gt_sm:.0f}m  "
-          f"({len(gt_by_tid)} GT tracks)")
-    sm_err_pct = 100 * (sm_total - gt_sm) / gt_sm if gt_sm else None
-    print(f"  TRACKER smoothed vs GT smoothed: +{sm_err_pct:.0f}%  "
-          f"(tracker IDs={len(positions)} vs GT IDs={len(gt_by_tid)})")
+    # GT-derived team distance (validation-only; skipped when --homography is set)
+    if not args.homography:
+        gt_by_tid = gt_positions_by_tid(Path(args.zip), args.seq)
+        gt_distances = compute_distances({tid: traj for tid, traj in gt_by_tid.items()},
+                                         smooth_win=args.smooth_win)
+        gt_raw = sum(d["raw_m"] for d in gt_distances.values())
+        gt_sm = sum(d["smoothed_m"] for d in gt_distances.values())
+        print(f"  GT      team distance: raw={gt_raw:.0f}m  smoothed={gt_sm:.0f}m  "
+              f"({len(gt_by_tid)} GT tracks)")
+        sm_err_pct = 100 * (sm_total - gt_sm) / gt_sm if gt_sm else None
+        print(f"  TRACKER smoothed vs GT smoothed: +{sm_err_pct:.0f}%  "
+              f"(tracker IDs={len(positions)} vs GT IDs={len(gt_by_tid)})")
+    else:
+        gt_raw = gt_sm = None
+        sm_err_pct = None
+        gt_by_tid = {}
 
     # Persist
     val_sum["team_distance_raw_m"] = raw_total
