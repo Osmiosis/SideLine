@@ -35,9 +35,9 @@ import team_assign as ta
 import basketball_court as bc
 from ball_head_classifier import embed_all   # frozen ResNet18 (ImageNet) 512-d, L2-normalized
 
-SEQS = ["v_00HRwkvvjtQ_c001", "v_00HRwkvvjtQ_c003", "v_00HRwkvvjtQ_c005",
-        "v_00HRwkvvjtQ_c007", "v_00HRwkvvjtQ_c008"]
-COURT_SEQ = "v_00HRwkvvjtQ_c007"
+SEQS_DEFAULT = ["v_00HRwkvvjtQ_c001", "v_00HRwkvvjtQ_c003", "v_00HRwkvvjtQ_c005",
+                "v_00HRwkvvjtQ_c007", "v_00HRwkvvjtQ_c008"]
+COURT_SEQ_DEFAULT = "v_00HRwkvvjtQ_c007"
 DAY22 = {"overall": 0.796, "A_white": 0.983, "B_blue": 0.652, "ref_excl": 0.16}
 
 
@@ -72,21 +72,26 @@ def pca_reduce(X, dim=50):
     return (Xc @ Vt[:dim].T).astype(np.float32)
 
 
-def assign(recs_by_seq, emb_by_seq, court_ci, court_m, off_thresh=0.5, ref_pct=92.0, pca_dim=50):
+def assign(recs_by_seq, emb_by_seq, court_ci, court_m, off_thresh=0.5, ref_pct=92.0, pca_dim=50,
+           seqs=None, court_seq=None):
     """Cluster embeddings (k=2) BLIND -> per-(seq,tid) roles. TeamA = whiter cluster (set later by
     caller via colour); here clusters are 0/1, caller maps. Returns track_teams + centers + det info."""
-    all_emb = np.concatenate([emb_by_seq[s] for s in SEQS])
+    if seqs is None:
+        seqs = SEQS_DEFAULT
+    if court_seq is None:
+        court_seq = COURT_SEQ_DEFAULT
+    all_emb = np.concatenate([emb_by_seq[s] for s in seqs])
     feat = pca_reduce(all_emb, pca_dim) if pca_dim else all_emb
     labels, centers = ta.kmeans_lab(feat, k=2)
     off = 0; det_cluster = {}; det_dist = {}
-    for s in SEQS:
+    for s in seqs:
         n = len(recs_by_seq[s])
         det_cluster[s] = labels[off:off + n]
         d = np.linalg.norm(feat[off:off + n][:, None, :] - centers[None, :, :], axis=2).min(1)
         det_dist[s] = d; off += n
-    # court-position on-court fraction (c007 only)
+    # court-position on-court fraction (court_seq only)
     on_frac = {}
-    for r in recs_by_seq[COURT_SEQ]:
+    for r in recs_by_seq[court_seq]:
         feet = (r[2] + r[4] / 2, r[3] + r[5])
         c = bc.apply_H(court_ci, [feet])[0]
         ok = abs(c[0]) <= court_m["hx"] + 1.5 and abs(c[1]) <= court_m["hy"] + 1.5
@@ -94,21 +99,21 @@ def assign(recs_by_seq, emb_by_seq, court_ci, court_m, off_thresh=0.5, ref_pct=9
     on_frac = {t: float(np.mean(v)) for t, v in on_frac.items()}
     # referee distance-outlier threshold (per-track mean dist, global)
     md_all = []
-    for s in SEQS:
+    for s in seqs:
         bt = defaultdict(list)
         for r, dd in zip(recs_by_seq[s], det_dist[s]):
             bt[r[1]].append(dd)
         md_all += [np.mean(v) for v in bt.values()]
     ref_thr = float(np.percentile(md_all, ref_pct)) if md_all else 1e9
     track_teams = {}
-    for s in SEQS:
+    for s in seqs:
         btc = defaultdict(list); btd = defaultdict(list)
         for r, c, dd in zip(recs_by_seq[s], det_cluster[s], det_dist[s]):
             btc[r[1]].append(int(c)); btd[r[1]].append(float(dd))
         out = {}
         for tid, votes in btc.items():
             cnt = Counter(votes); maj = cnt.most_common(1)[0][0]; md = float(np.mean(btd[tid]))
-            ocf = on_frac.get(tid) if s == COURT_SEQ else None
+            ocf = on_frac.get(tid) if s == court_seq else None
             if ocf is not None and ocf < off_thresh:
                 role = ("Excluded", maj)
             elif md >= ref_thr:
@@ -167,6 +172,8 @@ def validate(track_teams, out_dir):
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--seq", default=None,
+                    help="single seq to process (overrides the hardcoded SEQS list)")
     ap.add_argument("--track", default="outputs/track_results/bball_ftdet_bytetrack")
     ap.add_argument("--frames-root", default="datasets/sportsmot_basketball")
     ap.add_argument("--court", default="outputs/deliverables/v_00HRwkvvjtQ_c007/court/homography.json")
@@ -175,6 +182,9 @@ def main():
     ap.add_argument("--pca", type=int, default=50)
     ap.add_argument("--region", choices=["torso", "full", "both"], default="both")
     args = ap.parse_args()
+    # --seq overrides: process a single job seq instead of the SportsMOT list
+    seqs = [args.seq] if args.seq else SEQS_DEFAULT
+    court_seq = args.seq if args.seq else COURT_SEQ_DEFAULT
     out = Path(args.out)
     device = "cuda"
     hj = json.loads(Path(args.court).read_text())
@@ -182,7 +192,7 @@ def main():
 
     print("=== Part A: extract patches + embed (frozen ResNet18) ===")
     recs_by_seq, torso_by_seq, full_by_seq, bgr_by_seq = {}, {}, {}, {}
-    for s in SEQS:
+    for s in seqs:
         recs, torso, full = extract_patches(Path(args.track) / f"{s}.txt", Path(args.frames_root) / s / "img1", args.step)
         recs_by_seq[s] = recs; torso_by_seq[s] = torso; full_by_seq[s] = full
         # mean torso BGR per det (for white/blue cluster identification)
@@ -194,12 +204,14 @@ def main():
     for region in regions:
         src = torso_by_seq if region == "torso" else full_by_seq
         emb_by_seq = {}
-        for s in SEQS:
+        for s in seqs:
             emb_by_seq[s] = embed_all(list(src[s]), device) if len(src[s]) else np.zeros((0, 512), np.float32)
         print(f"\n=== {region}: cluster (k=2, PCA={args.pca}) + assign ===")
-        track_teams, centers, det_cluster, labels = assign(recs_by_seq, emb_by_seq, court_ci, court_m, pca_dim=args.pca)
+        track_teams, centers, det_cluster, labels = assign(
+            recs_by_seq, emb_by_seq, court_ci, court_m, pca_dim=args.pca,
+            seqs=seqs, court_seq=court_seq)
         # map cluster -> team by torso colour: whiter (higher mean B+G+R, low saturation) cluster = TeamA(white)
-        all_bgr = np.concatenate([bgr_by_seq[s] for s in SEQS])
+        all_bgr = np.concatenate([bgr_by_seq[s] for s in seqs])
         cluster_bright = [all_bgr[labels == c].mean(0).mean() if (labels == c).any() else 0 for c in range(2)]
         white_cluster = int(np.argmax(cluster_bright))
         cluster_team = {white_cluster: "TeamA", 1 - white_cluster: "TeamB"}
