@@ -6,4 +6,4 @@ analytics, per-player highlight clips, and event highlight reels.
 
 Author: Aarav Sharma
 School: DPS Modern Indian School, Doha
-Status: Day 1 — environment setup
+
