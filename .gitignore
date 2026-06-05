@@ -162,3 +162,9 @@ jobs/
 
 # JS syntax-check scratch dir
 build/
+
+# online-hosting secrets (Plan 1)
+supabase/.env
+supabase/tests/.env
+agent/.env
+agent/client_secret.json
