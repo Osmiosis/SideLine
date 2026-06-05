@@ -70,6 +70,16 @@ def test_mint_and_upload_small_file(two_users):
             headers={"Authorization": f"Bearer {google_token()}"}).json()
         assert int(f["size"]) == len(payload)
         assert folder_id in f["parents"]
+
+        # 4. complete-upload verifies the file and flips state to 'uploaded'
+        r = requests.post(f"{FUNCTIONS_URL}/complete-upload",
+                          headers=user_headers(two_users["a_tok"]),
+                          json={"job_id": job_id, "drive_file_id": file_id})
+        assert r.status_code == 200, r.text
+        job = requests.get(rest(f"jobs?id=eq.{job_id}"), headers=ADMIN_HEADERS).json()[0]
+        assert job["state"] == "uploaded"
+        assert job["drive_file_id"] == file_id
+        assert job["file_size_bytes"] == len(payload)
     finally:
         drive_cleanup(folder_id)
 
