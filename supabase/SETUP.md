@@ -48,11 +48,24 @@ of the codebase reads keys uniformly regardless of key style.
   production sender for `EMAIL_FROM`.
 - [ ] Register the operator admin row — **Plan 1 Task 9**.
 
-### Task 3 — Google Cloud OAuth (placeholder)
+### Task 3 — Google Cloud OAuth
 
-Will document: create a Google Cloud project, enable the Drive API, configure the OAuth consent
-screen, create OAuth client credentials, and obtain a refresh token. Resulting secrets land in
-`supabase/.env` and `supabase/tests/.env`.
+Produces `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN` for the `drive.file`
+scope. The operator does the console steps; the script mints the refresh token.
+
+- [ ] [console.cloud.google.com](https://console.cloud.google.com) → **New project** named
+  `sports-ai-relay` (free, no billing required).
+- [ ] **APIs & Services → Library** → enable **Google Drive API**.
+- [ ] **OAuth consent screen → External** → set the app name + support email → **do not add any
+  scopes here** → save.
+- [ ] **Publishing status → "In production"**. **CRITICAL:** while in **Testing** status, refresh
+  tokens expire after **7 days**. `drive.file` is a **non-sensitive** scope, so moving to
+  production needs **no verification review**.
+- [ ] **Credentials → Create credentials → OAuth client ID → Desktop app** → download the JSON to
+  `agent/client_secret.json` (gitignored).
+- [ ] Run `.venv\Scripts\python agent\get_refresh_token.py` (opens a browser, consent once) →
+  paste the three printed `GOOGLE_*` lines into **both** `supabase/.env` and
+  `supabase/tests/.env`.
 
 ## Auth note
 
