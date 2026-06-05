@@ -772,10 +772,10 @@ label.fl{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margi
               <div class="kv"><span>Distance covered</span><b>104.2 km</b></div>
               <div class="kv"><span>Top sprint</span><b>31.4 km/h</b></div>
               <div style="display:flex;gap:10px;margin-top:20px">
-                <button class="btn btn-primary" style="flex:1">
+                <a id="coachPdfBtn" class="btn btn-primary" style="flex:1;pointer-events:none;opacity:.45" download>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round"/></svg>
-                  Report PDF</button>
-                <button class="btn btn-ghost" style="flex:1">Annotated video</button>
+                  Report PDF</a>
+                <a id="coachVidBtn" class="btn btn-ghost" style="flex:1;pointer-events:none;opacity:.45" download>Annotated video</a>
               </div>
             </div>
           </div>
@@ -994,9 +994,10 @@ function observeReveals(){
 /* count-up */
 function countUp(el){
   const target=+el.dataset.count; const dur=1100; const t0=performance.now();
+  const dec = target % 1 !== 0;   // footage hours is fractional; counts are integers
   let node=el.firstChild;
   if(!node || node.nodeType!==3){ node=document.createTextNode('0'); el.insertBefore(node,el.firstChild); }
-  function tick(t){const p=Math.min(1,(t-t0)/dur); const e=1-Math.pow(1-p,3); node.textContent=Math.round(e*target); if(p<1)requestAnimationFrame(tick); }
+  function tick(t){const p=Math.min(1,(t-t0)/dur); const e=1-Math.pow(1-p,3); const v=e*target; node.textContent=dec?v.toFixed(1):Math.round(v); if(p<1)requestAnimationFrame(tick); }
   requestAnimationFrame(tick);
 }
 
@@ -1012,6 +1013,8 @@ async function initDashboard(){
   grid.appendChild(nc);
   let jobs=[];
   try{ jobs=await API.listJobs(); }catch(e){ jobs=null; }
+  let stats=null;
+  try{ stats=await API.getStats(); }catch(e){ stats=null; }
   const items = jobs===null
     ? MATCHES.map((m,i)=>({demo:true, ...m}))               // offline fallback: demo cards
     : jobs.map(j=>({job_id:j.job_id, name:j.match_name, date:j.match_date, sport:j.sport,
@@ -1041,6 +1044,22 @@ async function initDashboard(){
     grid.appendChild(el);
     drawFootage(el.querySelector('canvas'), m.sport, m.seed||7);
   });
+  // Real stats from the backend (fall back to the hardcoded demo numbers offline).
+  if(stats){
+    const ns=document.querySelectorAll('#v-dashboard .stat .n');
+    // [0]=matches [1]=highlights [2]=footage(adaptive) [3]=ready
+    if(stats.matches_processed!=null) ns[0].dataset.count=stats.matches_processed;
+    if(stats.highlights_created!=null) ns[1].dataset.count=stats.highlights_created;
+    if(stats.ready_to_download!=null && ns[3]) ns[3].dataset.count=stats.ready_to_download;
+    // footage: show minutes under an hour, hours above — avoids "0.0 hrs" for short clips
+    if(ns[2] && stats.footage_seconds!=null){
+      const secs=stats.footage_seconds, hrs=secs/3600, u=ns[2].querySelector('.u');
+      if(hrs>=1){ ns[2].dataset.count=Math.round(hrs*10)/10; if(u)u.textContent='hrs'; }
+      else { ns[2].dataset.count=Math.round(secs/60); if(u)u.textContent='min'; }
+    }
+    const mc=document.getElementById('matchCount');
+    if(mc) mc.textContent=items.length+' match'+(items.length!==1?'es':'');
+  }
   document.querySelectorAll('#v-dashboard .stat .n').forEach(countUp);
   observeReveals();
 }
@@ -1528,23 +1547,37 @@ async function initResults(){
   let files=[];
   try{ if(id) files=await API.listOutputs(id); }catch(e){ files=[]; }
 
-  // Event-highlights / coach outputs -> real downloadable file rows.
-  // /outputs is recursive (includes intermediate artifacts) — show only the
-  // user-facing deliverables: event-highlight media + the coach report.
-  const isDeliverable = fn =>
-    fn.startsWith('event_highlights/') ||
-    (fn.includes('/coach/') && /\.(pdf|png|mp4)$/i.test(fn)) ||
-    (fn.startsWith('events/') && fn.includes('/clips/') && /\.mp4$/i.test(fn));
+  // Coach deliverables -> wire the two buttons on the coach tab to real files.
+  const coachPdf=files.find(fn=>/\/coach\/.*\.pdf$/i.test(fn));
+  const coachVid=files.find(fn=>/\/coach\/tactical_(sample|view)\.mp4$/i.test(fn));
+  const wireBtn=(elId,fn)=>{
+    const a=document.getElementById(elId); if(!a) return;
+    if(fn){ a.href=API.outputUrl(id,fn); a.style.pointerEvents=''; a.style.opacity=''; a.removeAttribute('title'); }
+    else { a.removeAttribute('href'); a.style.pointerEvents='none'; a.style.opacity='.45'; a.title='Not available for this match yet'; }
+  };
+  wireBtn('coachPdfBtn',coachPdf);
+  wireBtn('coachVidBtn',coachVid);
+
+  // Event highlights tab -> ONLY event media (ranked event clips + draft reels).
+  // /outputs is recursive and full of intermediate artifacts + coach files; keep
+  // this list to the actual highlight VIDEOS so coach PDFs/figures don't leak in.
+  const isEventMedia = fn =>
+    /\.mp4$/i.test(fn) && (
+      fn.startsWith('event_highlights/') ||
+      (fn.startsWith('events/') && fn.includes('/clips/')));
   const cl=document.getElementById('clipList'); if(cl){
-    const delivFiles=files.filter(isDeliverable);
+    const delivFiles=files.filter(isEventMedia);
+    const evc=document.getElementById('evCount');
+    if(evc) evc.textContent=delivFiles.length+' clip'+(delivFiles.length!==1?'s':'');
     cl.innerHTML='';
     if(!delivFiles.length){
       cl.innerHTML='<div class="empty" style="opacity:.7;padding:18px">No files yet. They appear here when processing finishes.</div>';
     } else {
       delivFiles.forEach(fn=>{
+        const nice=fn.split('/').pop().replace(/\.mp4$/i,'').replace(/_/g,' ');
         const el=document.createElement('div'); el.className='card cliprow';
         el.innerHTML=`<div class="ct"><canvas></canvas></div>
-          <div class="ci"><b>${fn}</b><div class="tags"><span>${id}</span></div></div>
+          <div class="ci"><b>${nice}</b><div class="tags"><span>${id}</span></div></div>
           <a class="dlbtn" href="${API.outputUrl(id,fn)}" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round"/></svg></a>`;
         cl.appendChild(el);
         drawFootage(el.querySelector('canvas'),selSport,(fn.length*5)%30,{players:true});

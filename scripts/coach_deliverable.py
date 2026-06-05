@@ -56,6 +56,9 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, Circle, Polygon
 from scipy.spatial import ConvexHull
 
+sys.path.insert(0, str(Path(__file__).parent))
+from video_io import to_browser_h264   # cv2 writes mp4v; browsers need H.264
+
 # ---- pitch + analysis constants (shared with analyze_pitch.py / Day-10) ----
 PITCH_X_HALF = 52.5
 PITCH_Y_HALF = 34.0
@@ -652,6 +655,8 @@ def main():
         written, (W, Hh) = render_tactical_video(
             seq, paths, track_teams, possession, outdir, frames_dir, sample_mp4,
             secs=args.sample_secs, contact_only=args.contact_only, scale=args.sample_scale)
+        if written:
+            to_browser_h264(sample_mp4)   # so the coach tab can play it in-browser
         print(f"\n-- PART C: tactical SAMPLE {W}x{Hh}, {written} frames -> {sample_mp4}")
         print(f"   contact sheet -> {outdir / 'tactical_contact_sheet.png'}")
 
@@ -661,6 +666,8 @@ def main():
             fw, (FW, FH) = render_tactical_video(
                 seq, paths, track_teams, possession, outdir, frames_dir, full_mp4,
                 secs=args.video_secs, contact_only=False, scale=1.0)
+            if fw:
+                to_browser_h264(full_mp4)
             print(f"   full-res tactical_view {FW}x{FH}, {fw} frames -> {full_mp4} (gitignored)")
     else:
         print("\n-- PART C: skipped (--no-video)")

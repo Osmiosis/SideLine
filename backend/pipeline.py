@@ -116,7 +116,7 @@ def _football_steps() -> list[Step]:
             "--ball-dir", J(c, "outputs", "ball_track"),
             "--team-assign", J(c, "outputs", "team_assign", "track_teams.json"),
             "--track-dir", J(c, "outputs", "tracks"),
-            "--frames", J(c, "frames"), "--contact-only")),
+            "--frames", J(c, "frames"))),   # renders tactical_sample.mp4 for the coach tab
         # event_highlights tail
         Step("detect-events", "events", "event_highlights", lambda c: _py(
             _sd("detect_events.py"), c.job_id,

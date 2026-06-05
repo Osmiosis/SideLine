@@ -86,6 +86,37 @@ class JobStore:
     def exists(self, job_id: str) -> bool:
         return self.config_path(job_id).exists()
 
+    def set_duration(self, job_id: str, duration_sec: float) -> None:
+        db.set_duration(self.conn, job_id, duration_sec)
+
+    # ---- dashboard ----
+    def _count_highlights(self, out_dir: Path) -> int:
+        """Highlight VIDEOS only: ranked event clips + per-player reels + draft
+        reels. Mirrors the frontend event-media filter (coach/figs excluded)."""
+        if not out_dir.is_dir():
+            return 0
+        n = 0
+        for p in out_dir.rglob("*.mp4"):
+            rel = p.relative_to(out_dir).as_posix()
+            if ((rel.startswith("events/") and "/clips/" in rel)
+                    or (rel.startswith("player_highlights/") and "/reels/" in rel)
+                    or rel.startswith("event_highlights/")):
+                n += 1
+        return n
+
+    def dashboard_stats(self) -> dict:
+        rows = db.list_jobs(self.conn)
+        total_sec = sum((r["duration_sec"] or 0.0) for r in rows)
+        return {
+            "matches_processed": len(rows),
+            "ready_to_download": sum(1 for r in rows if r["state"] == "ready"),
+            "footage_hours": round(total_sec / 3600.0, 1),
+            "footage_seconds": round(total_sec, 1),  # frontend picks min/hrs unit
+            "highlights_created": sum(
+                self._count_highlights(self.job_dir(r["job_id"]) / "outputs")
+                for r in rows),
+        }
+
     # ---- player-highlights helpers ----
 
     def clips_manifest_path(self, job_id: str) -> Path:

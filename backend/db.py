@@ -29,6 +29,10 @@ def init_schema(conn: sqlite3.Connection) -> None:
         )
         """
     )
+    # Migration: duration_sec added later (footage-hours dashboard stat).
+    cols = {r["name"] for r in conn.execute("PRAGMA table_info(jobs)")}
+    if "duration_sec" not in cols:
+        conn.execute("ALTER TABLE jobs ADD COLUMN duration_sec REAL")
     conn.commit()
 
 
@@ -57,6 +61,12 @@ def update_job(conn: sqlite3.Connection, job_id: str, **fields: Any) -> None:
         f"UPDATE jobs SET {cols} WHERE job_id = ?",
         (*sets.values(), job_id),
     )
+    conn.commit()
+
+
+def set_duration(conn: sqlite3.Connection, job_id: str, duration_sec: float) -> None:
+    conn.execute("UPDATE jobs SET duration_sec = ? WHERE job_id = ?",
+                 (duration_sec, job_id))
     conn.commit()
 
 

@@ -18,6 +18,17 @@ from backend.schemas import (CalibrationRequest, CreateJobRequest, DeliverablesR
 from backend.worker import Worker
 
 
+def _probe_duration_sec(path: Path) -> float | None:
+    """Video duration in seconds via OpenCV (frame count / fps). None if unknown."""
+    cap = cv2.VideoCapture(str(path))
+    try:
+        fps = cap.get(cv2.CAP_PROP_FPS) or 0.0
+        frames = cap.get(cv2.CAP_PROP_FRAME_COUNT) or 0.0
+    finally:
+        cap.release()
+    return frames / fps if fps > 0 and frames > 0 else None
+
+
 def create_app(jobs_dir: Path | str = config.JOBS_DIR,
                start_worker: bool = True) -> FastAPI:
     app = FastAPI(title="Operator App Backend")
@@ -53,6 +64,10 @@ def create_app(jobs_dir: Path | str = config.JOBS_DIR,
                            state=r["state"], created_at=r["created_at"])
                 for r in rows]
 
+    @app.get("/api/stats")
+    def dashboard_stats() -> dict:
+        return store.dashboard_stats()
+
     @app.get("/api/jobs/{job_id}/status")
     def job_status(job_id: str) -> JobStatus:
         _require_job(job_id)
@@ -77,6 +92,9 @@ def create_app(jobs_dir: Path | str = config.JOBS_DIR,
             store.write_status(job_id, state="created", stage=None, progress=0,
                                stage_label=None, error=None)
             raise HTTPException(status_code=400, detail="No video received.")
+        dur = _probe_duration_sec(dest)
+        if dur:
+            store.set_duration(job_id, dur)
         store.write_status(job_id, state="calibration_pending", stage=None,
                            progress=0, stage_label="Ready for court setup",
                            error=None)

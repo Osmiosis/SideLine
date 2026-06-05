@@ -2745,3 +2745,76 @@ proxy; over-merge verifiable only where both merge endpoints hit home GT.
   (`over_merge_tracks_2plus_GT`/`_strict`) to `scripts/alfheim_identity_metric.py` (backward-compatible).
 - Committed package `outputs/deliverables/fullmatch_scale_football/day32_*` (findings.md, before_after.json,
   anchors_timeline.png). Anchored MOTs + metric JSONs stay LOCAL. Alfheim data off-repo.
+
+---
+
+## Operator App / Website — 2026-06-02 (consolidating Plans 1–4, built 2026-05-31 → 06-01)
+
+New product layer on top of the CV research: a **local web app** ("Sideline — Match Studio") that lets a
+**non-technical operator** turn recorded match footage into deliverables (coach analytics, event highlights,
+player highlights) without touching the CLI. Architecture = **thin FastAPI orchestration wrapping the existing
+CV scripts** — no CV reimplemented, no cloud, single GPU, one job at a time. Spec + UI brief:
+`docs/superpowers/specs/2026-05-31-operator-app-backend-design.md`,
+`Website/mptr09gx-Frontend_Design_Brief_OperatorApp.md`. Plans in `docs/superpowers/plans/`.
+
+### Backend (`backend/`, FastAPI on uvicorn — `backend.main:app`, host 0.0.0.0:8000)
+11 modules, ~1070 LOC. Binds all interfaces + prints the LAN URL on startup so the operator can drive it from a
+phone/laptop on the same network.
+
+- **13 HTTP endpoints** (`main.py`):
+  - `POST /api/jobs` create · `GET /api/jobs` list · `GET /api/jobs/{id}/status` (state/stage/progress/label/error)
+  - `POST /api/jobs/{id}/video` (chunked stream-to-disk, never buffered in RAM) · `GET /api/jobs/{id}/frame` (freeze-frame JPEG for calibration; 409 if no video)
+  - `POST /api/jobs/{id}/calibration` (4 corner clicks → homography)
+  - `POST /api/jobs/{id}/roster`
+  - `GET /api/jobs/{id}/tagging-clips` · `GET .../tagging-clips/{clip}/video` · `POST /api/jobs/{id}/tags`
+  - `POST /api/jobs/{id}/deliverables` (enqueue) · `GET /api/jobs/{id}/outputs` (nested deliverable tree) · `GET /api/jobs/{id}/outputs/{path}` (download, path-traversal-guarded)
+- **State machine** (SQLite `jobs` table, WAL mode; `db.py`): `created → uploading → calibration_pending →
+  calibrated → queued → decoding → detecting → tracking → teams → ball → [deliverable tail] → ready / failed`.
+  Player-highlights tail inserts a `tagging_pending` pause + `tagging_done` resume.
+- **Worker** (`worker.py`): single daemon thread, one job at a time, polls oldest `queued`. `run_one()` is
+  deterministic + unit-testable. **Resumable across server restart** (re-reads last completed stage). On
+  `tagging_pending` it parks the job and returns; `POST /tags` re-enqueues only if the job is parked there.
+- **Pipeline engine** (`pipeline.py`): sport-agnostic. `resolve_steps(cfg)` builds an ordered `Step` list =
+  foundation stages + only the requested deliverables. Foundation = decode → homography → detect/track → ball
+  cache+kalman → team-assign. Deliverable tails: coach_analytics (possession→coach), event_highlights
+  (detect-events→follow-cam→clip), player_highlights (involvement→clip-candidates→[tag pause]→reels).
+  `run_step` shells out to the **existing CV scripts** via `subprocess.run(cwd=repo_root)`; each stage's
+  stdout/stderr → `jobs/{id}/logs/{stage}.log` (server-side only). **Both football and basketball chains wired.**
+- **Adapters** (`adapters.py`): `decode_video` (mp4 → MOT-format frames + `seqinfo.ini`), `write_homography`
+  (4 marked pixels + per-sport real-world template → `cv2.findHomography` fwd+inv → `homography.json`).
+- **Landmarks** (`landmarks.py`): per-sport corner templates in metres, centre-origin (football 105×68,
+  basketball 28×15).
+- **Errors** (`errors.py`): operator only ever sees a **friendly per-stage message**; raw traceback stays in the
+  server-side log; state → `failed`.
+- **Job dir layout**: `jobs/{id}/` → `job_config.json`, `status.json`, `raw_video.mp4`, `frames/`,
+  `homography.json`, `logs/`, `outputs/`.
+
+### Frontend (`Website/`, no build step, plain HTML5 + ES2020)
+- `index.html` (1662 lines, inline CSS+JS) = the live single-page console, **"Sideline — Match Studio"**, dark
+  cinematic theme, pitch-lime accent, **canvas-based court marking**. `operator-console.html` /
+  `operator-console-2.html` are 2-line stubs pointing back at `index.html`.
+- `app.js` (137 lines): client API wrapper — `API.{createJob, uploadVideo (XHR + progress), saveCalibration,
+  saveRoster, setDeliverables, getStatus, listJobs, listOutputs, getTaggingClips, setTags, …}` + URL/payload
+  builders exported for the node test.
+- **Screen flow:** Dashboard → New Match setup (sport + name/date + drag-drop upload) → Court marking (click 4
+  corners on a freeze-frame) → Roster + Player tagging ("who is this?" clip preview) → Choose deliverables →
+  Processing (~1 s status poll, stage labels + progress bar) → Results (download links). Tagging screen appears
+  **only** when player-highlights is selected; the processing poller detects `tagging_pending`, routes to the
+  tagging screen, then re-enqueues to reels.
+
+### Tests — **62 passing, all green (1.3 s, no GPU)**
+- `tests/backend/` (18 files): config, schemas, db, jobs, errors, landmarks, adapters, pipeline
+  (football / basketball / player-highlights step lists + argv building), worker (`run_one` + tagging
+  pause/resume), every API endpoint, and `test_e2e_stub_flow` (create→upload→calibrate→deliverables→worker→ready
+  with `run_step` monkeypatched).
+- `tests/frontend/` node test covering `app.js` URL/payload builders.
+
+### Status — all 4 plans DONE
+- Plan 1 skeleton (state machine + stub pipeline) · Plan 2 frontend wiring · Plan 3 football pipeline ·
+  Plan 3-basketball · Plan 4 player-highlights tagging flow — **all committed**. Real end-to-end runs verified on
+  sample clips for **both sports** (worker → coach PDF + event clips). Recent fixes: nested-deliverable
+  discovery in `/outputs`, `outputUrl` path-segment encoding, Results filters to user-facing deliverables only,
+  basketball player-highlights arg fixes.
+- **Known gaps:** dashboard thumbnails are text-only (no thumbnail render); court auto-detect button has no
+  backend; tagging ergonomics basic (click only, no keyboard shortcuts); real-footage CV constant re-tuning
+  deferred; email/SMS notify dropped (no-cloud constraint).

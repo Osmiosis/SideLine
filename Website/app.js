@@ -96,6 +96,12 @@ const API = {
     return r.json();
   },
 
+  async getStats() {
+    const r = await fetch('/api/stats');
+    if (!r.ok) throw new Error('Could not load dashboard stats.');
+    return r.json();
+  },
+
   async listOutputs(id) {
     const r = await fetch(_build.jobUrl(id, 'outputs'));
     if (!r.ok) throw new Error('Could not load the results.');

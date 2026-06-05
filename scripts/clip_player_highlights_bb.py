@@ -32,6 +32,7 @@ import cv2
 
 sys.path.insert(0, str(Path(__file__).parent))
 from follow_cam import _crop   # identical crop math as the Day-15/16 C-feed renderer
+from video_io import to_browser_h264   # cv2 writes mp4v; browsers need H.264
 
 SEQS_DEFAULT = ["v_00HRwkvvjtQ_c001", "v_00HRwkvvjtQ_c003", "v_00HRwkvvjtQ_c005",
                 "v_00HRwkvvjtQ_c007", "v_00HRwkvvjtQ_c008"]
@@ -62,6 +63,8 @@ def render_clip(seq, tid, m, C, cw, ch, frames_dir, out_path, out_w, out_h, n_fr
                     (8, 21), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (40, 200, 255), 1, cv2.LINE_AA)
         vw.write(out); written += 1
     vw.release()
+    if written:
+        to_browser_h264(out_path)   # transcode mp4v -> H.264 so the UI can play it
     return written, s, e
 
 
