@@ -28,6 +28,8 @@ of the codebase reads keys uniformly regardless of key style.
 | ------------------------------------------------------ | ----------------------- | ------------------------------------------------------------------ |
 | Publishable key + secret key (+ URL, functions URL)    | `supabase/tests/.env`   | Used by the Python integration tests.                              |
 | Google OAuth + Resend Edge Function secrets            | `supabase/.env`         | Later pushed via `npx supabase secrets set --env-file supabase/.env`. |
+| Google OAuth Desktop-app client JSON                   | `agent/client_secret.json` | Downloaded from Google Cloud Console → Credentials (created in **Task 3**); used by `agent/get_refresh_token.py` and later by the local agent. |
+| Local agent secrets (Supabase secret key + Google refresh token) | `agent/.env`  | Populated in **Plan 3** when the agent is built.                   |
 
 ## Manual steps already done
 
