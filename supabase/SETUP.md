@@ -72,3 +72,25 @@ scope. The operator does the console steps; the script mints the refresh token.
 Magic-link email auth is **enabled by default** on new Supabase projects (the Email provider is
 ON). The built-in email sender is **rate-limited (~3–4 emails / hour / address)** — fine for dev.
 A production-grade sender arrives with **Resend in Plan 3**.
+
+## Plan 1 final state (2026-06-05)
+
+All four Edge Functions are **deployed** on project `qphkhchhdurvylrunaoz`:
+`mint-upload`, `complete-upload`, `decide`, `quota`. Function secrets were pushed with
+`npx supabase secrets set --env-file supabase/.env`.
+
+Full integration suite: `.venv\Scripts\python -m pytest supabase/tests -v` → **12 passed**
+(4 RLS + 2 drive flow + 4 decide + 2 quota) against the live project.
+
+Drive relay account: the refresh token belongs to the operator Drive account recorded in
+`supabase/.env` (15 GB free tier). Re-mint anytime with `agent/get_refresh_token.py`.
+
+### Registering the real operator as admin (deferred to Plan 2)
+
+The throwaway-admin path is fully tested. Once the operator's real account exists in
+`auth.users` (first magic-link sign-in via the Plan 2 site), run in the dashboard SQL editor:
+
+```sql
+insert into public.app_admins (user_id)
+select id from auth.users where email = '<operator email>';
+```
