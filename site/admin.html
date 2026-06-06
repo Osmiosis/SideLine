@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sideline — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="jobs.html">Side<b>line</b></a>
+    <nav>
+      <a href="jobs.html">My matches</a>
+      <a href="#" id="signout">Sign out</a>
+    </nav>
+  </header>
+  <h1>Studio admin</h1>
+  <p class="sub">Approve or reject submissions, keep an eye on storage.</p>
+
+  <div class="card">
+    <h3>Drive storage</h3>
+    <div class="progress"><div id="quotaBar"></div></div>
+    <p class="mono" id="quotaText">Loading…</p>
+  </div>
+
+  <h3 style="margin:26px 0 10px">Waiting for review</h3>
+  <div id="pending" class="joblist"></div>
+
+  <h3 style="margin:26px 0 10px">All jobs</h3>
+  <div class="card" style="padding:8px 14px;overflow-x:auto">
+    <table>
+      <thead><tr><th>Match</th><th>Sport</th><th>Submitted</th><th>State</th></tr></thead>
+      <tbody id="all"></tbody>
+    </table>
+  </div>
+</div>
+<script type="module">
+  import { sb, el, esc, requireUser, isAdmin, initNav, callFn, fmtBytes }
+    from "./js/api.js";
+  import { friendlyState } from "./js/jobcopy.js";
+
+  const user = await requireUser();
+  if (!(await isAdmin(user.id))) {
+    location.replace("jobs.html");
+    throw new Error("not admin");
+  }
+  await initNav(user);
+
+  async function loadQuota() {
+    try {
+      const q = await callFn("quota");
+      const pct = q.limit_bytes
+        ? Math.round((q.usage_bytes / q.limit_bytes) * 100) : 0;
+      el("quotaBar").style.width = `${pct}%`;
+      el("quotaText").textContent =
+        `${fmtBytes(q.free_bytes)} free of ${fmtBytes(q.limit_bytes)} (${pct}% used)`;
+    } catch {
+      el("quotaText").textContent = "Couldn't read Drive quota.";
+    }
+  }
+
+  async function loadJobs() {
+    const { data: jobs } = await sb.from("jobs")
+      .select("*").order("created_at", { ascending: false });
+    const pending = (jobs ?? []).filter((j) =>
+      ["submitted", "quota_waiting"].includes(j.state));
+
+    el("pending").innerHTML = pending.length ? pending.map((j) => `
+      <div class="card">
+        <div class="row">
+          <div>
+            <div style="font-weight:600">${esc(j.match_name)}</div>
+            <div class="mono">${esc(j.sport)} · ${j.declared_duration_min} min
+              · ${esc((j.deliverables ?? []).join(", "))}
+              · ${j.created_at.slice(0, 10)}</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary" data-approve="${j.id}">Approve</button>
+            <button class="btn btn-danger" data-reject="${j.id}">Reject</button>
+          </div>
+        </div>
+      </div>`).join("")
+      : `<p class="msg">Nothing waiting for review.</p>`;
+
+    el("all").innerHTML = (jobs ?? []).map((j) => {
+      const v = friendlyState(j);
+      return `<tr>
+        <td>${esc(j.match_name)}</td>
+        <td>${esc(j.sport)}</td>
+        <td class="mono">${j.created_at.slice(0, 10)}</td>
+        <td><span class="badge ${v.tone}">${esc(v.label)}</span></td>
+      </tr>`;
+    }).join("");
+  }
+
+  document.addEventListener("click", async (e) => {
+    const a = e.target.closest("[data-approve]");
+    const r = e.target.closest("[data-reject]");
+    if (!a && !r) return;
+    const job_id = a ? a.dataset.approve : r.dataset.reject;
+    const body = { job_id, action: a ? "approve" : "reject" };
+    if (r) {
+      const reason = prompt("Reason (emailed to the user, optional):");
+      if (reason === null) return;        // operator cancelled
+      if (reason.trim()) body.reason = reason.trim();
+    }
+    (a ?? r).disabled = true;
+    try {
+      await callFn("decide", body);
+    } catch (err) {
+      alert(err.message);
+    }
+    await Promise.all([loadJobs(), loadQuota()]);
+  });
+
+  await Promise.all([loadJobs(), loadQuota()]);
+  setInterval(loadJobs, 10000);
+</script>
+</body>
+</html>
