@@ -94,3 +94,20 @@ The throwaway-admin path is fully tested. Once the operator's real account exist
 insert into public.app_admins (user_id)
 select id from auth.users where email = '<operator email>';
 ```
+
+## Plan 2 final state (2026-06-06)
+
+- Public site: `site/` deployed to Cloudflare Pages → **https://sideline-d8c.pages.dev**
+  (project `sideline`; redeploy with `npx wrangler pages deploy site --project-name sideline`).
+  Pages serves pretty URLs (`/job.html` 308→ `/job`, query string preserved — email links work).
+- Local dev: `npx wrangler pages dev site` → http://localhost:8788.
+- Supabase Auth URL configuration: Site URL = the pages.dev URL; Redirect URLs allow
+  `https://sideline-d8c.pages.dev/*` AND `http://localhost:8788/*` (local dev sign-in).
+- Function secret `SITE_ORIGIN` = https://sideline-d8c.pages.dev (drives `decide` email links
+  and the CORS origin bound into Drive resumable sessions).
+- Operator admin registered in `public.app_admins` (vibha.aarav@gmail.com, 2026-06-06).
+- Upload path proven end-to-end from a real browser: 314.8 MB file → chunked PUT (32 MB
+  chunks) → Drive → `complete-upload` → state `uploaded`. Test artifacts cleaned up.
+- Site unit tests: `node --test site/tests/*.test.mjs` → 13 pass
+  (note: the bare directory form `node --test site/tests/` does NOT work on Node 24/Windows).
+- Cloud regression: `pytest supabase/tests -v` → 12 passed.
