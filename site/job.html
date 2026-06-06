@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sideline — Match status</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap" style="max-width:640px">
+  <header class="top">
+    <a class="brand" href="jobs.html">Side<b>line</b></a>
+    <nav>
+      <a href="jobs.html">My matches</a>
+      <a href="admin.html" id="adminLink" class="hidden">Admin</a>
+      <a href="#" id="signout">Sign out</a>
+    </nav>
+  </header>
+  <p class="mono" id="meta"></p>
+  <h1 id="title">Loading…</h1>
+  <div class="card">
+    <span class="badge" id="stateBadge"></span>
+    <p class="msg" id="detail"></p>
+    <div id="stageWrap" class="hidden">
+      <div class="progress"><div id="stageBar"></div></div>
+      <p class="mono" id="stageText"></p>
+    </div>
+  </div>
+  <div class="card hidden" id="uploadCard">
+    <h3>Upload your footage</h3>
+    <label for="file">Your match video</label>
+    <input id="file" type="file" accept="video/*">
+    <div style="margin-top:14px;display:flex;gap:8px">
+      <button id="startUpload" class="btn btn-primary" disabled>Start upload</button>
+      <button id="pauseUpload" class="btn btn-ghost hidden">Pause</button>
+    </div>
+    <div id="progressWrap" class="hidden">
+      <div class="progress"><div id="bar"></div></div>
+      <p class="mono" id="pct"></p>
+    </div>
+    <p id="upMsg" class="msg"></p>
+  </div>
+  <div class="card hidden" id="resultsCard">
+    <h3>Your analysis</h3>
+    <p class="msg" id="expiry"></p>
+    <a id="resultsLink" class="btn btn-primary" target="_blank" rel="noopener">
+      Open your results</a>
+  </div>
+</div>
+<script type="module">
+  import { sb, el, requireUser, initNav, callFn, fmtBytes } from "./js/api.js";
+  import { friendlyState } from "./js/jobcopy.js";
+  import { DriveUploader } from "./js/upload.js";
+
+  const user = await requireUser();
+  await initNav(user);
+  const jobId = new URLSearchParams(location.search).get("id");
+  let uploading = false;
+  let uploader = null;
+
+  async function load() {
+    const { data: job } = await sb.from("jobs")
+      .select("*").eq("id", jobId).maybeSingle();
+    if (!job) {
+      el("title").textContent = "Match not found";
+      el("detail").textContent =
+        "This link doesn't point to one of your matches.";
+      return;
+    }
+    render(job);
+  }
+
+  function render(job) {
+    const v = friendlyState(job);
+    el("title").textContent = job.match_name;
+    el("meta").textContent = `${job.sport} · ${job.declared_duration_min} min` +
+      ` · submitted ${job.created_at.slice(0, 10)}`;
+    el("stateBadge").textContent = v.label;
+    el("stateBadge").className = `badge ${v.tone}`;
+    el("detail").textContent = v.detail;
+
+    const showStage = ["processing", "operator_action"].includes(job.state);
+    el("stageWrap").classList.toggle("hidden", !showStage);
+    if (showStage) {
+      el("stageBar").style.width = `${job.progress ?? 0}%`;
+      el("stageText").textContent = `${job.progress ?? 0}%`;
+    }
+
+    el("uploadCard").classList.toggle("hidden", !(v.showUpload || uploading));
+    el("resultsCard").classList.toggle("hidden", !v.showResults);
+    if (v.showResults) {
+      el("resultsLink").href = job.results_url;
+      el("expiry").textContent = job.expires_at
+        ? `Available until ${job.expires_at.slice(0, 10)} — download it soon.`
+        : "";
+    }
+  }
+
+  el("file").onchange = () => {
+    el("startUpload").disabled = !el("file").files.length;
+  };
+
+  async function runUpload(offset) {
+    uploading = true;
+    el("pauseUpload").classList.remove("hidden");
+    el("pauseUpload").textContent = "Pause";
+    try {
+      const driveFile = await uploader.start(offset);
+      await callFn("complete-upload", { job_id: jobId, drive_file_id: driveFile.id });
+      localStorage.removeItem(`session_${jobId}`);
+      uploading = false;
+      el("upMsg").textContent = "Upload complete!";
+      el("upMsg").className = "msg";
+      el("pauseUpload").classList.add("hidden");
+      el("progressWrap").classList.add("hidden");
+      await load();
+    } catch (e) {
+      uploading = false;
+      if (e.paused) {
+        el("upMsg").textContent = "Paused — click Resume to continue.";
+        el("upMsg").className = "msg";
+        return;
+      }
+      el("upMsg").textContent = e.message || "Upload failed — please try again.";
+      el("upMsg").className = "msg err";
+      el("pauseUpload").classList.add("hidden");
+      el("startUpload").disabled = false;
+    }
+  }
+
+  el("pauseUpload").onclick = async () => {
+    if (!uploader) return;
+    if (!uploader.paused) {
+      uploader.pause();
+      el("pauseUpload").textContent = "Resume";
+    } else {
+      await runUpload(await uploader.resumeOffset());
+    }
+  };
+
+  el("startUpload").onclick = async () => {
+    const file = el("file").files[0];
+    if (!file) return;
+    el("startUpload").disabled = true;
+    el("upMsg").textContent = "";
+    el("upMsg").className = "msg";
+
+    // reuse an interrupted session if Drive still holds partial bytes for it
+    let sessionUri = localStorage.getItem(`session_${jobId}`);
+    let offset = 0;
+    if (sessionUri) {
+      const probe = new DriveUploader(file, sessionUri);
+      offset = await probe.resumeOffset();
+      if (!offset) sessionUri = null; // dead/expired/empty — mint a fresh one
+    }
+    if (!sessionUri) {
+      try {
+        const minted = await callFn("mint-upload", {
+          job_id: jobId, file_size: file.size,
+          mime_type: file.type || "video/mp4",
+        });
+        if (minted.queued) {  // Drive is full — quota_waiting (spec §8)
+          el("upMsg").textContent = minted.message;
+          el("startUpload").disabled = false;
+          await load();
+          return;
+        }
+        sessionUri = minted.session_uri;
+        localStorage.setItem(`session_${jobId}`, sessionUri);
+      } catch (e) {
+        el("upMsg").textContent = e.message;
+        el("upMsg").className = "msg err";
+        el("startUpload").disabled = false;
+        return;
+      }
+    }
+
+    uploader = new DriveUploader(file, sessionUri, (pct) => {
+      el("bar").style.width = `${pct}%`;
+      el("pct").textContent = `${pct}% of ${fmtBytes(file.size)}`;
+    });
+    el("progressWrap").classList.remove("hidden");
+    await runUpload(offset);
+  };
+
+  await load();
+  setInterval(() => { if (!uploading) load(); }, 5000);
+</script>
+</body>
+</html>
