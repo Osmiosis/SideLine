@@ -111,3 +111,17 @@ select id from auth.users where email = '<operator email>';
 - Site unit tests: `node --test site/tests/*.test.mjs` → 13 pass
   (note: the bare directory form `node --test site/tests/` does NOT work on Node 24/Windows).
 - Cloud regression: `pytest supabase/tests -v` → 12 passed.
+
+### Custom SMTP (added 2026-06-06)
+
+Supabase Auth sends via **Gmail SMTP** (no Resend, no domain needed — $0):
+host `smtp.gmail.com`, port 465, username/sender = the operator relay Gmail account,
+password = a Google **app password** (myaccount.google.com/apppasswords, requires 2FA;
+revocable anytime). Configured in dashboard → Project Settings → Auth → SMTP Settings.
+Auth email rate limit auto-raised to 30/hour (was 2/hour project-wide on built-in sender).
+Gmail allows ~500 emails/day — plenty at club scale. Plan 3 notification emails can reuse
+this instead of Resend.
+
+Tip: a sign-in link can be minted WITHOUT email (rate-limit-proof) via the admin API:
+`POST {SUPABASE_URL}/auth/v1/admin/generate_link` with `{"type":"magiclink","email":...,
+"options":{"redirect_to":"https://sideline-d8c.pages.dev"}}` (service role key).
