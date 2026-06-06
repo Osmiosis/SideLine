@@ -1,0 +1,70 @@
+/* ============================================================
+   SIDELINE — public site. Same tactics-board language as the
+   local operator UI (Website/index.html), reduced to a page kit.
+   ============================================================ */
+:root{
+  --ink:       oklch(16% 0.018 152);
+  --ink-deep:  oklch(12.5% 0.016 152);
+  --surface:   oklch(20% 0.020 152);
+  --surface-2: oklch(24% 0.022 154);
+  --surface-3: oklch(29% 0.024 154);
+  --fg:        oklch(94% 0.014 95);
+  --muted:     oklch(72% 0.018 120);
+  --faint:     oklch(55% 0.018 130);
+  --line:      oklch(31% 0.018 152);
+  --line-2:    oklch(42% 0.022 152);
+  --accent:    oklch(87% 0.19 126);
+  --accent-2:  oklch(80% 0.17 128);
+  --accent-ink:oklch(23% 0.05 140);
+  --amber:     oklch(82% 0.14 75);
+  --card-red:  oklch(63% 0.20 25);
+  --font-display:'Bricolage Grotesque','Hanken Grotesk',system-ui,sans-serif;
+  --font:        'Hanken Grotesk',system-ui,sans-serif;
+  --mono:        'JetBrains Mono',ui-monospace,monospace;
+  --r: 10px;
+  --ease: cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--ink);color:var(--fg);min-height:100vh;-webkit-font-smoothing:antialiased}
+.wrap{max-width:860px;margin:0 auto;padding:28px 20px 80px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:6px 0 26px;flex-wrap:wrap}
+.brand{font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:-.03em;text-decoration:none;color:var(--fg)}
+.brand b{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;font-size:14px;margin-left:16px}
+nav a:hover{color:var(--fg)}
+h1{font-family:var(--font-display);font-weight:800;letter-spacing:-.03em;font-size:clamp(26px,5vw,38px);line-height:1.05;margin-bottom:10px}
+h3{font-family:var(--font-display);font-weight:700;letter-spacing:-.02em;font-size:18px;margin-bottom:8px}
+.sub{color:var(--muted);font-size:15px;line-height:1.6;max-width:56ch;margin-bottom:26px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.card+.card{margin-top:14px}
+label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px;font-weight:600}
+input,select{width:100%;padding:11px 12px;border-radius:8px;border:1px solid var(--line-2);background:var(--ink-deep);color:var(--fg);font-size:15px;font-family:inherit}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:transparent}
+.checks{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.checks label{display:flex;align-items:center;gap:8px;margin:0;padding:10px 12px;border:1px solid var(--line-2);border-radius:8px;cursor:pointer;font-weight:500;color:var(--fg)}
+.checks input{width:auto}
+.checks label.off{opacity:.4;pointer-events:none}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:8px;font-family:var(--font-display);font-weight:600;font-size:14px;border:1px solid transparent;cursor:pointer;transition:.2s var(--ease);text-decoration:none}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-primary:hover{background:var(--accent-2);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--fg);border-color:var(--line-2)}
+.btn-ghost:hover{background:var(--surface-2)}
+.btn-danger{background:transparent;color:var(--card-red);border-color:var(--card-red)}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.badge{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:99px;border:1px solid var(--line-2);color:var(--muted)}
+.badge.ok{color:var(--accent);border-color:var(--accent)}
+.badge.warn{color:var(--amber);border-color:var(--amber)}
+.badge.bad{color:var(--card-red);border-color:var(--card-red)}
+.progress{height:10px;border-radius:99px;background:var(--ink-deep);border:1px solid var(--line);overflow:hidden;margin:12px 0 6px}
+.progress>div{height:100%;background:var(--accent);width:0%;transition:width .3s var(--ease)}
+.mono{font-family:var(--mono);font-size:12.5px;color:var(--faint)}
+.msg{margin-top:12px;font-size:14px;color:var(--muted);line-height:1.5}
+.msg.err{color:var(--card-red)}
+.msg a{color:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line)}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:500}
+.joblist a.card{display:block;text-decoration:none;color:inherit;transition:.2s var(--ease)}
+.joblist a.card:hover{border-color:var(--line-2)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.hidden{display:none}
