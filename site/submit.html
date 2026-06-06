@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sideline — Submit a match</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap" style="max-width:560px">
+  <header class="top">
+    <a class="brand" href="jobs.html">Side<b>line</b></a>
+    <nav>
+      <a href="jobs.html">My matches</a>
+      <a href="admin.html" id="adminLink" class="hidden">Admin</a>
+      <a href="#" id="signout">Sign out</a>
+    </nav>
+  </header>
+  <h1>Submit a match</h1>
+  <p class="sub">Tell us about your footage. Once it's approved you'll get an
+     email with an upload link.</p>
+  <div class="card">
+    <label for="sport">Sport</label>
+    <select id="sport">
+      <option value="football">Football</option>
+      <option value="basketball">Basketball</option>
+    </select>
+    <label for="matchName">Match name</label>
+    <input id="matchName" maxlength="120" placeholder="U16 vs Riverside, first half">
+    <label for="matchDate">Match date (optional)</label>
+    <input id="matchDate" type="date">
+    <label for="duration">Footage duration (minutes)</label>
+    <input id="duration" type="number" min="1" max="240" placeholder="15">
+    <label>What do you want back?</label>
+    <div class="checks" id="checks"></div>
+    <p id="scopeNote" class="msg hidden">Footage over 20 minutes gets coach
+       analytics only for now.</p>
+    <div style="margin-top:18px">
+      <button id="submit" class="btn btn-primary">Submit for review</button>
+    </div>
+    <p id="msg" class="msg"></p>
+  </div>
+</div>
+<script type="module">
+  import { sb, el, requireUser, initNav } from "./js/api.js";
+  import { ALL_DELIVERABLES, allowedDeliverables, restrictDeliverables }
+    from "./js/jobcopy.js";
+
+  const user = await requireUser();
+  await initNav(user);
+
+  const checks = el("checks");
+  checks.innerHTML = ALL_DELIVERABLES.map(([key, label]) => `
+    <label data-key="${key}">
+      <input type="checkbox" value="${key}" ${key === "coach_analytics" ? "checked" : ""}>
+      ${label}
+    </label>`).join("");
+
+  function refresh() {
+    const allowed = allowedDeliverables(Number(el("duration").value || 0));
+    for (const lab of checks.querySelectorAll("label")) {
+      const ok = allowed.includes(lab.dataset.key);
+      lab.classList.toggle("off", !ok);
+      if (!ok) lab.querySelector("input").checked = lab.dataset.key === "coach_analytics";
+    }
+    el("scopeNote").classList.toggle("hidden", allowed.length > 1);
+  }
+  el("duration").oninput = refresh;
+  refresh();
+
+  el("submit").onclick = async () => {
+    const duration = Number(el("duration").value);
+    const name = el("matchName").value.trim();
+    if (!name || !duration) {
+      el("msg").textContent = "Please fill in the match name and duration.";
+      el("msg").className = "msg err";
+      return;
+    }
+    const picked = [...checks.querySelectorAll("input:checked")].map((c) => c.value);
+    const deliverables = restrictDeliverables(duration, picked);
+    el("submit").disabled = true;
+    const { data, error } = await sb.from("jobs").insert({
+      user_id: user.id,
+      sport: el("sport").value,
+      match_name: name,
+      match_date: el("matchDate").value || null,
+      declared_duration_min: duration,
+      deliverables,
+    }).select().single();
+    if (error) {
+      el("msg").textContent = "Couldn't submit — please check the form and try again.";
+      el("msg").className = "msg err";
+      el("submit").disabled = false;
+      return;
+    }
+    location.href = `job.html?id=${data.id}`;
+  };
+</script>
+</body>
+</html>
