@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sideline — My matches</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="jobs.html">Side<b>line</b></a>
+    <nav>
+      <a href="submit.html">Submit a match</a>
+      <a href="admin.html" id="adminLink" class="hidden">Admin</a>
+      <a href="#" id="signout">Sign out</a>
+    </nav>
+  </header>
+  <h1>My matches</h1>
+  <p class="sub">Everything you've sent us, newest first.</p>
+  <div id="list" class="joblist"></div>
+</div>
+<script type="module">
+  import { sb, el, esc, requireUser, initNav } from "./js/api.js";
+  import { friendlyState } from "./js/jobcopy.js";
+
+  const user = await requireUser();
+  await initNav(user);
+
+  const { data: jobs, error } = await sb.from("jobs")
+    .select("*").order("created_at", { ascending: false });
+
+  const list = el("list");
+  if (error) {
+    list.innerHTML = `<p class="msg err">Couldn't load your matches. Please refresh.</p>`;
+  } else if (!jobs.length) {
+    list.innerHTML = `<p class="msg">No matches yet —
+      <a href="submit.html">submit your first one</a>.</p>`;
+  } else {
+    list.innerHTML = jobs.map((j) => {
+      const v = friendlyState(j);
+      return `<a class="card" href="job.html?id=${j.id}">
+        <div class="row">
+          <div>
+            <div style="font-weight:600">${esc(j.match_name)}</div>
+            <div class="mono">${esc(j.sport)} · ${j.declared_duration_min} min
+              · ${j.created_at.slice(0, 10)}</div>
+          </div>
+          <span class="badge ${v.tone}">${esc(v.label)}</span>
+        </div>
+      </a>`;
+    }).join("");
+  }
+</script>
+</body>
+</html>
