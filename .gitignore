@@ -168,3 +168,9 @@ supabase/.env
 supabase/tests/.env
 agent/.env
 agent/client_secret.json
+
+# wrangler/miniflare local dev state (Plan 2)
+.wrangler/
+
+# agent scratch downloads (Plan 3)
+agent_work/

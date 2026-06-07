@@ -125,3 +125,33 @@ this instead of Resend.
 Tip: a sign-in link can be minted WITHOUT email (rate-limit-proof) via the admin API:
 `POST {SUPABASE_URL}/auth/v1/admin/generate_link` with `{"type":"magiclink","email":...,
 "options":{"redirect_to":"https://sideline-d8c.pages.dev"}}` (service role key).
+
+## Plan 3: local agent (2026-06-06)
+
+Run order on the operator PC:
+1. `\.venv\Scripts\python -m backend.main`  (local pipeline server + worker, port 8000)
+2. `\.venv\Scripts\python -m agent.run`     (the relay agent; `--once` for a single pass)
+
+Agent secrets live in `agent/.env` (gitignored): Supabase service key, Google
+refresh token, Gmail SMTP app password (same one as Supabase Auth SMTP).
+
+Flow: cloud `uploaded` → agent downloads from Drive → deletes Drive raw
+(quota back) → local backend job (`local_job_id` column links them) → operator
+does calibration/tagging in the LOCAL UI when the cloud row shows
+`operator_action` → deliverables upload to `<job folder>/deliverables/`,
+shared by link → `ready` + email + 14-day expiry → `expired` + Drive cleanup.
+
+Agent tests: `pytest agent/tests -v` (logic/relay offline; drive/cloud hit the
+real services).
+
+### Operator notifier (Plan 3.1)
+
+Always-on watcher: `.venv\Scripts\pythonw.exe -m agent.notifier` (no console).
+Auto-start at login: Win+R -> `shell:startup` -> create shortcut with target
+  C:\sports-ai\.venv\Scripts\pythonw.exe -m agent.notifier
+and "Start in" = C:\sports-ai.
+Toasts: "awaiting approval" (button -> admin page) and "footage received"
+(button -> starts backend + agent consoles and opens http://localhost:8000).
+Delivery layout (Plan 3.1): Drive job folder contains named subfolders
+"Coach analytics" / "Event highlights" / "Player highlights" with user-facing
+files only (no json/internal artifacts).

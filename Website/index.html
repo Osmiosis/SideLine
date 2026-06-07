@@ -1018,10 +1018,11 @@ async function initDashboard(){
   const items = jobs===null
     ? MATCHES.map((m,i)=>({demo:true, ...m}))               // offline fallback: demo cards
     : jobs.map(j=>({job_id:j.job_id, name:j.match_name, date:j.match_date, sport:j.sport,
-                    status:(j.state==='ready'?'ready':j.state==='failed'?'draft':'proc'), seed:(j.match_name.length*7)%30}));
+                    status:(j.state==='ready'?'ready':j.state==='failed'?'draft':j.state==='calibration_pending'?'court':'proc'), seed:(j.match_name.length*7)%30}));
   items.forEach(m=>{
     const badge = m.status==='ready'?'<span class="badge ready"><span class="led"></span>Ready</span>'
       : m.status==='proc'?'<span class="badge proc"><span class="led"></span>Processing</span>'
+      : m.status==='court'?'<span class="badge proc"><span class="led"></span>Court setup</span>'
       : '<span class="badge draft"><span class="led"></span>Draft</span>';
     const sportIcon = m.sport==='basketball'
       ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3v18M5 5c4 3 4 11 0 14M19 5c-4 3-4 11 0 14"/></svg>'
@@ -1039,7 +1040,7 @@ async function initDashboard(){
     el.addEventListener('click',()=>{
       if(m.demo){ go(m.status==='ready'?'results':'processing'); return; }
       AppState.currentJobId=m.job_id; AppState.currentMatchName=m.name;
-      go(m.status==='ready'?'results':'processing');
+      go(m.status==='ready'?'results':m.status==='court'?'court':'processing');
     });
     grid.appendChild(el);
     drawFootage(el.querySelector('canvas'), m.sport, m.seed||7);
