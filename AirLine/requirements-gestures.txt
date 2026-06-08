@@ -1,0 +1,23 @@
+# AirLine Day 4 — gesture capture dependencies (LIVE WEBCAM PATH ONLY)
+#
+# ⚠️  DO NOT install these into the main .venv. They CONFLICT with the validated
+#     SideLine CV stack:
+#       - main .venv has numpy 2.4.4 ; mediapipe 0.10.x requires numpy<2
+#       - main .venv has protobuf 7.35 ; mediapipe 0.10.x requires protobuf<5
+#     Installing here would force-downgrade numpy + protobuf and likely break
+#     ultralytics / torch 2.11 / opencv. See notes.md "Day 4 — dependency flag".
+#
+# Intended use: an ISOLATED python 3.11 venv (e.g. .venv-gestures) that runs ONLY
+# the MediaPipeHandSource capture process. The gesture engine, intent wiring,
+# tests, and scripted demo all run in the main venv with ZERO mediapipe need.
+#
+# Exact versions resolved on 2026-06-08 in C:\airline-gestures-venv (python 3.11.9).
+# Note these are the very downgrades that would have broken the main venv:
+# numpy 2.4.4 -> 1.26.4, protobuf 7.35 -> 4.25.9. That is why they are quarantined.
+mediapipe==0.10.21
+numpy==1.26.4
+protobuf==4.25.9
+opencv-python==4.10.0.84
+# pulled in transitively (recorded for reproducibility):
+#   jax 0.7.1, jaxlib 0.7.1, scipy 1.17.1, matplotlib 3.10.9, sentencepiece 0.2.1,
+#   sounddevice 0.5.5, opencv-contrib-python 4.11.0.86, absl-py 2.4.0

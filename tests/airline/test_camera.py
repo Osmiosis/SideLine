@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import math
 
-from AirLine.camera import VirtualCamera, CameraConfig, Crop
+from AirLine.camera import VirtualCamera, CameraConfig, Crop, Shot
 from AirLine.target import TargetState
 
 W, H = 1280, 720
@@ -116,3 +116,48 @@ def test_crop_keeps_output_aspect():
     cam = VirtualCamera(cfg)
     crop = _settle(cam, W // 2, H // 2, n=40)
     assert abs(crop.w / crop.h - cfg.aspect) < 0.02
+
+
+# --- Day 5: named-shot API ---------------------------------------------------
+def test_default_shot_is_auto():
+    assert VirtualCamera().shot == Shot.AUTO
+
+
+def test_request_shot_tight_yields_tight_framing():
+    cfg = CameraConfig()
+    cam = VirtualCamera(cfg)
+    cam.request_shot(Shot.TIGHT)
+    crop = _settle(cam, W // 2, H // 2, n=120)
+    assert abs(cam.ch - cfg.shot_tight_frac * H) < 2
+
+
+def test_request_shot_wide_yields_wide_framing():
+    cfg = CameraConfig()
+    cam = VirtualCamera(cfg)
+    cam.request_shot(Shot.WIDE)
+    crop = _settle(cam, W // 2, H // 2, n=200)
+    assert abs(cam.ch - cfg.shot_wide_frac * H) < 2
+
+
+def test_shot_change_eases_not_jumps():
+    cfg = CameraConfig()
+    cam = VirtualCamera(cfg)
+    _settle(cam, W // 2, H // 2, n=80)          # settle in AUTO
+    cam.request_shot(Shot.WIDE)
+    before = cam.ch
+    cam.update(_box(W // 2, H // 2), TargetState.LOCKED, (W, H))
+    step = abs(cam.ch - before)
+    # one frame moves only by ~zoom_alpha of the gap — eased, not a jump
+    full_gap = abs(cfg.shot_wide_frac * H - before)
+    assert step < full_gap * 0.5
+
+
+def test_request_shot_does_not_change_auto_behaviour():
+    """AUTO framing must be identical whether or not the shot API exists."""
+    a = VirtualCamera()                  # default AUTO
+    b = VirtualCamera()
+    b.request_shot(Shot.AUTO)            # explicit AUTO
+    for _ in range(50):
+        ca = a.update(_box(700, 360), TargetState.LOCKED, (W, H))
+        cb = b.update(_box(700, 360), TargetState.LOCKED, (W, H))
+    assert (ca.x, ca.y, ca.w, ca.h) == (cb.x, cb.y, cb.w, cb.h)

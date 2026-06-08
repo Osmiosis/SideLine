@@ -22,9 +22,25 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from enum import Enum
 from typing import Optional
 
 from AirLine.target import TargetState
+
+
+class Shot(Enum):
+    """Named shot types the virtual camera can be asked to hold.
+
+    AUTO is the default speed-adaptive follow framing (Day 3 behaviour, unchanged).
+    TIGHT / WIDE are explicit framings requested via ``request_shot``. This enum is
+    the extension point for future shots (push-in / orbit / dolly) — those are NOT
+    implemented here and require flight-path logic in a later PRD. Do not add them
+    until that exists.
+    """
+
+    AUTO = "auto"
+    TIGHT = "tight"
+    WIDE = "wide"
 
 
 @dataclass
@@ -42,6 +58,9 @@ class CameraConfig:
     zoom_wide_follow_frac: float = 0.72  # crop height (frac of H) when subject is fast
     zoom_alpha: float = 0.08     # crop-size easing rate (slow → anti-pump)
     speed_to_widen_frac: float = 0.04   # target speed (frac of W /frame) → full widen
+    # --- explicit named shots (request_shot) ---
+    shot_tight_frac: float = 0.38   # crop height (frac of H) for Shot.TIGHT
+    shot_wide_frac: float = 0.95    # crop height (frac of H) for Shot.WIDE
     # --- drift-to-wide on loss ---
     drift_frames: int = 30       # eased frames from crop-at-loss to wide establishing
 
@@ -91,6 +110,31 @@ class VirtualCamera:
         self._drift_active = False
         self._drift_t = 0
         self._drift_start = (0.0, 0.0, 0.0)  # cx, cy, ch at loss
+        self._shot = Shot.AUTO
+
+    def request_shot(self, shot: Shot) -> None:
+        """Ask the camera to hold a named shot (TIGHT / WIDE / AUTO).
+
+        This is a dispatch seam only: it selects the zoom TARGET while LOCKED. The
+        existing easing (``zoom_alpha``) still applies, so a shot change eases in
+        rather than jumping — consistent with Day-3 smoothing. It does NOT alter
+        the follow / responsiveness / drift motion logic.
+        """
+        self._shot = shot
+
+    @property
+    def shot(self) -> Shot:
+        return self._shot
+
+    def _zoom_target_h(self, z: float, H: int) -> float:
+        """Resolve the crop-height target for the current shot. AUTO is the
+        unchanged speed-adaptive Day-3 framing; TIGHT/WIDE are explicit sizes."""
+        cfg = self.cfg
+        if self._shot == Shot.TIGHT:
+            return cfg.shot_tight_frac * H
+        if self._shot == Shot.WIDE:
+            return cfg.shot_wide_frac * H
+        return _lerp(cfg.zoom_tight_frac, cfg.zoom_wide_follow_frac, z) * H
 
     # --- framing helpers ---
     def _wide_h(self, W, H) -> float:
@@ -151,10 +195,11 @@ class VirtualCamera:
             self.cx += alpha * (gx - self.cx)
             self.cy += alpha * (gy - self.cy)
 
-            # zoom by speed: tight when stable, wider when fast (eased, anti-pump)
+            # zoom: AUTO = speed-adaptive (tight when stable, wider when fast);
+            # TIGHT/WIDE = explicit named shot. Eased either way (anti-pump).
             speed = math.hypot(vx, vy) / W
             z = _clamp(speed / cfg.speed_to_widen_frac, 0.0, 1.0)
-            target_h = _lerp(cfg.zoom_tight_frac, cfg.zoom_wide_follow_frac, z) * H
+            target_h = self._zoom_target_h(z, H)
             self.ch += cfg.zoom_alpha * (target_h - self.ch)
 
         elif state == TargetState.LOST:

@@ -196,8 +196,294 @@ faster footage when available.
 2. Responsiveness needs faster-motion footage to show on a real clip (above).
 3. Day 3 files not committed/pushed — left for you per PRD.
 
+---
+
+## Day 4 — gesture engine + intent wiring (directing by intent)  (2026-06-08)
+
+**Goal:** replace the `--target-id` stand-in with a reusable **gesture engine**
+(debounce/confirmation) emitting typed **intent commands**, wired onto the proven
+`TargetTracker` + `VirtualCamera`. Tier 1 (subject) + Tier 2 (shot) gestures.
+
+### ⚠️ DEPENDENCY FLAG — MediaPipe NOT installed (Step-2 gate honoured)
+MediaPipe is a hard conflict with the validated CV stack — **did not install it**:
+| dep | main .venv | mediapipe 0.10.x needs |
+|-----|-----------|------------------------|
+| numpy | **2.4.4** | **<2** |
+| protobuf | **7.35.0** | **>=4.25,<5** |
+| (also torch 2.11+cu128, opencv 4.10 — all numpy-2 built) |
+Installing would force-downgrade numpy 2→1 and protobuf 7→4 → very likely breaks
+ultralytics/torch/opencv. **This is a STOP-and-flag, not a force-install.** Env
+left untouched (verified post-build: numpy still 2.4.4, mediapipe still absent).
+- Recorded pinned set in `AirLine/requirements-gestures.txt` for an **isolated**
+  `.venv-gestures` (python 3.11) that runs ONLY the capture process.
+- **Aarav's call:** approve the isolated-venv capture path, or keep the scripted
+  driver. Engine/wiring/tests/demo all run with zero mediapipe either way.
+
+### What was built (all import-safe without mediapipe)
+- `AirLine/gestures.py` — the engine. `HandClassifier` (pure geometry on 21
+  landmarks → POINT/FIST/OPEN_PALM/SPREAD/NONE), `GestureDebouncer` (hold N
+  frames → fire once on transition — the Day-2-style anti-flicker), `GestureEngine`
+  (classify + horizontal-swipe + debounce), `MediaPipeHandSource` (**lazy** import,
+  live path only).
+- `AirLine/intent.py` — `IntentCommand` enum, `gesture_to_intent` (the separation
+  seam), `IntentApplier` (SELECT nearest-to-ref-x / SWITCH cycle / RELEASE →
+  TargetTracker; SHOT_TIGHT/WIDE → camera zoom **via public CameraConfig**, so
+  `camera.py` is never edited and no contract changes).
+- `AirLine/run_day4.py` — `--source scripted` (default; feeds a raw-label timeline
+  through the REAL engine, no webcam/mediapipe) and `--source webcam` (lazy live
+  path). Overlays raw gesture / confirmed intent / target / shot / state.
+- Tests: `tests/airline/test_gestures.py` (12) + `test_intent.py` (8).
+
+### Before-snapshot
+- 89 passed + known `test_video_io.py` error unchanged. ✅
+
+### Day 4 proof — `run_day4 clips/football.mp4 --source scripted`
+`AirLine/outputs/day4_gestured.mp4` (22 MB). 7 intents fired exactly on the
+scripted holds, driving the cinematography on the football clip:
+| frame | intent | gesture |
+|------:|--------|---------|
+| 35  | select      | POINT (held 6f) |
+| 95  | shot_tight  | FIST |
+| 150 | switch_next | swipe → |
+| 215 | shot_wide   | SPREAD |
+| 300 | switch_next | swipe → |
+| 365 | shot_tight  | FIST |
+| 455 | release     | OPEN_PALM |
+- **Debounce demonstrated (the reliability proof):** a deliberate **1-frame FIST
+  flicker at f70 did NOT fire** (`flicker fired? False`). On-screen overlay shows
+  raw vs confirmed so the gating is legible.
+- **Latency number:** confirm window = 6 frames ≈ **200 ms @ 30 fps** (held→fired).
+- avg FPS 16.3 (tracker-bound, consistent with Days 1/3).
+
+### Numbers — honesty notes
+- **Recognition-rate number is NOT yet measurable.** It needs live MediaPipe + a
+  real hand, which is gated on the dependency decision above. Classification
+  *logic* is proven by unit tests (crafted landmarks → correct labels incl. the
+  confusable OPEN_PALM vs SPREAD pair, separated by finger-span ratio). Real-world
+  rate (and the palm-vs-spread confusion check) pends the isolated-venv capture.
+- **What the scripted demo proves vs not:** proves the full
+  gesture→debounce→intent→target/camera pipeline + on-screen legibility + flicker
+  rejection. Does NOT prove webcam recognition robustness (that's the gated part).
+
+### Isolation proof
+- AirLine tests: **41 passed** (6+8+7+12+8). Full suite: **109 passed**;
+  `test_video_io.py` error unchanged.
+- Env unmutated (numpy 2.4.4, no mediapipe). Changes only under `AirLine/` +
+  `tests/airline/`. No contract edits to core_bridge/target/camera.
+
+### Open items / flags for Aarav
+1. **MediaPipe install decision** (isolated `.venv-gestures` vs keep scripted) —
+   your call; `requirements-gestures.txt` ready.
+2. Live recognition-rate + palm-vs-spread confusion number pends (1).
+3. One judgment call: SHOT_TIGHT/WIDE drive the camera by mutating the public
+   `CameraConfig` zoom fractions (not a contract change, camera.py untouched). If
+   you'd rather have a dedicated camera shot-API, that's a contract addition →
+   flagging rather than deciding it.
+4. `scripts.video_io` error still accepted as baseline (Day-2 decision b).
+5. Day 4 files not committed/pushed — left for you.
+
+---
+
+## Day 5 — gesture quarantine + named-shot seam (refactor/harden)  (2026-06-08)
+
+Two bounded jobs: (A) stand up the isolated gesture venv + prove the quarantine,
+(B) add a thin named-shot API to `camera.py` (the one approved contract edit).
+
+### Part A — isolated `.venv-gestures` + quarantine proof
+- Created **`C:\airline-gestures-venv`** (python 3.11.9) — built OUTSIDE the repo
+  on purpose: `.gitignore` covers `.venv/` but not `.venv-gestures/`, and editing
+  root `.gitignore` is out of scope, so keeping it off-repo keeps `git status`
+  clean. (Path is the only deviation from the PRD's `.venv-gestures` name; flagged.)
+- **Resolved pins (written back into `requirements-gestures.txt`):**
+  mediapipe 0.10.21, **numpy 1.26.4**, **protobuf 4.25.9**, opencv 4.10/4.11.
+  → These are exactly the downgrades (numpy 2.4.4→1.26.4, protobuf 7.35→4.25.9)
+  that would have broken the main stack. **The Day-4 STOP was correct.**
+- **Live mediapipe proven in the isolated venv:** webcam opens (1920×1080 frames),
+  `MediaPipeHandSource` instantiates and processes a frame with no error.
+  Landmarks returned `None` only because **no hand was in view** — I have no hands.
+- **QUARANTINE HELD (required deliverable):** main `.venv` byte-identical before
+  AND after — `numpy 2.4.4`, mediapipe absent, full suite green. The two envs
+  never merged.
+
+#### ARCHITECTURE FINDING — webcam recognition must be ultralytics-free
+`run_day4 --source webcam` is a dead end by design: it imports `core_bridge` →
+**ultralytics** (the tracker) AND needs **mediapipe** — two stacks that can't share
+a venv (the whole quarantine). A COMBINED live demo (gestures driving the football
+crop) therefore needs a future **two-process bridge** (capture proc emits intents →
+render proc applies them). But the recognition NUMBER doesn't need the tracker at
+all, so it got its own tool:
+- **`AirLine/gesture_eval.py`** — imports ONLY `AirLine.gestures` (mediapipe lazy),
+  zero ultralytics. Verified to import + run in the gestures venv. Interactive:
+  performs each gesture ×N, tallies rate + palm/spread confusion + latency, with a
+  live preview window. Pure `summarize()` is unit-tested in the main venv.
+
+#### RECOGNITION NUMBER — FINAL (Aarav at the webcam, 2026-06-08, 10 reps each)
+First run exposed two bugs (spread 0/10, swipe 0/10); after fixes, second run:
+| gesture | first run | **after fixes** |
+|---------|-----------|-----------------|
+| point     | 10/10 | **10/10 (100%)** ✅ |
+| fist      | 9/10* | **10/10 (100%)** ✅ |
+| open_palm | 10/10 | **10/10 (100%)** ✅ |
+| spread    | 0/10  | **10/10 (100%)** ✅ (fixed, no calibration even needed) |
+| swipe     | 0/10  | **6/10 (60%)** — the 4 misses were `none` (too little travel) |
+- *the fist "miss" was a deliberate POINT. palm-vs-spread confusion now **0/0**.
+- mean held→fired latency **432 ms** (debounce 6 frames; ≈ the window — not sluggish). ✅
+- **Verdict:** 4/5 gestures rock-solid, swipe ~60% (motion-threshold sensitive —
+  tune `--swipe-dx` lower for more sensitivity). Per the PRD's "reliable enough to
+  demo, not flawless" bar, this **passes**. Part A number = DONE.
+
+#### Three bugs found and fixed (root causes)
+1. **SPREAD 0/10** — spread metric normalized fingertip span by *palm length*
+   (`wrist→middle-MCP`), never crossing threshold. **Fixed:** `spread_ratio =
+   (index-tip..pinky-tip)/(index-MCP..pinky-MCP knuckle span)` — measures fan-out,
+   scale/rotation invariant. Threshold 1.2→1.4. (`--calibrate` mode added but the
+   default already gave 10/10.)
+2. **SWIPE 0/10** — wrist-motion tracking was gated on a clean static pose; a fast
+   swipe blurs → `none` → buffer cleared each frame. **Fixed:** track the wrist
+   whenever ANY hand is present, pose-independent. Eval is swipe-aware + `--swipe-dx`.
+3. **Preview froze after attempt 1** — blocking `input()` starved the GUI loop.
+   **Fixed:** gesture_eval is fully preview-driven (SPACE/s/q), frames pump live,
+   overlay shows raw label + spread_ratio.
+
+#### Reality check — this webcam layer is a STAND-IN; sensors replace it later
+Per the project arc, hand tracking will ultimately be done by **wearable sensors /
+a glove**, not a webcam + MediaPipe. So the webcam recognition rate is not a
+long-term quality gate — it only had to be "reliable enough to demo the intent
+pipeline," which it now is. The durable value is the layering: the glove later
+swaps in as a new landmark/label SOURCE behind the SAME `GestureEngine → intent`
+seam, and everything downstream (debounce, intents, target, camera, shots) is
+reused unchanged. Swipe's 60% and any future gesture flakiness are therefore
+**logged findings that may inform the glove design, not blockers** to fix here.
+
+### Part B — named-shot API seam in `camera.py` (first approved contract edit)
+Done as a pure ADDITION — motion/follow/drift logic untouched:
+- Added `Shot` enum (`AUTO` / `TIGHT` / `WIDE`; marked as the extension point for
+  future push-in/orbit — NOT built), `CameraConfig.shot_tight_frac` (0.38) /
+  `shot_wide_frac` (0.95), `VirtualCamera.request_shot()` + `.shot`, and a
+  `_zoom_target_h()` dispatch. **AUTO branch is byte-identical to Day-3 zoom**, so
+  existing `test_camera.py` passes UNCHANGED (proof: a test asserts default-AUTO vs
+  explicit-AUTO produce identical crops).
+- `intent.py` rewired: SHOT_TIGHT/WIDE now call `camera.request_shot(...)` (says
+  "request shot X"); RELEASE resets to AUTO. **No more poking CameraConfig zoom.**
+  `IntentApplier(tracker, camera)` (was `tracker, cfg`).
+- Shot changes EASE in (same `zoom_alpha`), don't jump — test-asserted.
+- Re-rendered `AirLine/outputs/day5_shots.mp4` via `--source scripted` through the
+  new seam: identical 7 intents fire (select→tight→switch→wide→switch→tight→
+  release), flicker @f70 still rejected → **behaviour-preserving refactor**.
+
+### Isolation proof
+- New Day-5 tests: 5 (shot-API: default-AUTO, tight, wide, eased-transition,
+  AUTO-unchanged). Existing camera tests pass unchanged.
+- AirLine tests: **46 passed**. Full suite: **114 passed**; `test_video_io.py`
+  error unchanged. Changes only under `AirLine/` + `tests/airline/`.
+
+### Open items / flags for Aarav
+1. **Live recognition number: DONE** — point/fist/open_palm/spread 10/10, swipe
+   6/10, palm-vs-spread confusion 0, latency 432 ms (via `AirLine/gesture_eval.py`,
+   after fixing the spread metric + swipe motion-tracking). Webcam is a stand-in;
+   sensors/glove replace it later behind the same engine→intent seam, so swipe's
+   60% is a logged finding, not a blocker. (`run_day4 --source webcam` retired —
+   can't mix ultralytics+mediapipe; a combined live demo needs a 2-process bridge.)
+2. `.venv-gestures` lives at `C:\airline-gestures-venv` (off-repo) not in the repo
+   tree — deviation from the PRD name to keep git clean; relocate if you prefer.
+3. Named-shot seam is in; Tier-3 shots (orbit/push-in) are the marked extension
+   point, NOT built (need flight-path logic first).
+4. `scripts.video_io` error still accepted as baseline (Day-2 decision b).
+5. Day 5 files not committed/pushed — left for you.
+
 ### Deferred (per PRD, do not start)
-Re-identification of a lost target under a new ID (future PRD — today drifts to
-wide instead) · gestures / real input modality (Day 4+) · LLM intent layer ·
-multiple shot *types* / cinematic vocabulary (orbit, push-in…) · hardware ·
-moving-camera/homography-under-motion.
+**Tier 3 shots (orbit/push-in/dolly) — seam built today, shots NOT** (need
+flight-path primitives + simulator first; immediate next major PRD) · new gestures ·
+two-hand director's-rectangle · re-identification · LLM intent layer (outer/slow
+loop only) · real glove hardware (webcam is its stand-in) · manual flight piloting /
+drone / real flight / moving-camera-homography.
+
+---
+
+## Day 6 — two-process live bridge + latency (plumbing day)  (2026-06-08)
+
+**Goal:** split capture (gestures venv) from render (main venv) across a socket so a
+hand live-directs the football cinematography; headline = an honest latency breakdown.
+
+### What was built (all reuse Day 1–5 contracts unchanged across the split)
+- `AirLine/bridge_protocol.py` — **pure stdlib**, importable by BOTH venvs.
+  Newline-delimited JSON `IntentMessage` (intent, ts, seq, payload). `decode()`
+  never raises; `is_known()` filters; `KNOWN_INTENTS` unit-tested in sync with
+  `IntentCommand`.
+- `AirLine/intent_types.py` — **small additive refactor (flagged):** extracted
+  `IntentCommand` + `gesture_to_intent` out of `intent.py` into a stdlib-safe module
+  (depends only on `gestures`), so the capture process can emit intents WITHOUT
+  importing `intent.py` (which reaches `core_bridge → ultralytics`). `intent.py`
+  re-exports them → every existing import still works, IntentApplier unchanged.
+- `AirLine/bridge_capture.py` — capture process. Real webcam mode (gestures venv:
+  `GestureEngine`+`MediaPipeHandSource`, emits on confirmed transitions, stamps a
+  live `confirm_ms`) + `--mock` (scripted intents, no mediapipe, runs in main venv).
+- `AirLine/bridge_render.py` — render process (main venv). Socket SERVER; **warms
+  the YOLO model BEFORE accepting** so model-load never contaminates the latency
+  measurement; plays the clip via `core_bridge`, applies received intents via the
+  EXISTING `IntentApplier`, overlays live state, writes `day6_live.mp4`, reports
+  the breakdown.
+- `AirLine/SETUP.md` — documents the two-env setup + rebuild + run commands
+  (closes the Day-5 undocumented-env loose end).
+- Tests: `tests/airline/test_bridge_protocol.py` (6): round-trip, str/bytes,
+  in-sync-with-enum, unknown-filtered, **malformed→None-never-raises** (9 bad
+  inputs), and decoded-intent→IntentApplier path.
+
+### THE NUMBER — latency breakdown (REAL: Aarav's hand, webcam capture, 15 intents)
+| stage | mean | worst | how measured |
+|-------|------|-------|--------------|
+| gesture→confirmed | **261 ms** | **318 ms** | **live** — capture stamps raw-pose-start → confirmed |
+| **transport+apply** | **35 ms** | **58 ms** | **live** — send-ts → applied in render |
+| **~total hand→screen** | **297 ms** | **376 ms** | sum |
+- 15 intents (select/tight/wide/release — static gestures; no swipe this run), all
+  applied correctly; the football crop reacted live to the hand.
+- Clock: both processes share one machine + one wall clock (`time.time()`), so
+  transport latency has **no cross-process offset** — stated honestly.
+- (Earlier mock run measured transport in isolation at 34 ms mean — matches the live
+  35 ms, confirming the mock was a faithful transport proxy.)
+
+### VERDICT — transport is NOT the bottleneck; the debounce is. Feel is GOOD.
+The socket bridge adds ~35 ms mean — negligible. Total live latency **~297 ms mean
+/ 376 ms worst** is dominated by the **261 ms gesture-confirmation debounce**, exactly
+as the PRD hypothesized. ~300 ms hand→screen is **responsive enough to feel direct** —
+the live feel is acceptable, not laggy. (Note: live confirm came in at 261 ms, snappier
+than the 432 ms Day-5 estimate — the live capture times raw-pose-start→confirm cleanly;
+Day-5's higher figure included model warm-up and looser holds.) The two-process backbone
+is proven cheap, viable, and de-risked for the future glove/CV-brain split.
+- **Levers (logged, NOT implemented today):** shorter debounce window = faster but
+  less reliable (swipe was already fragile at 60% — Day 5); lighter serialization
+  (already trivial JSON); decouple render FPS from intent rate (already async).
+  The only lever that meaningfully moves the number is the debounce, and that's a
+  reliability trade — a dedicated tuning decision, not a blind change.
+
+### Measurement provenance (all REAL now)
+Both stages measured live: transport+apply from the real socket+clock; gesture→confirmed
+from Aarav's webcam (capture stamps raw-pose-start→confirmed). The earlier mock run only
+existed to measure transport before a hand was available — its 34 ms matched the live
+35 ms, so it was a faithful proxy. **No placeholder numbers remain.**
+
+### Graceful-exit fix
+The live run ended with a `ConnectionAbortedError` (WinError 10053): render closes the
+socket when the clip ends, capture tried to send one more intent. Harmless (all numbers
+captured) but ugly → **fixed**: `bridge_capture.run_real` now catches `ConnectionError`
+on send and exits cleanly ("render disconnected — stopping").
+
+### Isolation proof
+- New Day-6 tests: 6. Full suite **121 passed**; `test_video_io.py` error unchanged.
+- **Both venvs intact**: main numpy 2.4.4 / no mediapipe; gestures mediapipe 0.10.21
+  / numpy 1.26.4. **Capture stack imports in the gestures venv with zero ultralytics**
+  — the seam holds across the process boundary.
+- Changes only under `AirLine/` + `tests/airline/` (+ `AirLine/SETUP.md`). No Day 1–5
+  contract modified (intent_types extraction is additive + re-exported).
+
+### Open items / flags for Aarav
+1. **Real hand→screen latency: DONE** — 297 ms mean / 376 ms worst (261 ms confirm +
+   35 ms transport), 15 live intents, crop reacted live. Feel is good. ✅
+2. `intent_types.py` extraction is the one structural change — additive, re-exported,
+   all 121 tests green. Flagging since it touched `intent.py`'s imports.
+3. Day 6 files not committed/pushed — left for you.
+
+### Day-6 deferred (unchanged)
+Tier 3 shots (next major PRD: flight-path + simulator) · LLM intent layer attaches
+HERE later as a slow outer intent consumer/producer · glove replaces capture process
+behind this same protocol · drone/flight/moving-camera-homography.
