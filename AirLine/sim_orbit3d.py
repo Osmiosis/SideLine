@@ -32,10 +32,15 @@ def _writer(fps: int):
     return PillowWriter(fps=fps), ".gif"
 
 
-def _sample(path: OrbitPath, n_frames: int,
-            centers_fn: Optional[Sequence] = None):
-    """Return (cam_positions[n,3], target_positions[n,3]) over ~1.25 periods."""
-    ts = np.linspace(0.0, path.period * 1.25, n_frames)
+def _sample(path, n_frames: int, centers_fn: Optional[Sequence] = None,
+            t_max: Optional[float] = None):
+    """Return (cam_positions[n,3], target_positions[n,3]) over [0, t_max].
+
+    t_max defaults to ~1.25 orbit periods for OrbitPath; non-periodic paths
+    (push-in, dolly) must pass an explicit t_max.
+    """
+    tmax = t_max if t_max is not None else path.period * 1.25
+    ts = np.linspace(0.0, tmax, n_frames)
     cams, tgts = [], []
     for i, t in enumerate(ts):
         c = None if centers_fn is None else centers_fn(t)
@@ -51,10 +56,10 @@ def _bounds(cams, tgts):
     return lo - pad, hi + pad
 
 
-def render_3d(path: OrbitPath, out_path: str, n_frames: int = 120,
+def render_3d(path, out_path: str, n_frames: int = 120,
               fps: int = 24, centers_fn: Optional[Sequence] = None,
-              title: str = "AirLine orbit (3D)") -> str:
-    cams, tgts = _sample(path, n_frames, centers_fn)
+              title: str = "AirLine orbit (3D)", t_max: Optional[float] = None) -> str:
+    cams, tgts = _sample(path, n_frames, centers_fn, t_max)
     lo, hi = _bounds(cams, tgts)
     fig = plt.figure(figsize=(7, 6))
     ax = fig.add_subplot(111, projection="3d")
@@ -79,10 +84,11 @@ def render_3d(path: OrbitPath, out_path: str, n_frames: int = 120,
     return out
 
 
-def render_triview(path: OrbitPath, out_path: str, n_frames: int = 120,
+def render_triview(path, out_path: str, n_frames: int = 120,
                    fps: int = 24, centers_fn: Optional[Sequence] = None,
-                   title: str = "AirLine orbit (orthographic)") -> str:
-    cams, tgts = _sample(path, n_frames, centers_fn)
+                   title: str = "AirLine orbit (orthographic)",
+                   t_max: Optional[float] = None) -> str:
+    cams, tgts = _sample(path, n_frames, centers_fn, t_max)
     lo, hi = _bounds(cams, tgts)
     fig, axes = plt.subplots(1, 3, figsize=(13, 4.4))
     # (axis, x-index, y-index, label)

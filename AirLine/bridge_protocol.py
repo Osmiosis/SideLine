@@ -20,6 +20,7 @@ from typing import Optional
 KNOWN_INTENTS = frozenset({
     "select", "switch_next", "switch_prev", "release",
     "shot_tight", "shot_wide", "shot_orbit",
+    "shot_push_in", "shot_pull_out", "shot_dolly",
 })
 
 

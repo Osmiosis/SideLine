@@ -41,11 +41,14 @@ class Shot(Enum):
     AUTO = "auto"
     TIGHT = "tight"
     WIDE = "wide"
-    ORBIT = "orbit"  # Day 7: engages a 3D orbit flight-path (see flightpath.py).
-    # The 2D VirtualCamera treats ORBIT as a pass-through for crop framing (no view
-    # synthesis exists from one fixed clip); the orbit is realized as a 3D camera
-    # pose path by flightpath.OrbitPath + the sim. So ORBIT does not alter the 2D
-    # zoom/follow/drift logic — tight/wide/AUTO stay provably unchanged.
+    ORBIT = "orbit"        # Day 7: 3D orbit flight-path
+    PUSH_IN = "push_in"    # Day 8: move toward the target (pull-out = its inverse)
+    PULL_OUT = "pull_out"  # Day 8: move away from the target
+    DOLLY = "dolly"        # Day 8: straight-line tracking translation at held offset
+    # Days 7-8 flight-path shots are realized as 3D camera-pose paths (flightpath.py)
+    # + the sim; there is no view synthesis from one fixed clip, so the 2D
+    # VirtualCamera treats all of them as crop pass-throughs. They do NOT alter the
+    # 2D zoom/follow/drift logic — tight/wide/AUTO stay provably unchanged.
 
 
 @dataclass

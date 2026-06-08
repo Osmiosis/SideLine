@@ -85,6 +85,17 @@ def test_shot_orbit_routes_to_camera_orbit():
     assert ap.shot == IntentCommand.SHOT_ORBIT
 
 
+def test_day8_shots_route_through_seam():
+    ap, _, cam = _applier()
+    ft = _frame([(1, 100)])
+    for cmd, want in [(IntentCommand.SHOT_PUSH_IN, Shot.PUSH_IN),
+                      (IntentCommand.SHOT_PULL_OUT, Shot.PULL_OUT),
+                      (IntentCommand.SHOT_DOLLY, Shot.DOLLY)]:
+        ap.apply(cmd, ft)
+        assert cam.shot == want
+        assert ap.shot == cmd
+
+
 def test_orbit_does_not_change_auto_crop_behaviour():
     """Requesting ORBIT must not alter the 2D follow/zoom crop (regression guard)."""
     from AirLine.target import TargetState

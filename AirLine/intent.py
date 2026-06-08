@@ -33,6 +33,9 @@ _INTENT_TO_SHOT = {
     IntentCommand.SHOT_TIGHT: Shot.TIGHT,
     IntentCommand.SHOT_WIDE: Shot.WIDE,
     IntentCommand.SHOT_ORBIT: Shot.ORBIT,
+    IntentCommand.SHOT_PUSH_IN: Shot.PUSH_IN,
+    IntentCommand.SHOT_PULL_OUT: Shot.PULL_OUT,
+    IntentCommand.SHOT_DOLLY: Shot.DOLLY,
 }
 
 

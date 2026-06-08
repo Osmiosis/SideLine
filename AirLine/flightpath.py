@@ -119,3 +119,90 @@ class OrbitPath:
             c = None if centers is None else centers[i]
             out.append(self.pose_at(t, c))
         return out
+
+
+class PushInPath:
+    """Camera moves along the camera↔target axis, distance shrinking (push-in) or
+    growing (pull-out — the same primitive with end>start). Look-at stays on target.
+
+    CONVENTION: `direction` is the unit vector FROM the target TO the camera (the
+    standoff direction). The camera sits at `target + direction * distance(t)`, so
+    its path is collinear with that fixed ray and it always looks back at the
+    target. Distance schedules linearly from `start_distance` to `end_distance`
+    over `duration` (constant speed), clamped — never overshoots the target or the
+    end standoff. Pull-out is just `end_distance > start_distance`.
+
+    Push-in's signature invariant is CHANGING distance — NOT orbit's constant radius.
+    """
+
+    def __init__(self, target: Sequence[float], direction: Sequence[float],
+                 start_distance: float, end_distance: float, duration: float = 1.0):
+        if start_distance <= 0 or end_distance <= 0:
+            raise ValueError("distances must be > 0 (camera must not reach the target)")
+        if duration <= 0:
+            raise ValueError("duration must be > 0")
+        self.target0 = np.asarray(target, dtype=float)
+        self.direction = _unit(np.asarray(direction, dtype=float))
+        self.d_start = float(start_distance)
+        self.d_end = float(end_distance)
+        self.duration = float(duration)
+
+    @property
+    def is_push_in(self) -> bool:
+        return self.d_end < self.d_start
+
+    def distance_at(self, t: float) -> float:
+        s = min(1.0, max(0.0, t / self.duration))
+        return self.d_start + (self.d_end - self.d_start) * s
+
+    def center_at(self, t: float, center: Optional[Sequence[float]] = None) -> np.ndarray:
+        return self.target0 if center is None else np.asarray(center, dtype=float)
+
+    def position_at(self, t: float, center: Optional[Sequence[float]] = None) -> np.ndarray:
+        return self.center_at(t, center) + self.direction * self.distance_at(t)
+
+    def pose_at(self, t: float, center: Optional[Sequence[float]] = None) -> CameraPose:
+        c = self.center_at(t, center)
+        return look_at(self.position_at(t, c), c)
+
+
+class DollyPath:
+    """Camera translates along a straight axis at a held offset to the subject — the
+    canonical tracking shot. Distinct from push-in (toward) and orbit (around).
+
+    CONVENTION: the camera path is the straight line `start + dolly_dir * speed * t`.
+    `offset` is the constant camera→target vector. In the TRACKING case (default,
+    `center=None`) the target co-translates with the camera, so the full 3D distance
+    to the target is constant ( = |offset| ) — that is dolly's correct invariant.
+
+    For a STATIONARY target (explicit `center`), the full 3D distance does NOT stay
+    constant (a straight line past a fixed point has a minimum at the perpendicular
+    foot) — asserting constant distance there would be a FALSE invariant (the Day-7
+    trap). What IS constant for a static target is its PERPENDICULAR standoff to the
+    dolly line — use `perp_standoff()`.
+    """
+
+    def __init__(self, start: Sequence[float], dolly_dir: Sequence[float],
+                 offset: Sequence[float], speed: float = 1.0):
+        self.start = np.asarray(start, dtype=float)
+        self.dir = _unit(np.asarray(dolly_dir, dtype=float))
+        self.offset = np.asarray(offset, dtype=float)  # camera -> target
+        self.speed = float(speed)
+
+    def position_at(self, t: float, center: Optional[Sequence[float]] = None) -> np.ndarray:
+        return self.start + self.dir * (self.speed * t)
+
+    def center_at(self, t: float, center: Optional[Sequence[float]] = None) -> np.ndarray:
+        # Tracking case: target co-moves with the camera at the held offset.
+        if center is not None:
+            return np.asarray(center, dtype=float)
+        return self.position_at(t) + self.offset
+
+    def pose_at(self, t: float, center: Optional[Sequence[float]] = None) -> CameraPose:
+        return look_at(self.position_at(t, center), self.center_at(t, center))
+
+    def perp_standoff(self, point: Sequence[float]) -> float:
+        """Perpendicular distance from a fixed point to the (infinite) dolly line."""
+        p = np.asarray(point, dtype=float) - self.start
+        along = np.dot(p, self.dir) * self.dir
+        return float(np.linalg.norm(p - along))

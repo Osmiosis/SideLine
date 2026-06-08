@@ -561,3 +561,80 @@ height-ramp orbits (different primitives; today = circle in a tiltable plane) ·
 gesture for orbit (own reliability problem) · real 3D rendering / photoreal view synthesis ·
 real drone flight dynamics · true 3D localization / homography-under-motion · re-ID · LLM
 intent layer · glove · actual drone/flight.
+
+---
+
+## Day 8 — push-in / pull-out / dolly → SHOT VOCABULARY COMPLETE  (2026-06-08)
+
+**Goal:** add the two remaining atomic flight-path primitives reusing Day-7 machinery,
+each proven by **its OWN correct invariants** (the Day-7 false-invariant lesson). After
+today: **tight / wide / orbit / push-in / pull-out / dolly** — the software shot core is banked.
+
+### What was built (all additive; OrbitPath + 2D camera untouched)
+- `flightpath.py` += `PushInPath` (covers pull-out via end>start) and `DollyPath`.
+  Documented conventions. `OrbitPath` unchanged (its 10 tests stay green).
+- `sim_orbit3d.py`: generalized `_sample`/`render_*` with an optional `t_max` so
+  non-periodic paths render (orbit path-based default preserved → Day-7 unaffected).
+- Seam (additive): `Shot.PUSH_IN/PULL_OUT/DOLLY`, `SHOT_PUSH_IN/SHOT_PULL_OUT/SHOT_DOLLY`
+  intents, `_INTENT_TO_SHOT`, `KNOWN_INTENTS`. No gestures (per PRD). 2D camera = pass-through.
+- `run_day8.py` + `tests/airline/test_pushin_dolly.py` (12) + 1 seam-routing test.
+
+### NUMBERS — each primitive's OWN correct invariants (NOT orbit's)
+**Push-in** (signature = CHANGING distance, NOT constant radius):
+| | value |
+|---|---|
+| distance start→end | 12.000 → 3.000 (monotonic ✓) |
+| lateral drift max | 8.9e-16 (collinear toward target) |
+| look-at err max | 1.5e-6 deg |
+| pull-out | 3.000 → 12.000 (increasing — correctly NOT monotonic-decreasing) |
+
+**Dolly** (signature = straight-line translation at held offset):
+| | value |
+|---|---|
+| camera path collinear | 0.0 (straight line along axis) |
+| tracking distance dev | 0.0 (held offset = constant 3D distance) |
+| look-at err max | 8.5e-7 deg |
+| **static-target distance** | **VARIES 7.159 → 15.724** (honest — NOT constant) |
+| perp standoff | 7.159 = closest approach (the correct static invariant) |
+
+### CORRECT-INVARIANT DISCIPLINE (the Day-7 lesson, applied)
+- Push-in asserts **changing distance** (monotonic), NOT orbit's constant radius.
+- Dolly asserts **straight-line at held offset**: constant distance ONLY in the
+  tracking case (target co-moves); for a STATIONARY target the full 3D distance
+  **varies** (min at the perpendicular foot = the standoff) — asserting constant
+  distance there would be a FALSE invariant, so the test asserts it varies + that
+  the perpendicular standoff is the constant/closest-approach. This is the precise,
+  honest invariant — the exact altitude-on-tilt trap avoided again.
+
+### Two visible proofs per primitive
+`day8_pushin.mp4` + `day8_pushin_triview.mp4` (camera diving in toward a moving
+target, look-at locked); `day8_dolly.mp4` + `day8_dolly_triview.mp4` (canonical
+tracking shot — camera slides straight, subject stays framed). Tri-views are the
+lie-catchers.
+
+### Regression + isolation
+- `OrbitPath` Day-7 invariants (10) + `test_camera.py` (12) **green unchanged** = 22.
+- Orbit still dispatches via the seam. New Day-8 tests: 13. Full suite **146 passed**;
+  `test_video_io.py` unchanged. Both venvs intact; changes only under `AirLine/` +
+  `tests/airline/`.
+
+### 🏁 MILESTONE: software shot vocabulary COMPLETE
+All of tight / wide / orbit / push-in / pull-out / dolly are triggerable through the
+intent path. Atomic primitive set is banked and proven.
+
+### Localization caveat (carried forward, unchanged)
+Paths are rigorous 3D; **target real depth + view-from-pose synthesis remain deferred**
+to a real moving camera/drone. Push-in's standoff and dolly's offset are defined in the
+synthetic/defined world, not measured from real footage. Sims are schematic matplotlib,
+NOT rendered views — they show where the camera *would be*, not what it *would see*.
+
+### Open items / flags for Aarav
+1. Shot vocabulary complete & proven; **target depth + view synthesis still the deferred
+   real-drone pieces** (caveat above).
+2. Day 8 files not committed/pushed — left for you.
+
+### Day-8 deferred (per PRD)
+Composition layer (spiral = orbit+push-in, etc. — combining primitives is a separate later
+idea) · webcam gestures for these shots · real 3D render / view synthesis · drone flight
+dynamics · true 3D localization / homography-under-motion · re-ID · LLM intent layer ·
+glove · actual drone/flight.
