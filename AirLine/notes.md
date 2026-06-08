@@ -487,3 +487,77 @@ on send and exits cleanly ("render disconnected — stopping").
 Tier 3 shots (next major PRD: flight-path + simulator) · LLM intent layer attaches
 HERE later as a slow outer intent consumer/producer · glove replaces capture process
 behind this same protocol · drone/flight/moving-camera-homography.
+
+---
+
+## Day 7 — first 3D flight-path primitive: ORBIT  (2026-06-08)
+
+**Goal:** first time AirLine computes a **camera pose in 3D space over time** (not a 2D
+crop). ONE primitive — orbit — as a genuine 3D trajectory in a **tiltable plane** (level
+= special case), proven by 3D invariants, two schematic views, behind the Day-5 seam.
+
+### What was built
+- `AirLine/flightpath.py` — `OrbitPath` + `CameraPose` + `look_at`. Pure 3D kinematics,
+  documented convention (X right, Y depth, **Z up**). Circle of fixed radius in a plane
+  (center, radius, plane_normal), constant angular speed, camera always looking at center;
+  center can be supplied per-step (**moving target**). Deterministic, no I/O.
+- `AirLine/sim_orbit3d.py` — BOTH views off the real path: rotating mpl-3D plot +
+  tri-view orthographic (top XY / side XZ / front YZ). ffmpeg available → mp4 (Pillow GIF
+  fallback wired but unused).
+- Seam (additive, pre-approved): `Shot.ORBIT`, `IntentCommand.SHOT_ORBIT`,
+  `_INTENT_TO_SHOT[SHOT_ORBIT]=ORBIT`, `KNOWN_INTENTS += shot_orbit`. No gesture maps to
+  orbit (per PRD — circular-hand-motion is its own reliability problem). The 2D camera
+  treats ORBIT as a crop pass-through (no view synthesis); tight/wide/AUTO **unchanged**.
+- `AirLine/run_day7.py` — drives orbit via the intent path, prints invariants, renders
+  both videos. Tests: `tests/airline/test_flightpath.py` (10) + 2 seam/regression tests.
+
+### NUMBERS — 3D invariants hold to machine precision (the real proof)
+| orbit | 3D radius (mean / dev) | look-at err max | out-of-plane max | altitude dev | period closure |
+|-------|------------------------|-----------------|------------------|--------------|----------------|
+| level (n=+Z)   | 4.0000 / 4.4e-16 | 0.0e0 deg | 0.0e0 | **0.0000** (level) | 9.8e-16 |
+| tilted 35° (static) | 5.0000 / 1.8e-15 | 1.5e-6 deg | 2.7e-15 | **5.74** (tilted) | 1.2e-15 |
+| tilted 35° + moving target | 5.0000 / 1.8e-15 | 1.5e-6 deg | 2.7e-15 | 5.74 | n/a (center moves) |
+- Constant-radius, look-at, in-plane, period-closure, constant-angular-speed, moving-target,
+  and level-altitude-constant all verified (10 invariant tests).
+- **Tilt genuinely demonstrated:** altitude varies 5.74 m on the tilted orbit, exactly 0 on
+  the level one — altitude-constant asserted ONLY for the level case (NOT a false invariant
+  for tilted).
+- Seam: `SELECT→lock id, SHOT_ORBIT→camera.shot=orbit` (OK); `test_camera.py` **12 passed
+  unchanged** (tight/wide/AUTO regression proof).
+
+### Two visible proofs
+- `AirLine/outputs/day7_orbit_3d.mp4` (rotating 3D) and `day7_orbit_triview.mp4`
+  (top/side/front) — camera on a constant-radius circle in a tilted plane, always looking
+  at a *moving* target. The tri-view is the lie-catcher: drift/ellipse/off-look-at would
+  show in an orthographic panel even if the 3D plot looked fine.
+
+### ⚠️ LOCALIZATION CAVEAT (do NOT gloss — path is 3D, depth & view are NOT)
+- The orbit **path is rigorous 3D** (invariants above, machine-precision).
+- BUT a real subject's **3D depth is approximated**: the fixed football cam gives a 2D image
+  position only; a real orbit center would come from a documented 2D→ground-plane assumption
+  (subject on flat ground). For proving the *path math* this is fine — here run_day7 defines
+  the world exactly (synthetic target), so no approximation is even invoked yet.
+- **No view synthesis exists:** there is NO real imagery of the subject from the orbiting
+  camera's poses (the clip is one fixed viewpoint). The sim shows where the camera *would be*
+  and roughly frame — **schematic matplotlib, not a rendered view.**
+- Genuinely deferred to a real moving camera / multi-view capture (the actual drone):
+  **true 3D target localization** and **view-from-pose synthesis**. Path = rigorous 3D;
+  target depth & view = approximated/deferred.
+
+### Isolation proof
+- New Day-7 tests: 12. Full suite **133 passed**; `test_video_io.py` unchanged.
+- `test_camera.py` unchanged (12 pass) — 2D motion logic untouched; orbit is an additive
+  3D mode. Main venv numpy 2.4.4 / no mediapipe; both venvs intact. Changes only under
+  `AirLine/` + `tests/airline/`.
+
+### Open items / flags for Aarav
+1. Orbit path proven in 3D; **target depth (2D→ground) and view-from-pose are the deferred
+   real-drone pieces** (caveat above) — stated, not glossed.
+2. Day 7 files not committed/pushed — left for you.
+
+### Day-7 deferred (per PRD)
+Push-in & dolly (next primitives — reuse this `flightpath` machinery) · spiral/radius-ramp/
+height-ramp orbits (different primitives; today = circle in a tiltable plane) · webcam
+gesture for orbit (own reliability problem) · real 3D rendering / photoreal view synthesis ·
+real drone flight dynamics · true 3D localization / homography-under-motion · re-ID · LLM
+intent layer · glove · actual drone/flight.

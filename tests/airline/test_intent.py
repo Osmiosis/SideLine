@@ -77,6 +77,27 @@ def test_shot_tight_and_wide_request_named_camera_shots():
     assert ap.shot == IntentCommand.SHOT_WIDE
 
 
+def test_shot_orbit_routes_to_camera_orbit():
+    ap, _, cam = _applier()
+    ft = _frame([(1, 100)])
+    ap.apply(IntentCommand.SHOT_ORBIT, ft)
+    assert cam.shot == Shot.ORBIT
+    assert ap.shot == IntentCommand.SHOT_ORBIT
+
+
+def test_orbit_does_not_change_auto_crop_behaviour():
+    """Requesting ORBIT must not alter the 2D follow/zoom crop (regression guard)."""
+    from AirLine.target import TargetState
+    a = VirtualCamera()
+    b = VirtualCamera()
+    b.request_shot(Shot.ORBIT)
+    box = (700 - 20, 360 - 40, 700 + 20, 360 + 40)
+    for _ in range(40):
+        ca = a.update(box, TargetState.LOCKED, (1280, 720))
+        cb = b.update(box, TargetState.LOCKED, (1280, 720))
+    assert (ca.x, ca.y, ca.w, ca.h) == (cb.x, cb.y, cb.w, cb.h)
+
+
 def test_none_command_is_noop():
     ap, tr, _ = _applier()
     ft = _frame([(1, 100)])

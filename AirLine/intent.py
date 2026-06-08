@@ -32,6 +32,7 @@ from AirLine.intent_types import IntentCommand, gesture_to_intent
 _INTENT_TO_SHOT = {
     IntentCommand.SHOT_TIGHT: Shot.TIGHT,
     IntentCommand.SHOT_WIDE: Shot.WIDE,
+    IntentCommand.SHOT_ORBIT: Shot.ORBIT,
 }
 
 

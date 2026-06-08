@@ -18,7 +18,8 @@ from typing import Optional
 
 # Kept in sync with intent_types.IntentCommand by test_bridge_protocol.
 KNOWN_INTENTS = frozenset({
-    "select", "switch_next", "switch_prev", "release", "shot_tight", "shot_wide",
+    "select", "switch_next", "switch_prev", "release",
+    "shot_tight", "shot_wide", "shot_orbit",
 })
 
 

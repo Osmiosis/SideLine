@@ -26,6 +26,7 @@ class IntentCommand(str, Enum):
     RELEASE = "release"
     SHOT_TIGHT = "shot_tight"
     SHOT_WIDE = "shot_wide"
+    SHOT_ORBIT = "shot_orbit"  # Day 7: engage the 3D orbit path (no gesture maps to it)
 
 
 _GESTURE_TO_INTENT = {
