@@ -97,3 +97,5 @@ If so follow the steps below exactly
   node --test site/tests/*.test.mjs    # run the site tests
 ```
 Yes we are finally done, but I'm not finished, theres much more to come! Hardware and some more software fixes!
+
+**Declaration of AI USE: EXTENSIVE USE OF CLAUDE CODE**
