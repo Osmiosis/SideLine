@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sideline — See how it works</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .steps{display:flex;gap:8px;margin:6px 0 20px;flex-wrap:wrap}
+  .steps .dot{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--muted);border:1px solid var(--line-2);border-radius:99px;padding:4px 10px}
+  .steps .dot.on{color:var(--accent-ink);background:var(--accent);border-color:var(--accent)}
+  .steps .dot.done{color:var(--accent);border-color:var(--accent)}
+  .stage{position:relative}
+  canvas#frame{max-width:100%;height:auto;border:1px solid var(--line);border-radius:10px;cursor:crosshair;display:block}
+  .hint{font-family:var(--mono);font-size:12px;color:var(--muted);margin:10px 0}
+  .hint b{color:var(--accent)}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
+  .checks{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+  .checks label{display:flex;gap:10px;align-items:center;font-size:15px;cursor:pointer}
+  .tagrow{display:flex;gap:10px;align-items:center;margin-top:10px}
+  .tagrow input{max-width:220px}
+  .bar{height:10px;background:var(--surface-2);border:1px solid var(--line);border-radius:99px;overflow:hidden;margin:14px 0}
+  .bar>i{display:block;height:100%;width:0;background:var(--accent);transition:width .5s var(--ease)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:8px}
+  .grid figure{margin:0}
+  .grid img{width:100%;border:1px solid var(--line);border-radius:10px;display:block}
+  .grid figcaption{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px;text-transform:uppercase;letter-spacing:.06em}
+  .demonote{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.05em}
+</style>
+</head>
+<body>
+<div class="wrap" style="max-width:760px">
+  <header class="top">
+    <a class="brand" href="index.html">Side<b>line</b></a>
+    <span class="badge warn">Interactive demo</span>
+  </header>
+
+  <h1>See how it works</h1>
+  <p class="sub">A 60-second taste of the real workflow — set up the pitch, find the players,
+     pick your outputs, and see the analysis. Nothing here is saved; it's just a walkthrough.</p>
+
+  <div class="steps" id="stepbar">
+    <span class="dot" data-i="0">1 · Court setup</span>
+    <span class="dot" data-i="1">2 · Find players</span>
+    <span class="dot" data-i="2">3 · Choose output</span>
+    <span class="dot" data-i="3">4 · Processing</span>
+    <span class="dot" data-i="4">5 · Results</span>
+  </div>
+
+  <!-- STEP 1 -->
+  <section id="step-setup" class="card stage">
+    <h2 style="margin:0 0 8px">Set up the court</h2>
+    <p class="hint" id="setup-hint">Click the <b>far-left corner</b> of the pitch.</p>
+    <canvas id="frame" width="720" height="405"></canvas>
+    <div class="row">
+      <button id="setup-next" class="btn btn-primary" disabled>Next</button>
+      <button id="setup-reset" class="btn btn-ghost">Reset</button>
+    </div>
+    <p class="msg" id="setup-msg"></p>
+  </section>
+
+  <!-- STEP 2 -->
+  <section id="step-players" class="card stage hidden">
+    <h2 style="margin:0 0 8px">Find the players</h2>
+    <p class="hint">We detect and track every player automatically. Optionally name a couple.</p>
+    <img id="tracked" src="demo/football_tracked.png" alt="Tracked players" style="max-width:100%;border:1px solid var(--line);border-radius:10px;display:block">
+    <div class="tagrow"><span class="demonote">Player&nbsp;#7</span><input type="text" placeholder="e.g. Son"></div>
+    <div class="tagrow"><span class="demonote">Player&nbsp;#5</span><input type="text" placeholder="e.g. Romero"></div>
+    <div class="row">
+      <button id="players-next" class="btn btn-primary">Next</button>
+      <button class="btn btn-ghost" data-back="0">Back</button>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section id="step-output" class="card stage hidden">
+    <h2 style="margin:0 0 8px">Choose your outputs</h2>
+    <p class="hint">Pick what you want back for this match.</p>
+    <div class="checks">
+      <label><input type="checkbox" checked> Coach analytics <span class="demonote">— heatmaps, distances, positions</span></label>
+      <label><input type="checkbox" checked> Event highlights <span class="demonote">— shots, key moments</span></label>
+      <label><input type="checkbox" checked> Player highlights <span class="demonote">— per-player reels</span></label>
+    </div>
+    <div class="row">
+      <button id="output-run" class="btn btn-primary">Run analysis</button>
+      <button class="btn btn-ghost" data-back="1">Back</button>
+    </div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section id="step-processing" class="card stage hidden">
+    <h2 style="margin:0 0 8px">Processing your match…</h2>
+    <div class="bar"><i id="bar-fill"></i></div>
+    <p class="hint" id="proc-stage">Starting…</p>
+    <p class="demonote">In the real product this runs on our side — you just wait for the email.</p>
+  </section>
+
+  <!-- STEP 5 -->
+  <section id="step-results" class="card stage hidden">
+    <h2 style="margin:0 0 8px">Your analysis is ready</h2>
+    <p class="hint">A sample of the coach analytics. Every match gets its own set.</p>
+    <div class="grid">
+      <figure><img src="demo/results/heatmap_team.png" alt="Team heatmap"><figcaption>Team heatmap</figcaption></figure>
+      <figure><img src="demo/results/heatmap_a.png" alt="Player heatmap"><figcaption>Player movement</figcaption></figure>
+      <figure><img src="demo/results/heatmap_b.png" alt="Player heatmap"><figcaption>Player movement</figcaption></figure>
+    </div>
+    <p class="msg demonote">Sample output — matches you submit are processed for you.</p>
+    <div class="row">
+      <a id="results-open" class="btn btn-primary" href="jobs.html">Open the full results</a>
+      <button class="btn btn-ghost" id="restart">Run the demo again</button>
+    </div>
+  </section>
+</div>
+
+<script type="module">
+  import { worldCorners, computeHomography, project } from "./js/calibration.js";
+  import { pitchSegments } from "./js/pitchmodel.js";
+
+  // Where "Open the full results" points. Swapped to the real Tottenham
+  // results_url once that job is ready (see plan Task 6).
+  const RESULTS_URL = "jobs.html";
+  document.getElementById("results-open").href = RESULTS_URL;
+
+  const el = (id) => document.getElementById(id);
+  const sections = ["step-setup", "step-players", "step-output", "step-processing", "step-results"];
+  const dots = [...document.querySelectorAll("#stepbar .dot")];
+  let current = 0;
+
+  function showStep(i) {
+    current = i;
+    sections.forEach((id, k) => el(id).classList.toggle("hidden", k !== i));
+    dots.forEach((d, k) => {
+      d.classList.toggle("on", k === i);
+      d.classList.toggle("done", k < i);
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  document.querySelectorAll("[data-back]").forEach((b) =>
+    b.addEventListener("click", () => showStep(Number(b.dataset.back))));
+
+  // ---- Step 1: court setup (real homography) ----
+  const canvas = el("frame");
+  const ctx = canvas.getContext("2d");
+  const CORNERS = ["far-left corner", "far-right corner", "near-right corner", "near-left corner"];
+  const img = new Image();
+  let clicks = [];
+
+  img.onload = () => {
+    const w = Math.min(720, img.naturalWidth);
+    const scale = w / img.naturalWidth;
+    canvas.width = w;
+    canvas.height = Math.round(img.naturalHeight * scale);
+    redraw();
+  };
+  img.src = "demo/football_frame.png";
+
+  function redraw(overlay = null) {
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    // clicked points
+    ctx.fillStyle = "#39FF88";
+    clicks.forEach(([x, y], i) => {
+      ctx.beginPath(); ctx.arc(x, y, 5, 0, 2 * Math.PI); ctx.fill();
+      ctx.font = "12px monospace"; ctx.fillText(String(i + 1), x + 8, y - 8);
+    });
+    if (overlay) {
+      ctx.strokeStyle = "#39FF88"; ctx.lineWidth = 2;
+      for (const poly of pitchSegments()) {
+        ctx.beginPath();
+        poly.forEach(([mx, my], i) => {
+          const [px, py] = project(overlay, [mx, my]);
+          i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+        });
+        ctx.stroke();
+      }
+    }
+  }
+
+  canvas.addEventListener("click", (e) => {
+    if (clicks.length >= 4) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+    const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+    clicks.push([x, y]);
+    redraw();
+    if (clicks.length < 4) {
+      el("setup-hint").innerHTML = `Click the <b>${CORNERS[clicks.length]}</b>.`;
+    } else {
+      const H = computeHomography(worldCorners(), clicks);
+      if (!H) {
+        el("setup-msg").textContent = "Those points don't form a pitch — reset and try again.";
+        el("setup-msg").className = "msg err";
+        return;
+      }
+      redraw(H);
+      el("setup-hint").innerHTML = "Nice — the pitch model is locked onto your corners. That drives every metric.";
+      el("setup-msg").textContent = "";
+      el("setup-next").disabled = false;
+    }
+  });
+
+  el("setup-reset").addEventListener("click", () => {
+    clicks = [];
+    el("setup-next").disabled = true;
+    el("setup-msg").textContent = "";
+    el("setup-hint").innerHTML = "Click the <b>far-left corner</b> of the pitch.";
+    redraw();
+  });
+
+  el("setup-next").addEventListener("click", () => showStep(1));
+  el("players-next").addEventListener("click", () => showStep(2));
+
+  // ---- Step 4: fake processing through the real stage labels ----
+  const STAGES = ["Decoding video", "Tracking players", "Assigning teams",
+    "Computing analytics", "Finding involvement", "Rendering highlights", "Packaging results"];
+
+  el("output-run").addEventListener("click", () => {
+    showStep(3);
+    el("bar-fill").style.width = "0";
+    let i = 0;
+    const tick = () => {
+      el("proc-stage").textContent = STAGES[i] + "…";
+      el("bar-fill").style.width = Math.round(((i + 1) / STAGES.length) * 100) + "%";
+      i++;
+      if (i < STAGES.length) {
+        setTimeout(tick, 1200);
+      } else {
+        setTimeout(() => showStep(4), 900);
+      }
+    };
+    tick();
+  });
+
+  el("restart").addEventListener("click", () => {
+    el("setup-reset").click();
+    showStep(0);
+  });
+
+  showStep(0);
+</script>
+</body>
+</html>
