@@ -1,0 +1,49 @@
+# Keeps the free-tier Supabase project from auto-pausing.
+#
+# Supabase pauses free projects after 7 days with no activity; a paused project
+# drops its DNS and the whole site (auth/magic-link, DB, edge functions) goes
+# offline. This workflow pings the project on a schedule so it never goes idle.
+#
+# Runs in GitHub's cloud — independent of any local machine being on.
+#
+# Caveat: GitHub disables scheduled workflows after 60 days with no repo commits.
+# Any push re-arms it. For a demo that must never lapse, Supabase Pro ($25/mo)
+# removes pausing entirely.
+name: supabase-keepalive
+
+on:
+  schedule:
+    # Every 3 days at 07:00 UTC — comfortable margin under the 7-day pause window.
+    - cron: "0 7 */3 * *"
+  workflow_dispatch: {} # allow manual "Run workflow" from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase (auth health + REST)
+        env:
+          # Public anon/publishable key — already shipped in site/js/config.js.
+          SUPABASE_URL: https://qphkhchhdurvylrunaoz.supabase.co
+          SUPABASE_ANON_KEY: sb_publishable_Rfms3kDq4bF9M52RfAg5BA_FfIej3WP
+        run: |
+          set -e
+          echo "Pinging $SUPABASE_URL ..."
+
+          health=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 \
+            "$SUPABASE_URL/auth/v1/health")
+          echo "auth/v1/health -> HTTP $health"
+
+          # A real REST request generates database-facing activity.
+          rest=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            "$SUPABASE_URL/rest/v1/jobs?select=id&limit=1")
+          echo "rest/v1/jobs -> HTTP $rest"
+
+          # Health must be reachable (200). REST may be 200 or an RLS 401/403 —
+          # all of these are live responses proving the project is awake.
+          if [ "$health" != "200" ]; then
+            echo "::error::Project did not respond 200 on auth health (got $health) — it may be paused."
+            exit 1
+          fi
+          echo "Project is awake."

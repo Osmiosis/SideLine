@@ -14,40 +14,54 @@
   <header class="top"><a class="brand" href="index.html">Side<b>line</b></a></header>
   <h1>Match analysis for your club</h1>
   <p class="sub">Send us your footage, get back coach analytics and highlights.
-     Sign in with your email — we'll send you a magic link. No password needed.</p>
+     Sign in to view the demo.</p>
   <div class="card">
     <label for="email">Email</label>
     <input id="email" type="email" placeholder="you@club.com" autocomplete="email">
+
+    <label for="password" style="margin-top:14px">Password</label>
+    <input id="password" type="password" autocomplete="current-password" placeholder="••••••••">
+
     <div style="margin-top:16px">
-      <button id="send" class="btn btn-primary">Send magic link</button>
+      <button id="verify" class="btn btn-primary">Sign in</button>
     </div>
     <p id="msg" class="msg"></p>
+    <p class="msg" style="opacity:.7">Reviewing Sideline? Use the login you were given.</p>
   </div>
+  <p class="msg" style="margin-top:14px;text-align:center"><a href="demo.html">See how it works →</a></p>
 </div>
 <script type="module">
   import { sb, el } from "./js/api.js";
+  import { signIn } from "./js/auth.js";
 
-  // already signed in (or just landed back from the magic link) → go to jobs
+  // already signed in (or just verified a code) → go to jobs
   sb.auth.onAuthStateChange((_event, session) => {
     if (session) location.replace("jobs.html");
   });
   const { data: { session } } = await sb.auth.getSession();
   if (session) location.replace("jobs.html");
 
-  el("send").onclick = async () => {
+  const msg = el("msg");
+  function show(text, isErr = false) {
+    msg.textContent = text;
+    msg.className = isErr ? "msg err" : "msg";
+  }
+
+  // Email + password sign-in. On success signInWithPassword stores the session;
+  // redirect explicitly rather than depending on onAuthStateChange timing.
+  async function doVerify() {
     const email = el("email").value.trim();
-    if (!email) return;
-    el("send").disabled = true;
-    const { error } = await sb.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${location.origin}/jobs.html` },
-    });
-    el("msg").textContent = error
-      ? "Couldn't send the link — please check the address and try again."
-      : "Check your email — your sign-in link is on its way.";
-    el("msg").className = error ? "msg err" : "msg";
-    el("send").disabled = false;
-  };
+    if (!email) return show("Enter your email.", true);
+    el("verify").disabled = true;
+    show("Signing you in…");
+    const r = await signIn(sb, email, el("password").value);
+    el("verify").disabled = false;
+    if (!r.ok) return show(r.message, true);
+    show("Signed in — taking you to your matches…");
+    location.replace("jobs.html");
+  }
+  el("verify").onclick = doVerify;
+  el("password").onkeydown = (e) => { if (e.key === "Enter") doVerify(); };
 </script>
 </body>
 </html>
