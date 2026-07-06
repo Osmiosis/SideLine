@@ -67,7 +67,7 @@
   <section id="step-players" class="card stage hidden">
     <h2 style="margin:0 0 8px">Find the players</h2>
     <p class="hint">We detect and track every player automatically. Optionally name a couple.</p>
-    <img id="tracked" src="demo/football_tracked.png" alt="Tracked players" style="max-width:100%;border:1px solid var(--line);border-radius:10px;display:block">
+    <img id="tracked" src="demo/football_tracked.jpg" alt="Tracked players" style="max-width:100%;border:1px solid var(--line);border-radius:10px;display:block">
     <div class="tagrow"><span class="demonote">Player&nbsp;#7</span><input type="text" placeholder="e.g. Son"></div>
     <div class="tagrow"><span class="demonote">Player&nbsp;#5</span><input type="text" placeholder="e.g. Romero"></div>
     <div class="row">
@@ -102,13 +102,13 @@
   <!-- STEP 5 -->
   <section id="step-results" class="card stage hidden">
     <h2 style="margin:0 0 8px">Your analysis is ready</h2>
-    <p class="hint">A sample of the coach analytics. Every match gets its own set.</p>
+    <p class="hint">Real coach analytics from a Tottenham vs Watford match. Every match gets its own set.</p>
     <div class="grid">
       <figure><img src="demo/results/heatmap_team.png" alt="Team heatmap"><figcaption>Team heatmap</figcaption></figure>
-      <figure><img src="demo/results/heatmap_a.png" alt="Player heatmap"><figcaption>Player movement</figcaption></figure>
-      <figure><img src="demo/results/heatmap_b.png" alt="Player heatmap"><figcaption>Player movement</figcaption></figure>
+      <figure><img src="demo/results/heatmap_a.png" alt="Formation"><figcaption>Formation</figcaption></figure>
+      <figure><img src="demo/results/heatmap_b.png" alt="Territory control"><figcaption>Territory control</figcaption></figure>
     </div>
-    <p class="msg demonote">Sample output — matches you submit are processed for you.</p>
+    <p class="msg demonote">Real output from a processed match — submit yours and we do the same.</p>
     <div class="row">
       <a id="results-open" class="btn btn-primary" href="jobs.html">Open the full results</a>
       <button class="btn btn-ghost" id="restart">Run the demo again</button>
@@ -122,7 +122,7 @@
 
   // Where "Open the full results" points. Swapped to the real Tottenham
   // results_url once that job is ready (see plan Task 6).
-  const RESULTS_URL = "jobs.html";
+  const RESULTS_URL = "https://drive.google.com/drive/folders/1mJctlRymvO0KrtRSyI0JhCVO9wVjUw-K";
   document.getElementById("results-open").href = RESULTS_URL;
 
   const el = (id) => document.getElementById(id);
@@ -156,7 +156,7 @@
     canvas.height = Math.round(img.naturalHeight * scale);
     redraw();
   };
-  img.src = "demo/football_frame.png";
+  img.src = "demo/football_frame.jpg";
 
   function redraw(overlay = null) {
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
